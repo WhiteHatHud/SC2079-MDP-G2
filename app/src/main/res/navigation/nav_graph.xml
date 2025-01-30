@@ -25,4 +25,10 @@
             android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/BluetoothFragment"
+        android:name="com.application.controller.bluetooth.BluetoothFragment"
+        android:label="BluetoothConnectFragment"
+        tools:layout="@layout/fragment_bluetooth">
+    </fragment>
 </navigation>
