@@ -22,6 +22,7 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.application.controller.BluetoothConnectActivity
 import com.application.controller.MainActivity
 import com.google.android.material.snackbar.Snackbar
 
@@ -139,10 +140,10 @@ class BluetoothFragment : Fragment() {
             val macAddress = deviceName.substring(deviceName.length - 19, deviceName.length - 2)
 
             // Call BluetoothService to connect with the selected device
-           /* if (MainActivity.getBluetoothService().connectToBluetoothDevice(macAddress)) {
+           if (BluetoothConnectActivity.getBluetoothService().connectToBluetoothDevice(macAddress)) {
                 Snackbar.make(view, CONNECTED_TO_DEVICE + deviceName, Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
-            }*/
+            }
         }
 
 

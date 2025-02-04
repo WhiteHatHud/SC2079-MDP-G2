@@ -26,9 +26,22 @@
             app:destination="@id/FirstFragment" />
     </fragment>
     <fragment
+        android:id="@+id/communicationFragment"
+        android:name="com.application.controller.bluetooth.CommunicationFragment"
+        android:label="CommunicationFragment"
+        tools:layout="@layout/fragment_communication">
+
+        <action
+            android:id="@+id/action_CommunicationFragment_to_FirstFragment"
+            app:destination="@id/BluetoothFragment" />
+    </fragment>
+    <fragment
         android:id="@+id/BluetoothFragment"
         android:name="com.application.controller.bluetooth.BluetoothFragment"
         android:label="BluetoothConnectFragment"
         tools:layout="@layout/fragment_bluetooth">
+        <action
+            android:id="@+id/action_BluetoothFragment_to_CommunicationFragment"
+            app:destination="@id/communicationFragment" />
     </fragment>
 </navigation>

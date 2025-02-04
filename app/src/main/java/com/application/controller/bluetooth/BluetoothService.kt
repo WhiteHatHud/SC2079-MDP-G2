@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.util.Log
+import android.widget.Toast
 import com.application.controller.MainActivity
 import com.application.controller.maze.MazeFragment
 import java.util.Locale
@@ -98,7 +99,7 @@ class BluetoothService {
                         updateIsConnected(false)
                     }
                 }
-/**
+
                 Constants.MESSAGE_READ -> {
                     val readBytes = message.obj as ByteArray
                     val readMessage = String(readBytes, 0, message.arg1)
@@ -108,10 +109,10 @@ class BluetoothService {
                     )
 
                     // Always display the received text in receive data section in CommunicationFragment
-                    MainActivity.updateReceivedTextStrings(readMessage)
+                    //TODO MAZE LOGIC IS HERE
                     // Update maze display if it is maze update response message
                     if (!readMessage.equals("ack", ignoreCase = true)) {
-                        processMazeUpdateResponseMessage(readMessage)
+                      //  processMazeUpdateResponseMessage(readMessage)
                     }
                     updateIsConnected(true)
                     connectedDeviceName = message.data.getString(Constants.DEVICE_NAME)
@@ -120,7 +121,7 @@ class BluetoothService {
                         "MESSAGE_DEVICE_NAME - $connectedDeviceName"
                     )
                 }
-**/
+
                 Constants.MESSAGE_DEVICE_NAME -> {
                     updateIsConnected(true)
                     connectedDeviceName = message.data.getString(Constants.DEVICE_NAME)
@@ -136,13 +137,14 @@ class BluetoothService {
                         BLUETOOTH_SERVICE_HANDLER_TAG,
                         "MESSAGE_TOAST - $toastMessage"
                     )
-                    /**
+
                     if (toastMessage.equals(DEVICE_CONNECTION_WAS_LOST, ignoreCase = true)) {
-                        this.isConnectedToBluetoothDevice = false
+
+                        // this.isConnectedToBluetoothDevice = false
                         connectedDeviceName =
                             "" // set name to empty string since connection was lost
-                        MainActivity.updateBluetoothStatusFloatingActionButtonDisplay()
-                    }**/
+                       // MainActivity.updateBluetoothStatusFloatingActionButtonDisplay()
+                    }
                 }
             }
         }
@@ -162,7 +164,7 @@ class BluetoothService {
         /*
         MainActivity.updateBluetoothStatusFloatingActionButtonDisplay()*/
     }
-/**
+/** TODO MAZE LOGIC
     private fun processMazeUpdateResponseMessage(mazeUpdateResponseMessage: String) {
         // Message format: ROBOT,IDLE/RUNNING/CALIBRATING/ARRIVED,0/90/180/270,X:Y;MDF,STRING;IMAGE,X:Y:ID:DIRECTION
         val infoArr = mazeUpdateResponseMessage.split(LEVEL_1_SEPARATOR.toRegex())

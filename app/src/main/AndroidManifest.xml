@@ -62,6 +62,11 @@
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.MDP_ControllerApp"/>
+        <activity
+            android:name=".CommunicationActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MDP_ControllerApp"/>
     </application>
 
 </manifest>

@@ -12,25 +12,26 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.application.controller.CommunicationActivity
 import com.application.controller.MainActivity
 import com.google.android.material.snackbar.Snackbar
 import java.util.Timer
 import java.util.TimerTask
 
 class CommunicationFragment : Fragment() {
-    /**
+
     private var communicationViewModel: CommunicationViewModel? = null
 
     private var timer: Timer? = null
     private var updateReceivedDataTimerTask: UpdateReceivedDataTimerTask? = null
-    private var textViewPersistentCommunicationString1: TextView? = null
-    private var textViewPersistentCommunicationString2: TextView? = null
-    private var textViewVolatileCommunicationString: TextView? = null
-    private var textViewReceivedStrings: TextView? = null
-    private var persistentStringSendButton1: Button? = null
-    private var persistentStringSendButton2: Button? = null
-    private var volatileStringSendButton: Button? = null
-    private var receivedDataClearButton: Button? = null
+    private lateinit var textViewPersistentCommunicationString1: TextView
+    private lateinit var textViewPersistentCommunicationString2: TextView
+    private lateinit var textViewVolatileCommunicationString: TextView
+    private lateinit var textViewReceivedStrings: TextView
+    private lateinit var persistentStringSendButton1: Button
+    private lateinit var persistentStringSendButton2: Button
+    private lateinit var volatileStringSendButton: Button
+    private lateinit var receivedDataClearButton: Button
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,18 +44,18 @@ class CommunicationFragment : Fragment() {
         timer = Timer()
         updateReceivedDataTimerTask = UpdateReceivedDataTimerTask()
 
-        val root: View = inflater.inflate(R.layout.fragment_communication, container, false)
+        val root: View = inflater.inflate(com.application.controller.R.layout.fragment_communication, container, false)
         textViewPersistentCommunicationString1 =
-            root.findViewById<TextView>(R.id.editTextCommunicationString1)
+            root.findViewById<TextView>(com.application.controller.R.id.editTextCommunicationString1)
         textViewPersistentCommunicationString2 =
-            root.findViewById<TextView>(R.id.editTextCommunicationString2)
+            root.findViewById<TextView>(com.application.controller.R.id.editTextCommunicationString2)
         textViewVolatileCommunicationString =
-            root.findViewById<TextView>(R.id.editTextCommunicationString)
-        textViewReceivedStrings = root.findViewById<TextView>(R.id.textViewReceivedStrings)
-        persistentStringSendButton1 = root.findViewById<Button>(R.id.stringSendButton1)
-        persistentStringSendButton2 = root.findViewById<Button>(R.id.stringSendButton2)
-        volatileStringSendButton = root.findViewById<Button>(R.id.stringSendButton)
-        receivedDataClearButton = root.findViewById<Button>(R.id.receivedDataClearButton)
+            root.findViewById<TextView>(com.application.controller.R.id.editTextCommunicationString)
+        textViewReceivedStrings = root.findViewById<TextView>(com.application.controller.R.id.textViewReceivedStrings)
+        persistentStringSendButton1 = root.findViewById<Button>(com.application.controller.R.id.stringSendButton1)
+        persistentStringSendButton2 = root.findViewById<Button>(com.application.controller.R.id.stringSendButton2)
+        volatileStringSendButton = root.findViewById<Button>(com.application.controller.R.id.stringSendButton)
+        receivedDataClearButton = root.findViewById<Button>(com.application.controller.R.id.receivedDataClearButton)
 
         textViewReceivedStrings.setMovementMethod(ScrollingMovementMethod())
         textViewReceivedStrings.setText(RECEIVED_DATA_PLACEHOLDER)
@@ -67,7 +68,7 @@ class CommunicationFragment : Fragment() {
                 Snackbar.LENGTH_LONG
             )
                 .setAction("Action", null).show()
-            MainActivity.sendCommunicationMessage(
+            CommunicationActivity.sendCommunicationMessage(
                 textViewPersistentCommunicationString1.getText().toString()
             )
         })
@@ -79,7 +80,7 @@ class CommunicationFragment : Fragment() {
                 Snackbar.LENGTH_LONG
             )
                 .setAction("Action", null).show()
-            MainActivity.sendCommunicationMessage(
+            CommunicationActivity.sendCommunicationMessage(
                 textViewPersistentCommunicationString2.getText().toString()
             )
         })
@@ -91,13 +92,13 @@ class CommunicationFragment : Fragment() {
                 Snackbar.LENGTH_LONG
             )
                 .setAction("Action", null).show()
-            MainActivity.sendCommunicationMessage(
+            CommunicationActivity.sendCommunicationMessage(
                 textViewVolatileCommunicationString.getText().toString()
             )
         })
 
         receivedDataClearButton.setOnClickListener(View.OnClickListener {
-            MainActivity.resetReceivedTextStrings()
+            CommunicationActivity()
             textViewReceivedStrings.setText(RECEIVED_DATA_PLACEHOLDER)
             Log.d(
                 COMMUNICATION_FRAGMENT_TAG,
@@ -119,7 +120,7 @@ class CommunicationFragment : Fragment() {
 
         // Write persistent strings in SharedPreferences
         // https://stackoverflow.com/questions/21720089/how-do-i-use-shared-preferences-in-a-fragment-on-android
-        val sharedPreferences = activity!!.getPreferences(Context.MODE_PRIVATE)
+        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString(
             PERSISTENT_STRING_KEY_1,
@@ -137,7 +138,7 @@ class CommunicationFragment : Fragment() {
 
         // Get persistent strings from SharedPreferences
         // https://stackoverflow.com/questions/21720089/how-do-i-use-shared-preferences-in-a-fragment-on-android
-        val sharedPreferences = activity!!.getPreferences(Context.MODE_PRIVATE)
+        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
         val communicationStringValue1 =
             sharedPreferences.getString(PERSISTENT_STRING_KEY_1, PERSISTENT_STRING_DEFAULT_1)
         val communicationStringValue2 =
@@ -154,8 +155,8 @@ class CommunicationFragment : Fragment() {
         override fun run() {
             try {
                 activity!!.runOnUiThread {
-                    if (!MainActivity.getReceivedTextStrings().isEmpty()) {
-                        textViewReceivedStrings.setText(MainActivity.getReceivedTextStrings())
+                    if (!CommunicationActivity.getReceivedTextStrings1().isEmpty()) {
+                        textViewReceivedStrings.setText(CommunicationActivity.getReceivedTextStrings1())
                     }
                 }
             } catch (ignored: NullPointerException) {
@@ -181,5 +182,5 @@ class CommunicationFragment : Fragment() {
         private const val RECEIVE_DATA_UPDATE_DELAY = 0
         private const val RECEIVE_DATA_UPDATE_INTERVAL = 500
     }
-    **/
+
 }

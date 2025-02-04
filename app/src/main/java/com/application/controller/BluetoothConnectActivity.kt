@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.widget.Button
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +15,7 @@ import androidx.compose.runtime.savedinstancestate.savedInstanceState
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.commit
+import com.application.controller.CommunicationActivity.Companion
 import com.application.controller.bluetooth.BluetoothFragment
 import com.application.controller.bluetooth.BluetoothService
 import com.google.android.material.snackbar.Snackbar
@@ -35,6 +37,11 @@ class BluetoothConnectActivity : AppCompatActivity()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bluetooth_connect)
+        val toCommsButton: Button = findViewById(R.id.button_fromBluetoothToCommunication)
+        toCommsButton.setOnClickListener {
+            val intent= Intent(this, CommunicationActivity::class.java)
+            startActivity(intent)
+        }
         requestBluetoothPermissions()
 
 
@@ -154,6 +161,12 @@ class BluetoothConnectActivity : AppCompatActivity()
 
         }
 
+    }
+
+    companion object {
+        fun getBluetoothService(): BluetoothService {
+            return CommunicationActivity.bluetoothService!!
+        }
     }
 
 

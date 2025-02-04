@@ -8,16 +8,24 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/button_fromBluetoothToCommunication"
-        android:text="Go to Communication"
+        android:id="@+id/button_fromCommunicationToBluetooth"
+        android:text="Go to Bluetooth Settings"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+    </Button>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bluetoothStatusButton"
+        android:text="Bluetooth Status"
+        app:layout_constraintStart_toEndOf="@id/button_fromCommunicationToBluetooth"
         app:layout_constraintTop_toTopOf="parent">
     </Button>
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"
-        android:name="com.application.controller.bluetooth.BluetoothFragment"
+        android:name="com.application.controller.bluetooth.CommunicationFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/button_fromBluetoothToCommunication"/>
+        app:layout_constraintTop_toBottomOf="@id/button_fromCommunicationToBluetooth"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
