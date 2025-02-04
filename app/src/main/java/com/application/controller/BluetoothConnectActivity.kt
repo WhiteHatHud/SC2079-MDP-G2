@@ -43,7 +43,7 @@ class BluetoothConnectActivity : AppCompatActivity()
             startActivity(intent)
         }
         requestBluetoothPermissions()
-
+        BluetoothFragment.Companion.bluetoothService = BluetoothService()
 
         /**
         val bluetoothManager: BluetoothManager = getSystemService(BluetoothManager::class.java)
@@ -164,9 +164,12 @@ class BluetoothConnectActivity : AppCompatActivity()
     }
 
     companion object {
+        var bluetoothService: BluetoothService? = BluetoothService()
+     /*
         fun getBluetoothService(): BluetoothService {
-            return CommunicationActivity.bluetoothService!!
-        }
+           // return CommunicationActivity.bluetoothService!!
+            return BluetoothConnectActivity.bluetoothService!!
+        }*/
     }
 
 

@@ -107,7 +107,6 @@ class BluetoothService {
                         BLUETOOTH_SERVICE_HANDLER_TAG,
                         "MESSAGE_READ - $readMessage"
                     )
-
                     // Always display the received text in receive data section in CommunicationFragment
                     //TODO MAZE LOGIC IS HERE
                     // Update maze display if it is maze update response message

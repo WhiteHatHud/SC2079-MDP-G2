@@ -140,7 +140,7 @@ class BluetoothFragment : Fragment() {
             val macAddress = deviceName.substring(deviceName.length - 19, deviceName.length - 2)
 
             // Call BluetoothService to connect with the selected device
-           if (BluetoothConnectActivity.getBluetoothService().connectToBluetoothDevice(macAddress)) {
+           if (BluetoothConnectActivity.bluetoothService?.connectToBluetoothDevice(macAddress) == true) {
                 Snackbar.make(view, CONNECTED_TO_DEVICE + deviceName, Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
             }
@@ -262,6 +262,7 @@ class BluetoothFragment : Fragment() {
     }
 
     companion object {
+        lateinit var bluetoothService: BluetoothService
         private const val BLUETOOTH_FRAGMENT_TAG = "BluetoothFragment"
 
         // Snackbar messages

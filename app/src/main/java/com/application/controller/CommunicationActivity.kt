@@ -20,7 +20,7 @@ class CommunicationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        CommunicationActivity.Companion.bluetoothService = BluetoothService()
+        CommunicationActivity.Companion.bluetoothService = BluetoothConnectActivity.bluetoothService
 
         CommunicationActivity.Companion.receivedTextStrings = ""
 
