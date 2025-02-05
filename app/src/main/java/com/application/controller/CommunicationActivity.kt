@@ -140,6 +140,16 @@ class CommunicationActivity : AppCompatActivity() {
         return receivedTextStrings!!
     }
 
+    fun getLatestMessage(): String
+    {
+         if(bluetoothService?.latestMessage !=null) {
+             return bluetoothService?.latestMessage!!
+         }
+        else
+        {
+            return "No message received"
+        }
+    }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////             Send Out Messages            ///////////////////////////

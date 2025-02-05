@@ -39,6 +39,9 @@ class CommunicationFragment : Fragment() {
     ): View? {
         communicationViewModel =
             ViewModelProvider(this).get(CommunicationViewModel::class.java)
+        // Access the Activity and its variable
+        //val activity = requireActivity() as CommunicationActivity
+       var receivedString= CommunicationActivity.getLatestMessage()
 
         // Update receive data
         timer = Timer()
@@ -58,7 +61,8 @@ class CommunicationFragment : Fragment() {
         receivedDataClearButton = root.findViewById<Button>(com.application.controller.R.id.receivedDataClearButton)
 
         textViewReceivedStrings.setMovementMethod(ScrollingMovementMethod())
-        textViewReceivedStrings.setText(RECEIVED_DATA_PLACEHOLDER)
+       // textViewReceivedStrings.setText(RECEIVED_DATA_PLACEHOLDER)
+        textViewReceivedStrings.setText(receivedString)
 
         persistentStringSendButton1.setOnClickListener(View.OnClickListener { view ->
             Snackbar.make(
@@ -155,8 +159,8 @@ class CommunicationFragment : Fragment() {
         override fun run() {
             try {
                 activity!!.runOnUiThread {
-                    if (!CommunicationActivity.getReceivedTextStrings1().isEmpty()) {
-                        textViewReceivedStrings.setText(CommunicationActivity.getReceivedTextStrings1())
+                    if (!CommunicationActivity.getLatestMessage().isEmpty()) {
+                        textViewReceivedStrings.setText(CommunicationActivity.getLatestMessage())
                     }
                 }
             } catch (ignored: NullPointerException) {

@@ -27,6 +27,10 @@ class BluetoothService {
     var connectedDeviceName: String? = null
         private set
 
+
+    var latestMessage: String? = null
+        private set
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////              Public Methods              ///////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,6 +111,7 @@ class BluetoothService {
                         BLUETOOTH_SERVICE_HANDLER_TAG,
                         "MESSAGE_READ - $readMessage"
                     )
+                    storeLatestMessage(readMessage)
                     // Always display the received text in receive data section in CommunicationFragment
                     //TODO MAZE LOGIC IS HERE
                     // Update maze display if it is maze update response message
@@ -114,7 +119,9 @@ class BluetoothService {
                       //  processMazeUpdateResponseMessage(readMessage)
                     }
                     updateIsConnected(true)
-                    connectedDeviceName = message.data.getString(Constants.DEVICE_NAME)
+                    if(message.data.getString(Constants.DEVICE_NAME)!=null){
+                        connectedDeviceName = message.data.getString(Constants.DEVICE_NAME)
+                    }
                     Log.d(
                         BLUETOOTH_SERVICE_HANDLER_TAG,
                         "MESSAGE_DEVICE_NAME - $connectedDeviceName"
@@ -163,6 +170,13 @@ class BluetoothService {
         /*
         MainActivity.updateBluetoothStatusFloatingActionButtonDisplay()*/
     }
+  //TODO Store latest sent information and return it if requested
+    private fun storeLatestMessage(message: String)
+    {
+        latestMessage=message;
+    }
+
+
 /** TODO MAZE LOGIC
     private fun processMazeUpdateResponseMessage(mazeUpdateResponseMessage: String) {
         // Message format: ROBOT,IDLE/RUNNING/CALIBRATING/ARRIVED,0/90/180/270,X:Y;MDF,STRING;IMAGE,X:Y:ID:DIRECTION
