@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -49,7 +50,7 @@ class CommunicationFragment : Fragment() {
 
         val root: View = inflater.inflate(com.application.controller.R.layout.fragment_communication, container, false)
         textViewPersistentCommunicationString1 =
-            root.findViewById<TextView>(com.application.controller.R.id.editTextCommunicationString1)
+            root.findViewById<EditText>(com.application.controller.R.id.editTextCommunicationString1)
         textViewPersistentCommunicationString2 =
             root.findViewById<TextView>(com.application.controller.R.id.editTextCommunicationString2)
         textViewVolatileCommunicationString =
@@ -144,7 +145,8 @@ class CommunicationFragment : Fragment() {
         // https://stackoverflow.com/questions/21720089/how-do-i-use-shared-preferences-in-a-fragment-on-android
         val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
         val communicationStringValue1 =
-            sharedPreferences.getString(PERSISTENT_STRING_KEY_1, PERSISTENT_STRING_DEFAULT_1)
+         ""
+           // sharedPreferences.getString(PERSISTENT_STRING_KEY_1, PERSISTENT_STRING_DEFAULT_1)
         val communicationStringValue2 =
             sharedPreferences.getString(PERSISTENT_STRING_KEY_2, PERSISTENT_STRING_DEFAULT_2)
         textViewPersistentCommunicationString1!!.text = communicationStringValue1
@@ -179,7 +181,7 @@ class CommunicationFragment : Fragment() {
 
         private const val PERSISTENT_STRING_KEY_1 = "persistent_string_1"
         private const val PERSISTENT_STRING_KEY_2 = "persistent_string_2"
-        private const val PERSISTENT_STRING_DEFAULT_1 = "This is persistent text string 1"
+     //   private const val PERSISTENT_STRING_DEFAULT_1 = "This is persistent text string 1"
         private const val PERSISTENT_STRING_DEFAULT_2 = "This is persistent text string 2"
         private const val RECEIVED_DATA_PLACEHOLDER = "Your received text strings will appear here"
 
