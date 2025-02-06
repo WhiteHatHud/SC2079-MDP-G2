@@ -1,4 +1,4 @@
-package com.example.mdpapplication.ui.maze
+package com.application.controller.maze
 
 import android.content.Context
 import android.graphics.Canvas
