@@ -7,7 +7,6 @@ import android.os.Message
 import android.util.Log
 import android.widget.Toast
 import com.application.controller.MainActivity
-import com.application.controller.maze.MazeFragment
 import java.util.Locale
 
 class BluetoothService {
