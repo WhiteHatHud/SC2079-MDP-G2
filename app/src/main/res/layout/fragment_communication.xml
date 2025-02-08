@@ -24,6 +24,7 @@
             android:id="@+id/editTextCommunicationString1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textIsSelectable="true"
             android:layout_marginTop="16dp"
             android:paddingHorizontal="12dp"
             android:textColor="@color/black"
@@ -42,7 +43,7 @@
             android:background="@drawable/ic_border"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/stringSendButton1" />
+            app:layout_constraintTop_toBottomOf="@id/ScrollViewMessageLog" />
         <TextView
             android:id="@+id/editTextCommunicationString"
             android:layout_width="match_parent"
@@ -66,6 +67,32 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/button_second" />
+        <ScrollView
+            android:id="@+id/ScrollViewMessageLog"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="16dp"
+            android:paddingHorizontal="12dp"
+            android:fillViewport="true"
+            app:layout_constraintTop_toBottomOf="@id/stringSendButton1"
+            >
+        <TextView
+            android:id="@+id/textViewMessageLog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:background="@drawable/ic_border"
+            android:maxLines="10"
+            android:scrollbars = "vertical"
+            android:scrollbarStyle="insideInset"
+            android:overScrollMode="always"
+            android:text="textViewMessageLog"
+            android:textIsSelectable="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/stringSendButton1" /></ScrollView>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -103,5 +130,26 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textViewReceivedStrings"
             />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/TextViewCommunicationFragLatestReceivedLabel"
+            android:text="Latest Recieved Message"
+            app:layout_constraintStart_toStartOf="@id/textViewReceivedStrings"
+            app:layout_constraintBottom_toTopOf="@id/textViewReceivedStrings"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/TextViewCommunicationFragSendMessageLabel"
+            android:text="Send Message"
+            app:layout_constraintStart_toStartOf="@id/editTextCommunicationString1"
+            app:layout_constraintBottom_toTopOf="@id/editTextCommunicationString1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/TextViewCommunicationFragLogLabel"
+            android:text="Communication Log"
+            app:layout_constraintStart_toStartOf="@id/ScrollViewMessageLog"
+            app:layout_constraintBottom_toTopOf="@id/ScrollViewMessageLog"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

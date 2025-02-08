@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.application.controller.databinding.FragmentFirstBinding
+import com.application.controller.MenuActivity
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -35,6 +36,8 @@ class FirstFragment : Fragment() {
         binding.buttonFirst.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
+
+
     }
 
     override fun onDestroyView() {

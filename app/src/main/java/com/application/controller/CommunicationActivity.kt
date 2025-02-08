@@ -151,6 +151,17 @@ class CommunicationActivity : AppCompatActivity() {
         }
     }
 
+    fun getMessageLog():String{
+        if(bluetoothService?.persistentMessageLog !=null) {
+            return bluetoothService?.persistentMessageLog!!
+        }
+        else
+        {
+            return "No messages to display"
+        }
+    }
+
+
         ////////////////////////////////////////////////////////////////////////////////////////////////
         ///////////////////////////             Send Out Messages            ///////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////

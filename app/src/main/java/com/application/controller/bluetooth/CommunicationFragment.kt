@@ -1,6 +1,5 @@
 package com.application.controller.bluetooth
 
-import android.R
 import android.content.Context
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
@@ -14,7 +13,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.application.controller.CommunicationActivity
-import com.application.controller.MainActivity
 import com.google.android.material.snackbar.Snackbar
 import java.util.Timer
 import java.util.TimerTask
@@ -29,6 +27,7 @@ class CommunicationFragment : Fragment() {
     private lateinit var textViewPersistentCommunicationString2: TextView
     private lateinit var textViewVolatileCommunicationString: TextView
     private lateinit var textViewReceivedStrings: TextView
+    private lateinit var textViewCommsLog:TextView
     private lateinit var persistentStringSendButton1: Button
     private lateinit var persistentStringSendButton2: Button
     private lateinit var volatileStringSendButton: Button
@@ -43,6 +42,7 @@ class CommunicationFragment : Fragment() {
         // Access the Activity and its variable
         //val activity = requireActivity() as CommunicationActivity
        var receivedString= CommunicationActivity.getLatestMessage()
+        var commsLog=CommunicationActivity.getMessageLog()
 
         // Update receive data
         timer = Timer()
@@ -60,10 +60,12 @@ class CommunicationFragment : Fragment() {
         persistentStringSendButton2 = root.findViewById<Button>(com.application.controller.R.id.stringSendButton2)
         volatileStringSendButton = root.findViewById<Button>(com.application.controller.R.id.stringSendButton)
         receivedDataClearButton = root.findViewById<Button>(com.application.controller.R.id.receivedDataClearButton)
-
-        textViewReceivedStrings.setMovementMethod(ScrollingMovementMethod())
+        textViewCommsLog=root.findViewById<TextView>(com.application.controller.R.id.textViewMessageLog)
+        textViewCommsLog.movementMethod = ScrollingMovementMethod()
+        //textViewCommsLog.movementMethod = ScrollingMovementMethod.getInstance();
        // textViewReceivedStrings.setText(RECEIVED_DATA_PLACEHOLDER)
         textViewReceivedStrings.setText(receivedString)
+        textViewCommsLog.setText(commsLog)
 
         persistentStringSendButton1.setOnClickListener(View.OnClickListener { view ->
             Snackbar.make(
@@ -164,7 +166,20 @@ class CommunicationFragment : Fragment() {
                     if (!CommunicationActivity.getLatestMessage().isEmpty()) {
                         textViewReceivedStrings.setText(CommunicationActivity.getLatestMessage())
                     }
+                    var newLog=CommunicationActivity.getMessageLog()
+                    var oldLog=textViewCommsLog.text.toString()
+                    if (newLog != oldLog) {
+                        textViewCommsLog.setText(CommunicationActivity.getMessageLog())
+                        val scrollAmount = textViewCommsLog.layout.getLineTop(textViewCommsLog.lineCount) - textViewCommsLog.height
+                        if (scrollAmount > 0) {
+                            textViewCommsLog.scrollTo(0, scrollAmount)
+                        } else {
+                            textViewCommsLog.scrollTo(0, 0)
+                        }
+                    //    textViewCommsLog.movementMethod = ScrollingMovementMethod()
+                    }
                 }
+               // textViewCommsLog.movementMethod = ScrollingMovementMethod()
             } catch (ignored: NullPointerException) {
             } catch (exception: Exception) {
                 Log.d(COMMUNICATION_FRAGMENT_TAG, exception.localizedMessage)

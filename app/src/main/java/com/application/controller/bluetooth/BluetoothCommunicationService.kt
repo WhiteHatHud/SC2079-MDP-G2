@@ -381,6 +381,7 @@ class BluetoothCommunicationService(private val mHandler: Handler) {
                     )
                 } else {
                     mmDevice.createInsecureRfcommSocketToServiceRecord(
+                    //mmDevice.createRfcommSocketToServiceRecord(
                         MY_UUID_INSECURE
                     )
                 }

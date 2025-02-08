@@ -31,6 +31,9 @@ class BluetoothService {
     var latestMessage: String? = null
         private set
 
+    var persistentMessageLog: String?= ""
+        private set
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////              Public Methods              ///////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,6 +68,8 @@ class BluetoothService {
             "Sending message: $message"
         )
         bluetoothCommunicationService.write(message.toByteArray())
+        storeMessageLogSent(message)
+
         //        processMazeUpdateResponseMessage("ROBOT,CALIBRATING,180,5:10;MDF,000000000000000000000000000000011100000000000000000000000000000000000000000000001110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;IMAGE,4:5:10,6:6:8"); // TODO: Remove
 //        processMazeUpdateResponseMessage("ROBOT,IDLE,0,1:1;MDF,000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;IMAGE;"); // TODO: Remove
 //        processMazeUpdateResponseMessage("P1,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA;P2,CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC;"); // TODO: Remove
@@ -112,6 +117,7 @@ class BluetoothService {
                         "MESSAGE_READ - $readMessage"
                     )
                     storeLatestMessage(readMessage)
+                    storeMessageLogRecieve(readMessage)
                     // Always display the received text in receive data section in CommunicationFragment
                     //TODO MAZE LOGIC IS HERE
                     // Update maze display if it is maze update response message
@@ -174,6 +180,16 @@ class BluetoothService {
     private fun storeLatestMessage(message: String)
     {
         latestMessage=message;
+    }
+
+    private fun storeMessageLogRecieve(message: String)
+    {
+        persistentMessageLog+= "$connectedDeviceName : $message\n"
+    }
+
+    private fun storeMessageLogSent(message: String)
+    {
+        persistentMessageLog+= "Me : $message\n"
     }
 
 
