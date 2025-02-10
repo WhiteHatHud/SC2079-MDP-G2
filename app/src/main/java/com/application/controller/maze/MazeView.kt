@@ -15,6 +15,12 @@ class MazeView(context: Context?, attrs: AttributeSet?) :
     // Paint for grid lines
     private val gridLinePaint = Paint()
     private val emptyGridPaint: Paint
+    // paint for the robot
+    private val robotPaint: Paint
+
+    // The Robots position and direction
+    private var robotPosition: Pair<Int, Int> = Pair(1, 1) // Initial robot position (1,1)
+    private var robotDirection: Int = 0 // Robot direction (0 = up, 90 = right, 180 = down, 270 = left)
 
     init {
         gridLinePaint.color = Color.BLACK
@@ -23,6 +29,10 @@ class MazeView(context: Context?, attrs: AttributeSet?) :
         // Paint for grid background
         emptyGridPaint = Paint()
         emptyGridPaint.color = Color.LTGRAY
+
+        //Paint for the robots
+        robotPaint = Paint()
+        robotPaint.color = Color.BLUE
     }
 
     override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {
@@ -34,6 +44,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) :
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         drawGrid(canvas)
+        drawRobot(canvas)
     }
 
     private fun drawGrid(canvas: Canvas) {
@@ -65,6 +76,28 @@ class MazeView(context: Context?, attrs: AttributeSet?) :
                 (j * gridSize).toFloat(),
                 gridLinePaint
             )
+        }
+    }
+
+    private fun drawRobot(canvas: Canvas) {
+        // Get robot's grid coordinates
+        val (x, y) = robotPosition
+
+        // Convert grid position to pixel position
+        val left = x * gridSize.toFloat()
+        val top = y * gridSize.toFloat()
+        val right = (x + 1) * gridSize.toFloat()
+        val bottom = (y + 1) * gridSize.toFloat()
+
+        // Draw the robot as a filled rectangle
+        canvas.drawRect(left, top, right, bottom, robotPaint)
+    }
+
+    fun updateRobotPosition(x: Int, y: Int, direction: Int) {
+        if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM) {
+            robotPosition = Pair(x, y)
+            robotDirection = direction
+            invalidate() // Redraw the view
         }
     }
 
