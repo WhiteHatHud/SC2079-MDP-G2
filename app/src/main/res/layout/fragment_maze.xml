@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -16,7 +17,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- TextView Label for Add Obstacles -->
+
     <!-- Buttons for obstacle input -->
+    <TextView
+        android:id="@+id/tv_add_obstacles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="528dp"
+        android:padding="8dp"
+        android:text="Add Obstacles"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <LinearLayout
         android:id="@+id/obstacle_input_box"
         android:layout_width="0dp"
@@ -30,12 +47,14 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <!-- X Entry -->
+
+
         <Spinner
             android:id="@+id/spinner_x"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:entries="@array/number_options"
-            android:layout_weight="1" />
+            android:layout_weight="0.5" />
 
         <!-- Y Entry -->
         <Spinner
@@ -43,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:entries="@array/number_options"
-            android:layout_weight="1" />
+            android:layout_weight="0.5" />
 
         <!-- D Option -->
         <Spinner
@@ -51,7 +70,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:entries="@array/obstacle_types"
-            android:layout_weight="1" />
+            android:layout_weight="0.5" />
 
         <!-- Add Button -->
         <Button
