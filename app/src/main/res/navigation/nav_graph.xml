@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/FirstFragment">
+
+    <fragment
+        android:id="@+id/FirstFragment"
+        android:name="com.application.controller.FirstFragment"
+        android:label="@string/direct_control_fragment_label"
+        tools:layout="@layout/fragment_first">
+
+        <action
+            android:id="@+id/action_FirstFragment_to_SecondFragment"
+            app:destination="@id/SecondFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/SecondFragment"
+        android:name="com.application.controller.SecondFragment"
+        android:label="@string/gridmap_control_fragment_label"
+        tools:layout="@layout/fragment_second">
+
+        <action
+            android:id="@+id/action_SecondFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+        <action
+            android:id="@+id/action_SecondFragment_to_MazeFragment"
+            app:destination="@id/MazeFragment" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/communicationFragment"
+        android:name="com.application.controller.bluetooth.CommunicationFragment"
+        android:label="CommunicationFragment"
+        tools:layout="@layout/fragment_communication">
+
+        <action
+            android:id="@+id/action_CommunicationFragment_to_FirstFragment"
+            app:destination="@id/BluetoothFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/BluetoothFragment"
+        android:name="com.application.controller.bluetooth.BluetoothFragment"
+        android:label="BluetoothConnectFragment"
+        tools:layout="@layout/fragment_bluetooth">
+        <action
+            android:id="@+id/action_BluetoothFragment_to_CommunicationFragment"
+            app:destination="@id/communicationFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/MazeFragment"
+        android:name="com.application.controller.maze.MazeFragment"
+        android:label="Maze"
+        tools:layout="@layout/fragment_maze">
+
+        <!-- Example: Navigation from SecondFragment to MazeFragment -->
+        <action
+            android:id="@+id/action_SecondFragment_to_MazeFragment"
+            app:destination="@id/MazeFragment" />
+    </fragment>
+</navigation>
