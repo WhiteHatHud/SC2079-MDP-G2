@@ -79,5 +79,10 @@
         <item>Left</item>
         <item>Right</item>
     </string-array>
-
+        <string-array name="direction_options">
+            <item>0</item> <!-- Up -->
+            <item>90</item> <!-- Right -->
+            <item>180</item> <!-- Down -->
+            <item>270</item> <!-- Left -->
+        </string-array>
 </resources>

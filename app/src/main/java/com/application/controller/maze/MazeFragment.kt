@@ -13,6 +13,9 @@ import com.application.controller.R
 class MazeFragment : Fragment() {
 
     private lateinit var mazeView: MazeView // Reference to the MazeView
+    private lateinit var spinnerRobotX: Spinner
+    private lateinit var spinnerRobotY: Spinner
+    private lateinit var spinnerRobotDirection: Spinner
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,6 +56,13 @@ class MazeFragment : Fragment() {
             mazeView.updateRobotPosition(robotX, robotY, 90) // Update to "Right"
         }
 
+        view.findViewById<Button>(R.id.btn_set_robot).setOnClickListener {
+            val x = spinnerRobotX.selectedItem.toString().toInt()
+            val y = spinnerRobotY.selectedItem.toString().toInt()
+            val direction = spinnerRobotDirection.selectedItem.toString().toInt()
+            mazeView.setRobotPosition(x, y, direction)
+        }
+
         // Handle obstacle input
         setupObstacleInput(view)
     }
@@ -77,4 +87,6 @@ class MazeFragment : Fragment() {
             }
         }
     }
+
+
 }

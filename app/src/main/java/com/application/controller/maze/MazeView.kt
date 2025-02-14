@@ -167,6 +167,16 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         }
     }
 
+    fun setRobotPosition(x: Int, y: Int, direction: Int) {
+        if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM && direction in robotBitmaps.keys) {
+            robotX = x
+            robotY = y
+            robotDirection = direction
+            invalidate() // Redraw the maze to update the robot's position
+        }
+    }
+
+
 }
 
 
