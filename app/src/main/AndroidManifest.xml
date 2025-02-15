@@ -26,6 +26,7 @@
          physical location. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -36,6 +37,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MDP_ControllerApp"
         android:hardwareAccelerated="true"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
             android:name=".MenuActivity"
@@ -46,6 +48,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".API.APITestActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MDP_ControllerApp" >
         </activity>
         <activity
             android:name=".MainActivity"

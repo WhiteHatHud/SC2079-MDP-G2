@@ -11,6 +11,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.application.controller.API.APITestActivity
 import com.application.controller.bluetooth.BluetoothService
 import com.application.controller.databinding.ActivityMenuBinding
 
@@ -21,6 +22,7 @@ class MenuActivity : AppCompatActivity() {
     private lateinit var BluetoothService : BluetoothService
     private var bluetoothConnectedFlag=false;
     private lateinit var BluetoothStatusButton:Button;
+    private lateinit var APITestButton:Button;
     /*
     TODO- Look into establishing access to the Bluetooth Service access in order to translate movement instructions
       from Frag1 to directly to Bluetooth Service - Companion to Bluetooth Activity? - Check
@@ -51,6 +53,16 @@ class MenuActivity : AppCompatActivity() {
                 .setAnchorView(R.id.fab).show()
 
             val intent= Intent(this, BluetoothConnectActivity::class.java)
+            startActivity(intent)
+        }
+
+        APITestButton=findViewById(R.id.button_menuActivityGotoAPITest)
+        APITestButton.setOnClickListener{ view ->
+            Snackbar.make(view, "API TEST", Snackbar.LENGTH_LONG)
+            .setAction("Action", null)
+            .setAnchorView(R.id.button_menuActivityGotoAPITest).show()
+
+            val intent= Intent(this, APITestActivity::class.java)
             startActivity(intent)
         }
     }
@@ -90,6 +102,12 @@ class MenuActivity : AppCompatActivity() {
         else
         {
             BluetoothStatusButton.visibility=View.GONE
+        }
+    }
+
+    companion object {
+        fun getBluetoothService() : BluetoothService? {
+            return BluetoothConnectActivity.Companion.bluetoothService;
         }
     }
 

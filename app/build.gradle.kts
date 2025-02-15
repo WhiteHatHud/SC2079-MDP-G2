@@ -46,6 +46,9 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/INDEX.LIST"
+            excludes += "/META-INF/DEPENDENCIES"
+            excludes += "/META-INF/io.netty.versions.properties"
         }
     }
 }
@@ -67,6 +70,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.runtime.saved.instance.state)
     implementation(libs.androidx.ui.test.android)
+    implementation(libs.firebase.appdistribution.gradle)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -74,4 +78,25 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    // retrofit
+
+
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+
+
+    // GSON
+
+
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // OkHttp (Retrofit uses it)
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+    // coroutine
+
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 }
