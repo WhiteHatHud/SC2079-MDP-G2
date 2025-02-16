@@ -153,11 +153,6 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         }
     }
 
-    companion object {
-        private const val COLUMN_NUM = 20
-        private const val ROW_NUM = 20
-        private const val leftMargin = 50
-    }
     fun updateRobotPosition(x: Int, y: Int, direction: Int) {
         if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM) {
             robotX = x
@@ -175,8 +170,24 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
             invalidate() // Redraw the maze to update the robot's position
         }
     }
+    companion object {
+        const val COLUMN_NUM = 20
+        const val ROW_NUM = 20
+        private const val leftMargin = 50
+    }
 
+    fun resetMaze() {
+        // Reset robot to initial position and direction
+        robotX = 1
+        robotY = 1
+        robotDirection = 0
 
+        // Clear all obstacles
+        obstacleMap.clear()
+
+        // Redraw the maze
+        invalidate()
+    }
 }
 
 

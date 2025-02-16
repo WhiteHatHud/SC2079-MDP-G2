@@ -17,6 +17,27 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/tv_add_robot_position" />
 
+    <LinearLayout
+        android:id="@+id/reset_controls_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/maze_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tv_add_robot_position"
+        android:layout_margin="8dp">
+
+        <Button
+            android:id="@+id/button_reset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reset"
+            android:layout_margin="8dp" />
+    </LinearLayout>
+
+
     <!-- TextView for Add Robot Position -->
     <TextView
         android:id="@+id/tv_add_robot_position"
@@ -136,6 +157,7 @@
     </LinearLayout>
 
     <!-- Buttons for movement -->
+    <!-- Buttons for movement -->
     <LinearLayout
         android:id="@+id/button_container"
         android:layout_width="0dp"
@@ -171,5 +193,6 @@
             android:layout_height="wrap_content"
             android:text="Right" />
     </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

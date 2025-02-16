@@ -16,6 +16,14 @@ class MazeFragment : Fragment() {
     private lateinit var spinnerRobotX: Spinner
     private lateinit var spinnerRobotY: Spinner
     private lateinit var spinnerRobotDirection: Spinner
+    private lateinit var spinnerObstacleX: Spinner
+    private lateinit var spinnerObstacleY: Spinner
+    private lateinit var spinnerObstacleType: Spinner
+
+    // Variables to track the robot's current position and direction
+    private var robotX = 1
+    private var robotY = 1
+    private var robotDirection = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,63 +38,143 @@ class MazeFragment : Fragment() {
         // Initialize MazeView
         mazeView = view.findViewById(R.id.maze_view)
 
-        // Initialize robot's position and direction
-        var robotX = 1 // Starting X position
-        var robotY = 1 // Starting Y position
-        var robotDirection = 0 // Initial direction (e.g., 0 for up, 90 for right, etc.)
+        // Initialize spinners
+        spinnerRobotX = view.findViewById(R.id.spinner_robot_x)
+        spinnerRobotY = view.findViewById(R.id.spinner_robot_y)
+        spinnerRobotDirection = view.findViewById(R.id.spinner_robot_direction)
+        spinnerObstacleX = view.findViewById(R.id.spinner_x)
+        spinnerObstacleY = view.findViewById(R.id.spinner_y)
+        spinnerObstacleType = view.findViewById(R.id.spinner_obstacle_type)
 
-        // Handle button clicks for robot movement
+
+        // Handle robot movement buttons
         view.findViewById<Button>(R.id.button_move_up).setOnClickListener {
-            robotY = (robotY - 1).coerceAtLeast(0) // Ensure the robot stays within bounds
-            mazeView.updateRobotPosition(robotX, robotY, 0) // Update to "Up"
+            robotY = (robotY + 1).coerceAtMost(MazeView.ROW_NUM - 1) // Ensure within bounds
+            mazeView.updateRobotPosition(robotX, robotY, 0) // Update in the MazeView
+            robotDirection = 0 // Update direction
         }
 
         view.findViewById<Button>(R.id.button_move_down).setOnClickListener {
-            robotY = (robotY + 1).coerceAtMost(19) // Ensure the robot stays within bounds
-            mazeView.updateRobotPosition(robotX, robotY, 180) // Update to "Down"
+            robotY = (robotY - 1).coerceAtLeast(0) // Ensure within bounds
+            mazeView.updateRobotPosition(robotX, robotY, 180) // Update in the MazeView
+            robotDirection = 180 // Update direction
         }
 
         view.findViewById<Button>(R.id.button_move_left).setOnClickListener {
-            robotX = (robotX - 1).coerceAtLeast(0) // Ensure the robot stays within bounds
-            mazeView.updateRobotPosition(robotX, robotY, 270) // Update to "Left"
+            robotX = (robotX - 1).coerceAtLeast(0) // Ensure within bounds
+            mazeView.updateRobotPosition(robotX, robotY, 270) // Update in the MazeView
+            robotDirection = 270 // Update direction
         }
 
         view.findViewById<Button>(R.id.button_move_right).setOnClickListener {
-            robotX = (robotX + 1).coerceAtMost(19) // Ensure the robot stays within bounds
-            mazeView.updateRobotPosition(robotX, robotY, 90) // Update to "Right"
+            robotX = (robotX + 1).coerceAtMost(MazeView.COLUMN_NUM - 1) // Ensure within bounds
+            mazeView.updateRobotPosition(robotX, robotY, 90) // Update in the MazeView
+            robotDirection = 90 // Update direction
         }
 
+        // Handle "Set Robot" button
         view.findViewById<Button>(R.id.btn_set_robot).setOnClickListener {
-            val x = spinnerRobotX.selectedItem.toString().toInt()
-            val y = spinnerRobotY.selectedItem.toString().toInt()
-            val direction = spinnerRobotDirection.selectedItem.toString().toInt()
-            mazeView.setRobotPosition(x, y, direction)
+            setRobotPosition()
         }
 
-        // Handle obstacle input
+        // Setup "Add Obstacle" button
         setupObstacleInput(view)
+
+        // Setup Reset button
+        val resetButton: Button = view.findViewById(R.id.button_reset)
+        resetButton.setOnClickListener {
+            mazeView.resetMaze() // Call the resetMaze function in MazeView
+            Toast.makeText(context, "Maze has been reset!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+    private fun setRobotPosition() {
+        // Get the values from the spinners
+        val x = spinnerRobotX.selectedItem?.toString()?.toIntOrNull()
+        val y = spinnerRobotY.selectedItem?.toString()?.toIntOrNull()
+        val direction = spinnerRobotDirection.selectedItem?.toString()?.toIntOrNull()
+
+        if (x == null || y == null || direction == null) {
+            Toast.makeText(
+                context,
+                "Please select valid X, Y, and direction values!",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        if (x !in 0 until MazeView.COLUMN_NUM || y !in 0 until MazeView.ROW_NUM) {
+            Toast.makeText(
+                context,
+                "Position out of bounds! Ensure X and Y are within grid limits.",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        if (direction !in listOf(0, 90, 180, 270)) {
+            Toast.makeText(
+                context,
+                "Invalid direction! Must be 0, 90, 180, or 270.",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        // Update the robot's position and direction in the MazeView
+        mazeView.setRobotPosition(x, y, direction)
+
+        // Synchronize the variables in MazeFragment
+        robotX = x
+        robotY = y
+        robotDirection = direction
+    }
+
+    private fun resetMaze() {
+        // Reset the maze in MazeView
+        mazeView.resetMaze()
+
+        // Reset the local robot variables
+        robotX = 1
+        robotY = 1
+        robotDirection = 0
+
+        Toast.makeText(context, "Maze reset to initial state!", Toast.LENGTH_SHORT).show()
     }
 
     private fun setupObstacleInput(view: View) {
-        // Get references to the input fields and the add button
-        val spinnerX = view.findViewById<Spinner>(R.id.spinner_x)
-        val spinnerY = view.findViewById<Spinner>(R.id.spinner_y)
-        val spinnerObstacleType = view.findViewById<Spinner>(R.id.spinner_obstacle_type)
+        // Get references to the add obstacle button
         val btnAddObstacle = view.findViewById<Button>(R.id.btn_add_obstacle)
 
         btnAddObstacle.setOnClickListener {
             // Get selected values from the spinners
-            val x = spinnerX.selectedItem.toString().toIntOrNull()
-            val y = spinnerY.selectedItem.toString().toIntOrNull()
-            val obstacleType = spinnerObstacleType.selectedItem.toString()
+            val x = spinnerObstacleX.selectedItem?.toString()?.toIntOrNull()
+            val y = spinnerObstacleY.selectedItem?.toString()?.toIntOrNull()
+            val obstacleType = spinnerObstacleType.selectedItem?.toString()
 
-            if (x != null && y != null) {
-                mazeView.addObstacle(x, y, obstacleType) // Add the obstacle to the MazeView
+            if (x != null && y != null && obstacleType != null) {
+                if (x !in 0 until MazeView.COLUMN_NUM || y !in 0 until MazeView.ROW_NUM) {
+                    Toast.makeText(
+                        context,
+                        "Position out of bounds! Ensure X and Y are within grid limits.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
+
+                // Add obstacle to the MazeView
+                mazeView.addObstacle(x, y, obstacleType)
+                Toast.makeText(context, "Obstacle added at ($x, $y)!", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(context, "Please select valid X and Y values!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "Please select valid X, Y, and obstacle type!",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
+
+
     }
-
-
 }
