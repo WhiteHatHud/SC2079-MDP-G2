@@ -47,6 +47,12 @@ class MazeFragment : Fragment() {
         spinnerObstacleType = view.findViewById(R.id.spinner_obstacle_type)
 
 
+        // Handle Undo button
+        view.findViewById<Button>(R.id.button_undo).setOnClickListener {
+            mazeView.undoLastAction()
+            Toast.makeText(context, "Last action undone!", Toast.LENGTH_SHORT).show()
+        }
+
         // Handle robot movement buttons
         view.findViewById<Button>(R.id.button_move_up).setOnClickListener {
             robotY = (robotY + 1).coerceAtMost(MazeView.ROW_NUM - 1) // Ensure within bounds

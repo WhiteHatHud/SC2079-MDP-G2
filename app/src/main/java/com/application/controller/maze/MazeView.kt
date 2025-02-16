@@ -9,6 +9,7 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import com.application.controller.R
+import java.util.Stack
 import kotlin.math.min
 
 class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
@@ -44,6 +45,8 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     // Obstacles map
     private val obstacleMap: MutableMap<Pair<Int, Int>, String> = mutableMapOf()
+    //stack for states
+    private val stateStack: Stack<MazeState> = Stack()
 
     init {
         gridLinePaint.color = Color.BLACK
@@ -148,6 +151,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     fun addObstacle(x: Int, y: Int, type: String) {
         if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM && type in obstacleBitmaps.keys) {
+            saveState()
             obstacleMap[Pair(x, y)] = type
             invalidate()
         }
@@ -155,6 +159,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     fun updateRobotPosition(x: Int, y: Int, direction: Int) {
         if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM) {
+            saveState()
             robotX = x
             robotY = y
             robotDirection = direction
@@ -164,6 +169,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     fun setRobotPosition(x: Int, y: Int, direction: Int) {
         if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM && direction in robotBitmaps.keys) {
+            saveState()
             robotX = x
             robotY = y
             robotDirection = direction
@@ -175,9 +181,16 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         const val ROW_NUM = 20
         private const val leftMargin = 50
     }
-
+    data class MazeState(
+        val robotX: Int,
+        val robotY: Int,
+        val robotDirection: Int,
+        val obstacleMap: Map<Pair<Int, Int>, String>
+    )
+//reset maZe stuff
     fun resetMaze() {
         // Reset robot to initial position and direction
+        saveState()
         robotX = 1
         robotY = 1
         robotDirection = 0
@@ -187,6 +200,28 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
         // Redraw the maze
         invalidate()
+    }
+
+    fun undoLastAction() {
+        if (stateStack.isNotEmpty()) {
+            val previousState = stateStack.pop()
+            robotX = previousState.robotX
+            robotY = previousState.robotY
+            robotDirection = previousState.robotDirection
+            obstacleMap.clear()
+            obstacleMap.putAll(previousState.obstacleMap)
+            invalidate()
+        }
+    }
+
+    fun saveState() {
+        val currentState = MazeState(
+            robotX,
+            robotY,
+            robotDirection,
+            HashMap(obstacleMap)
+        )
+        stateStack.push(currentState)
     }
 }
 
