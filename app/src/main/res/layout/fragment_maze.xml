@@ -17,13 +17,58 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/tv_add_robot_position" />
 
+    <!-- Save State Section -->
+    <LinearLayout
+        android:id="@+id/save_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@color/desert_tan"
+        app:layout_constraintTop_toBottomOf="@id/maze_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/reset_controls_layout"
+        android:layout_margin="0dp">
+
+        <EditText
+            android:id="@+id/et_state_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="State name"
+            android:layout_weight="1"
+            android:padding="0dp" />
+
+        <Button
+            android:id="@+id/btn_save_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save State"
+            android:padding="0dp" />
+
+        <Spinner
+            android:id="@+id/spinner_load_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:entries="@array/state_list"
+            android:padding="0dp" />
+
+        <Button
+            android:id="@+id/btn_load_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Load State"
+            android:padding="0dp" />
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/reset_controls_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/maze_view"
+        app:layout_constraintTop_toBottomOf="@+id/save_state"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/tv_add_robot_position"

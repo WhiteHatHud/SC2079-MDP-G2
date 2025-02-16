@@ -11,6 +11,8 @@ import android.view.View
 import com.application.controller.R
 import java.util.Stack
 import kotlin.math.min
+import org.json.JSONObject
+import org.json.JSONArray
 
 class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     private var gridSize = 0
@@ -222,6 +224,57 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
             HashMap(obstacleMap)
         )
         stateStack.push(currentState)
+    }
+
+    fun saveMazeState(): String {
+        val mazeStateJson = JSONObject()
+        val robotPositionJson = JSONObject()
+        robotPositionJson.put("x", robotX)
+        robotPositionJson.put("y", robotY)
+        robotPositionJson.put("direction", robotDirection)
+        mazeStateJson.put("robotPosition", robotPositionJson)
+
+        val obstaclesJsonArray = JSONArray()
+        for ((position, type) in obstacleMap) {
+            val obstacleJson = JSONObject()
+            obstacleJson.put("x", position.first)
+            obstacleJson.put("y", position.second)
+            obstacleJson.put("type", type)
+            obstaclesJsonArray.put(obstacleJson)
+        }
+        mazeStateJson.put("obstacles", obstaclesJsonArray)
+
+        return mazeStateJson.toString()
+    }
+
+    fun loadMazeState(mazeStateJson: String) {
+        try {
+            val jsonObject = JSONObject(mazeStateJson)
+
+            // Load robot position
+            val robotPosition = jsonObject.getJSONObject("robotPosition")
+            val x = robotPosition.getInt("x")
+            val y = robotPosition.getInt("y")
+            val direction = robotPosition.getInt("direction")
+            setRobotPosition(x, y, direction)
+
+            // Clear existing obstacles
+            obstacleMap.clear()
+
+            // Load obstacles
+            val obstaclesArray = jsonObject.getJSONArray("obstacles")
+            for (i in 0 until obstaclesArray.length()) {
+                val obstacle = obstaclesArray.getJSONObject(i)
+                val obstacleX = obstacle.getInt("x")
+                val obstacleY = obstacle.getInt("y")
+                val obstacleType = obstacle.getString("type")
+                addObstacle(obstacleX, obstacleY, obstacleType)
+            }
+
+            invalidate() // Redraw the maze
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }
 

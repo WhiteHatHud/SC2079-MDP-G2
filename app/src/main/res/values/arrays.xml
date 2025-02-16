@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <resources>
+        <string-array name="state_list">
+            <item>State 1</item>
+            <item>State 2</item>
+            <item>State 3</item>
+        </string-array>
+    </resources>
