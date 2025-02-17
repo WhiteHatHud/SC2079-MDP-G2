@@ -24,6 +24,10 @@
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
+        <action
+            android:id="@+id/action_SecondFragment_to_MazeFragment"
+            app:destination="@id/MazeFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/communicationFragment"
@@ -43,5 +47,17 @@
         <action
             android:id="@+id/action_BluetoothFragment_to_CommunicationFragment"
             app:destination="@id/communicationFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/MazeFragment"
+        android:name="com.application.controller.maze.MazeFragment"
+        android:label="Maze"
+        tools:layout="@layout/fragment_maze">
+
+        <!-- Example: Navigation from SecondFragment to MazeFragment -->
+        <action
+            android:id="@+id/action_SecondFragment_to_MazeFragment"
+            app:destination="@id/MazeFragment" />
     </fragment>
 </navigation>

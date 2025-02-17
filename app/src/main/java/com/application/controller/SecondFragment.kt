@@ -31,9 +31,16 @@ class SecondFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentSecondBinding.bind(view)  // ✅ Use ViewBinding properly
 
+        // ✅ Button to navigate to FirstFragment
         binding.buttonSecond.setOnClickListener {
             findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
+        }
+
+        // ✅ New Button to navigate to MazeFragment
+        binding.btnGoToMaze.setOnClickListener {
+            findNavController().navigate(R.id.action_SecondFragment_to_MazeFragment)
         }
     }
 

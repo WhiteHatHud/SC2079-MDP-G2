@@ -29,7 +29,7 @@ class BluetoothConnectActivity : AppCompatActivity()
         android.Manifest.permission.BLUETOOTH_ADVERTISE,
         android.Manifest.permission.BLUETOOTH_CONNECT,
         android.Manifest.permission.ACCESS_FINE_LOCATION,
-        android.Manifest.permission.ACCESS_COARSE_LOCATION
+        android.Manifest.permission.ACCESS_COARSE_LOCATION,
     )
     private val REQUEST_BLUETOOTH_PERMISSIONS = 1
     private var bluetoothService: BluetoothService? = null
