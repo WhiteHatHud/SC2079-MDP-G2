@@ -97,11 +97,11 @@ class MenuActivity : AppCompatActivity() {
 
         if(bluetoothConnectedFlag)
         {
-            BluetoothStatusButton.visibility= View.VISIBLE
+            BluetoothStatusButton.isEnabled= true
         }
         else
         {
-            BluetoothStatusButton.visibility=View.GONE
+            BluetoothStatusButton.isEnabled=false
         }
     }
 
