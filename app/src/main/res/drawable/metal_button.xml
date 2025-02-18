@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Pressed State -->
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
             <solid android:color="#6E4B2A"/> <!-- Darker metallic shade when clicked -->
             <corners android:radius="8dp"/>
             <stroke android:width="2dp" android:color="#5C3E1E"/>
-            <padding android:left="10dp" android:top="10dp" android:right="10dp" android:bottom="10dp"/>
         </shape>
     </item>
-    <item>
+
+    <!-- Normal (Enabled) State -->
+    <item android:state_enabled="true">
         <shape android:shape="rectangle">
             <solid android:color="#8B6F47"/> <!-- Default metallic shade -->
             <corners android:radius="8dp"/>
             <stroke android:width="2dp" android:color="#6E4B2A"/>
-            <padding android:left="10dp" android:top="10dp" android:right="10dp" android:bottom="10dp"/>
         </shape>
     </item>
 </selector>

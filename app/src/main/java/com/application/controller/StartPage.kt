@@ -27,6 +27,7 @@ class StartFragment : Fragment() {
         // Navigation to FirstFragment
         binding.btnStart.setOnClickListener {
             findNavController().navigate(R.id.action_StartFragment_to_FirstFragment)
+            
         }
 
         // Navigation to Settings

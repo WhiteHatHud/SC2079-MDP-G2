@@ -12,20 +12,19 @@
         android:id="@+id/titleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tank Cat: Pixel Warfare"
-        android:textSize="28sp"
-        android:textColor="@android:color/white"
-        android:textStyle="bold"
+        android:layout_marginTop="200dp"
         android:fontFamily="@font/military_font"
         android:shadowColor="@android:color/black"
-        android:shadowRadius="5"
         android:shadowDx="3"
         android:shadowDy="3"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:shadowRadius="5"
+        android:text="Tank Cat: Pixel Warfare"
+        android:textColor="@android:color/white"
+        android:textSize="60sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="60dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <!-- Start Button -->
@@ -33,41 +32,47 @@
         android:id="@+id/btnStart"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:text="START"
+        android:layout_marginTop="400dp"
+        style="@style/MetalButton"
         android:background="@drawable/metal_button"
+        android:backgroundTint="@null"
+        android:fontFamily="@font/military_font"
+        android:text="START"
         android:textColor="@android:color/white"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/titleText"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="400dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/titleText" />
 
     <!-- Settings Button -->
     <Button
         android:id="@+id/btnSettings"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:text="SETTINGS"
+        android:layout_marginTop="30dp"
         android:background="@drawable/metal_button"
+        android:backgroundTint="@null"
+        android:fontFamily="@font/military_font"
+        android:text="SETTINGS"
         android:textColor="@android:color/white"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/btnStart"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="30dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnStart" />
 
     <!-- Credits Button -->
     <Button
         android:id="@+id/btnCredits"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:text="CREDITS"
+        android:layout_marginTop="30dp"
         android:background="@drawable/metal_button"
+        android:fontFamily="@font/military_font"
+        android:text="CREDITS"
         android:textColor="@android:color/white"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/btnSettings"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="30dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnSettings" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
