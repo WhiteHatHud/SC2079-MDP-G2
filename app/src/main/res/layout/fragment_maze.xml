@@ -1,205 +1,324 @@
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<androidx.constraintlayout.widget.ConstraintLayout-->
+<!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    android:orientation="vertical"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent">-->
+
+<!--    &lt;!&ndash; MazeView for displaying the maze &ndash;&gt;-->
+<!--    <com.application.controller.maze.MazeView-->
+<!--        android:id="@+id/maze_view"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:background="@android:color/darker_gray"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/tv_add_robot_position" />-->
+
+<!--    <LinearLayout-->
+<!--        android:id="@+id/reset_controls_layout"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:gravity="center"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/maze_view"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/tv_add_robot_position"-->
+<!--        android:layout_margin="8dp">-->
+
+<!--        <Button-->
+<!--            android:id="@+id/button_reset"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Reset"-->
+<!--            android:layout_margin="8dp" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/button_undo"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Undo"-->
+<!--            android:layout_margin="8dp" />-->
+<!--    </LinearLayout>-->
+
+
+<!--    &lt;!&ndash; TextView for Add Robot Position &ndash;&gt;-->
+<!--    <TextView-->
+<!--        android:id="@+id/tv_add_robot_position"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:padding="0dp"-->
+<!--        android:text="Add Robot Position"-->
+<!--        android:textSize="18sp"-->
+<!--        android:textStyle="bold"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/reset_controls_layout"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent" />-->
+
+<!--    &lt;!&ndash; Robot Input Box &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:id="@+id/robot_input_box"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:padding="0dp"-->
+<!--        android:background="@color/desert_tan"-->
+<!--        android:layout_margin="8dp"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/tv_add_robot_position"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent">-->
+
+<!--        &lt;!&ndash; X Entry &ndash;&gt;-->
+<!--        <Spinner-->
+<!--            android:id="@+id/spinner_robot_x"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:entries="@array/number_options"-->
+<!--            android:layout_weight="1" />-->
+
+<!--        &lt;!&ndash; Y Entry &ndash;&gt;-->
+<!--        <Spinner-->
+<!--            android:id="@+id/spinner_robot_y"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:entries="@array/number_options"-->
+<!--            android:layout_weight="1" />-->
+
+<!--        &lt;!&ndash; D Option &ndash;&gt;-->
+<!--        <Spinner-->
+<!--            android:id="@+id/spinner_robot_direction"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:entries="@array/direction_options"-->
+<!--            android:layout_weight="1" />-->
+
+<!--        &lt;!&ndash; Set Button &ndash;&gt;-->
+<!--        <Button-->
+<!--            android:id="@+id/btn_set_robot"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="SET"-->
+<!--            android:layout_weight="1" />-->
+<!--    </LinearLayout>-->
+
+<!--    &lt;!&ndash; TextView for Add Obstacle &ndash;&gt;-->
+<!--    <TextView-->
+<!--        android:id="@+id/tv_add_obstacles"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:padding="0dp"-->
+<!--        android:text="Add Obstacles"-->
+<!--        android:textSize="18sp"-->
+<!--        android:textStyle="bold"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/robot_input_box"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent" />-->
+
+<!--    &lt;!&ndash; Obstacle Input Box &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:id="@+id/obstacle_input_box"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:padding="0dp"-->
+<!--        android:background="@color/desert_tan"-->
+<!--        android:layout_margin="8dp"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/tv_add_obstacles"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent">-->
+
+<!--        &lt;!&ndash; X Entry &ndash;&gt;-->
+<!--        <Spinner-->
+<!--            android:id="@+id/spinner_x"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:entries="@array/number_options"-->
+<!--            android:layout_weight="0.5" />-->
+
+<!--        &lt;!&ndash; Y Entry &ndash;&gt;-->
+<!--        <Spinner-->
+<!--            android:id="@+id/spinner_y"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:entries="@array/number_options"-->
+<!--            android:layout_weight="0.5" />-->
+
+<!--        &lt;!&ndash; D Option &ndash;&gt;-->
+<!--        <Spinner-->
+<!--            android:id="@+id/spinner_obstacle_type"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:entries="@array/obstacle_types"-->
+<!--            android:layout_weight="0.5" />-->
+
+<!--        &lt;!&ndash; Add Button &ndash;&gt;-->
+<!--        <Button-->
+<!--            android:id="@+id/btn_add_obstacle"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="ADD"-->
+<!--            android:layout_weight="1" />-->
+<!--    </LinearLayout>-->
+
+<!--    &lt;!&ndash; Buttons for movement &ndash;&gt;-->
+<!--    &lt;!&ndash; Buttons for movement &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:id="@+id/button_container"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:gravity="center"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/obstacle_input_box"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent">-->
+
+<!--        <Button-->
+<!--            android:id="@+id/button_move_up"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Up" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/button_move_down"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Down" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/button_move_left"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Left" />-->
+
+<!--        <Button-->
+<!--            android:id="@+id/button_move_right"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Right" />-->
+<!--    </LinearLayout>-->
+
+
+<!--</androidx.constraintlayout.widget.ConstraintLayout>-->
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- MazeView for displaying the maze -->
-    <com.application.controller.maze.MazeView
-        android:id="@+id/maze_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@android:color/darker_gray"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tv_add_robot_position" />
-
     <LinearLayout
-        android:id="@+id/reset_controls_layout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/maze_view"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tv_add_robot_position"
-        android:layout_margin="8dp">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/button_reset"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Reset"
-            android:layout_margin="8dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="431dp"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/button_undo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Undo"
-            android:layout_margin="8dp" />
+            <LinearLayout
+                android:layout_width="430dp"
+                android:layout_height="430dp"
+                android:orientation="horizontal">
+
+                <view
+                    android:id="@+id/mazeView"
+                    class="com.application.controller.maze.MazeView"
+                    android:layout_width="match_parent"
+                    android:layout_height="430dp" />
+
+                <Switch
+                    android:id="@+id/switchMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Switch" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="150dp"
+                android:layout_height="380dp"
+                android:layout_marginStart="7dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/bluetoothConnection"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="@drawable/metal_button"
+                    android:gravity="center"
+                    android:text="BLUETOOTH"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/black"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/metal_button"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/bluetoothStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:fontFamily="sans-serif"
+                        android:gravity="center"
+                        android:text="Disconnected"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/holo_red_dark" />
+
+                    <TextView
+                        android:id="@+id/bluetoothConnectedDevice"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:fontFamily="sans-serif"
+                        android:gravity="center"
+                        android:text="Connected Device"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/black" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.viewpager.widget.ViewPager
+                    android:id="@+id/view_pager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+                    <com.google.android.material.tabs.TabLayout
+                        android:id="@+id/tabs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:tabGravity="center"
+                        app:tabIndicator="@drawable/metal_button"
+                        app:tabIndicatorAnimationMode="elastic"
+                        app:tabIndicatorColor="@null"
+                        app:tabIndicatorGravity="stretch"
+                        app:tabMinWidth="130dp"
+                        app:tabMode="scrollable"
+                        app:tabRippleColor="@null"
+                        app:tabSelectedTextColor="@android:color/black" />
+                </androidx.viewpager.widget.ViewPager>
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
-
-
-    <!-- TextView for Add Robot Position -->
-    <TextView
-        android:id="@+id/tv_add_robot_position"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="0dp"
-        android:text="Add Robot Position"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/reset_controls_layout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Robot Input Box -->
-    <LinearLayout
-        android:id="@+id/robot_input_box"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="0dp"
-        android:background="@color/desert_tan"
-        android:layout_margin="8dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_add_robot_position"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- X Entry -->
-        <Spinner
-            android:id="@+id/spinner_robot_x"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/number_options"
-            android:layout_weight="1" />
-
-        <!-- Y Entry -->
-        <Spinner
-            android:id="@+id/spinner_robot_y"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/number_options"
-            android:layout_weight="1" />
-
-        <!-- D Option -->
-        <Spinner
-            android:id="@+id/spinner_robot_direction"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/direction_options"
-            android:layout_weight="1" />
-
-        <!-- Set Button -->
-        <Button
-            android:id="@+id/btn_set_robot"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SET"
-            android:layout_weight="1" />
-    </LinearLayout>
-
-    <!-- TextView for Add Obstacle -->
-    <TextView
-        android:id="@+id/tv_add_obstacles"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="0dp"
-        android:text="Add Obstacles"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/robot_input_box"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Obstacle Input Box -->
-    <LinearLayout
-        android:id="@+id/obstacle_input_box"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="0dp"
-        android:background="@color/desert_tan"
-        android:layout_margin="8dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_add_obstacles"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- X Entry -->
-        <Spinner
-            android:id="@+id/spinner_x"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/number_options"
-            android:layout_weight="0.5" />
-
-        <!-- Y Entry -->
-        <Spinner
-            android:id="@+id/spinner_y"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/number_options"
-            android:layout_weight="0.5" />
-
-        <!-- D Option -->
-        <Spinner
-            android:id="@+id/spinner_obstacle_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/obstacle_types"
-            android:layout_weight="0.5" />
-
-        <!-- Add Button -->
-        <Button
-            android:id="@+id/btn_add_obstacle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ADD"
-            android:layout_weight="1" />
-    </LinearLayout>
-
-    <!-- Buttons for movement -->
-    <!-- Buttons for movement -->
-    <LinearLayout
-        android:id="@+id/button_container"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/obstacle_input_box"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <Button
-            android:id="@+id/button_move_up"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Up" />
-
-        <Button
-            android:id="@+id/button_move_down"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Down" />
-
-        <Button
-            android:id="@+id/button_move_left"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Left" />
-
-        <Button
-            android:id="@+id/button_move_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Right" />
-    </LinearLayout>
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
