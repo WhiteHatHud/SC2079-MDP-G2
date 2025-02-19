@@ -45,4 +45,6 @@ class StartFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    fun button(view: View) {}
 }
