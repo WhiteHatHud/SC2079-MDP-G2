@@ -49,6 +49,11 @@ class MazeFragment : Fragment() {
         spinnerObstacleY = view.findViewById(R.id.spinner_y)
         spinnerObstacleType = view.findViewById(R.id.spinner_obstacle_type)
 
+        view.findViewById<Button>(R.id.button_start).setOnClickListener {
+            val jsonString = getJsonFromApi() // Function to get JSON from API
+            parseJsonAndUpdateMaze(jsonString)
+        }
+
 
         // Handle Undo button
         view.findViewById<Button>(R.id.button_undo).setOnClickListener {
@@ -225,5 +230,22 @@ class MazeFragment : Fragment() {
             }
         }.start()
     }
+    private fun getJsonFromApi(): String {
+        // Mocking the API response, replace with actual API call
+        return """
+    {
+      "path": [
+        {"x": 1, "y": 1},
+        {"x": 2, "y": 1},
+        {"x": 3, "y": 1}
+      ],
+      "obstacles": [
+        {"x": 4, "y": 4, "order": 1},
+        {"x": 5, "y": 5, "order": 2}
+      ]
+    }
+    """
+    }
+
 
 }
