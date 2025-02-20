@@ -145,9 +145,31 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
                 val left = x * gridSize + leftMargin
                 val top = (ROW_NUM - y - 1) * gridSize
                 canvas.drawBitmap(scaledBitmap, left.toFloat(), top.toFloat(), null)
+
+                // Draw the number on top of the obstacle
+                val number = obstacleNumbersMap[position] ?: continue
+                labelPaint.color = Color.RED
+                labelPaint.textSize = 30f
+                canvas.drawText(
+                    number.toString(),
+                    (left + gridSize / 2).toFloat(),
+                    (top + gridSize / 1.5).toFloat(),
+                    labelPaint
+                )
             }
         }
     }
+    private val obstacleNumbersMap: MutableMap<Pair<Int, Int>, Int> = mutableMapOf()
+    fun addObstacleWithNumber(x: Int, y: Int, type: String, number: Int) {
+        if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM && type in obstacleBitmaps.keys) {
+            saveState()
+            obstacleMap[Pair(x, y)] = type
+            obstacleNumbersMap[Pair(x, y)] = number
+            invalidate()
+        }
+    }
+
+
 
     fun addObstacle(x: Int, y: Int, type: String) {
         if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM && type in obstacleBitmaps.keys) {
