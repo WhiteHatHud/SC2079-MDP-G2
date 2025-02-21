@@ -309,28 +309,50 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
                 val x = ((event.x - leftMargin + gridSize / 2) / gridSize).toInt().coerceIn(0, maxX)
                 val y = (ROW_NUM - 1 - ((event.y + gridSize / 2) / gridSize).toInt()).coerceIn(0, maxY)
 
-                // List of obstacle types
-                val obstacleTypes = listOf("Normal", "Up", "Down", "Left", "Right")
-
-                // Determine which obstacle type to use
-                val obstacleType = if (selectedObstacleType.isNotEmpty()) {
-                    selectedObstacleType  // Use the selected type
+                // Check if dragging outside the map
+                if (x !in 0..COLUMN_NUM || y !in 0..ROW_NUM) {
+                    removeObstacle(x, y)
                 } else {
-                    clipData?.let { obstacleTypes.getOrNull(it) } ?: "Normal" // Default if dragging without selection
+                    // List of obstacle types
+                    val obstacleTypes = listOf("Normal", "Up", "Down", "Left", "Right")
+
+                    // Determine the correct obstacle type
+                    val obstacleType = if (selectedObstacleType.isNotEmpty()) {
+                        selectedObstacleType
+                    } else {
+                        clipData?.let { obstacleTypes.getOrNull(it) } ?: "Normal"
+                    }
+
+                    Log.d("MazeView", "Dropping obstacle at: ($x, $y) | Type: $obstacleType")
+
+                    // Ensure obstacle ID increments correctly
+                    if (!obstacleIDMap.containsKey(Pair(x, y))) {
+                        addObstacle(x, y, obstacleType) // Add only if it’s a new obstacle
+                    }
                 }
 
-                Log.d("MazeView", "Dropping obstacle at: ($x, $y) | Type: $obstacleType")
-                addObstacle(x, y, obstacleType)
                 invalidate()
             }
         }
         return true
     }
+
     // Function to update the selected obstacle type
     fun setSelectedObstacleType(type: String) {
         selectedObstacleType = type
         Log.d("MazeView", "Selected Obstacle Type updated to: $selectedObstacleType")
     }
+
+    //To remove the obstacles
+    fun removeObstacle(x: Int, y: Int) {
+        if (obstacleMap.containsKey(Pair(x, y))) {
+            obstacleMap.remove(Pair(x, y))
+            obstacleIDMap.remove(Pair(x, y))
+            invalidate()
+        }
+    }
+
+
 }
 
 
