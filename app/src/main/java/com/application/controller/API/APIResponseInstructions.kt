@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class APIResponseInstructions(
     @SerializedName("distance") val distance: Double,
-    @SerializedName("path") val robotDir: List<APIPathData>,
+    @SerializedName("path") var path: List<APIPathData>,
     @SerializedName("commands") val commands: List<String>,
     @SerializedName("error") val error: String?
 )

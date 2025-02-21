@@ -44,6 +44,10 @@ class BluetoothConnectActivity : AppCompatActivity()
         }
         requestBluetoothPermissions()
         BluetoothFragment.Companion.bluetoothService = BluetoothService()
+        val returnButton: Button = findViewById(R.id.button_returnToControls)
+        returnButton.setOnClickListener {
+            finish()
+        }
 
         /**
         val bluetoothManager: BluetoothManager = getSystemService(BluetoothManager::class.java)
