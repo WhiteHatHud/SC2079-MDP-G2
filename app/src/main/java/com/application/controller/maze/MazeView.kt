@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.DragEvent
 import android.view.View
 import com.application.controller.R
@@ -264,6 +265,8 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
         // Clear all obstacles
         obstacleMap.clear()
+        obstacleIDMap.clear()
+        obstacleID = 1
 
         // Redraw the maze
         invalidate()
@@ -277,6 +280,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
             robotDirection = previousState.robotDirection
             obstacleMap.clear()
             obstacleMap.putAll(previousState.obstacleMap)
+            obstacleID = obstacleMap.size + 1
             invalidate()
         }
     }
@@ -296,14 +300,17 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
             DragEvent.ACTION_DROP -> {
                 val clipData = event.clipData?.getItemAt(0)?.text?.toString()?.toIntOrNull()
                 if (clipData != null) {
-                    val x = (event.x / gridSize).toInt()
-                    val y = (event.y / gridSize).toInt()
+                    val maxX = COLUMN_NUM - 1
+                    val maxY = ROW_NUM - 1
+
+                    val x = ((event.x - leftMargin + gridSize / 2) / gridSize).toInt().coerceIn(0, maxX)
+                    val y = (ROW_NUM - 1 - ((event.y + gridSize / 2) / gridSize).toInt()).coerceIn(0, maxY)
 
                     val obstacleTypes = listOf("Normal", "Up", "Down", "Left", "Right")
-                    val obstacleType = obstacleTypes.getOrNull(clipData)
-
-                    if (obstacleType != null) {
-                        addObstacle(x, y, obstacleType) // Same function as current obstacles
+                    if (clipData in obstacleTypes.indices) {
+                        val obstacleType = obstacleTypes[clipData]
+                        Log.d("MazeView", "Dropping obstacle at: ($x, $y) | Raw: (${event.x}, ${event.y})")
+                        addObstacle(x, y, obstacleType)
                         invalidate()
                     }
                 }
