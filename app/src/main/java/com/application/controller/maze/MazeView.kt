@@ -23,6 +23,8 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     //for the path
     private val pathMap: MutableList<Pair<Int, Int>> = mutableListOf()
 
+    private var obstacleID = 1
+    private val obstacleIDMap: MutableMap<Pair<Int, Int>, Int> = mutableMapOf()
 
     // Tank images
     private val robotBitmaps: Map<Int, Bitmap> = mapOf(
@@ -183,6 +185,17 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
                         labelPaint
                     )
                 }
+
+                obstacleIDMap[position]?.let { id ->
+                    labelPaint.color = Color.BLUE
+                    labelPaint.textSize = 30f
+                    canvas.drawText(
+                        id.toString(),
+                        (left + gridSize / 2).toFloat(),
+                        (top + gridSize / 1.5).toFloat(),
+                        labelPaint
+                    )
+                }
             }
         }
     }
@@ -193,6 +206,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
             saveState()
             obstacleMap[Pair(x, y)] = type
             obstacleNumbersMap[Pair(x, y)] = number
+
             invalidate()
         }
     }
@@ -203,6 +217,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM && type in obstacleBitmaps.keys) {
             saveState()
             obstacleMap[Pair(x, y)] = type
+            obstacleIDMap[Pair(x, y)] = obstacleID++
             invalidate()
         }
     }
