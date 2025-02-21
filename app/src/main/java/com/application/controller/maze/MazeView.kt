@@ -28,6 +28,9 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     private var obstacleID = 1
     private val obstacleIDMap: MutableMap<Pair<Int, Int>, Int> = mutableMapOf()
 
+    //Obstacle Selector type:
+    private var selectedObstacleType: String = "Normal"
+
     // Tank images
     private val robotBitmaps: Map<Int, Bitmap> = mapOf(
         0 to BitmapFactory.decodeResource(resources, R.drawable.tank_up),
@@ -318,7 +321,11 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         }
         return true
     }
-
+    // Function to update the selected obstacle type
+    fun setSelectedObstacleType(type: String) {
+        selectedObstacleType = type
+        Log.d("MazeView", "Selected Obstacle Type updated to: $selectedObstacleType")
+    }
 }
 
 
