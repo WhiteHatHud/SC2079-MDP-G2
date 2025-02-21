@@ -1,14 +1,19 @@
 package com.application.controller.maze
 
+import android.content.ClipData
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.Button
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.application.controller.R
+import com.application.controller.spinner.ObstacleSpinnerAdapter
 //libraries for Json Parsing:
 import org.json.JSONObject
 import org.json.JSONArray
@@ -52,6 +57,41 @@ class MazeFragment : Fragment() {
         view.findViewById<Button>(R.id.button_start).setOnClickListener {
             val jsonString = getJsonFromApi() // Function to get JSON from API
             parseJsonAndUpdateMaze(jsonString)
+        }
+
+        // Define obstacle images
+        val obstacleImages = listOf(
+            R.drawable.obs_normal,
+            R.drawable.obs_up,
+            R.drawable.obs_down,
+            R.drawable.obs_left,
+            R.drawable.obs_right
+        )
+
+        // Find the spinner and set the adapter
+        val spinnerObstacleType: Spinner = view.findViewById(R.id.spinner_obstacle_type)
+        val adapter = ObstacleSpinnerAdapter(requireContext(), obstacleImages)
+        spinnerObstacleType.adapter = adapter
+
+        // Set listener to update obstacle ID
+        spinnerObstacleType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedObstacle = position + 1 // Update ID dynamically
+                Log.d("MazeFragment", "Selected Obstacle ID: $selectedObstacle")
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+
+        spinnerObstacleType.setOnTouchListener { v, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                val position = spinnerObstacleType.selectedItemPosition
+                val clipData = ClipData.newPlainText("obstacle_type", position.toString())
+                val shadow = View.DragShadowBuilder(v)
+                v.startDragAndDrop(clipData, shadow, v, 0)
+                return@setOnTouchListener true
+            }
+            return@setOnTouchListener false
         }
 
 

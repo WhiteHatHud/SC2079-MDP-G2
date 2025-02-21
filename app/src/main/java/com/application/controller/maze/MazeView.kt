@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.view.DragEvent
 import android.view.View
 import com.application.controller.R
 import java.util.Stack
@@ -289,6 +290,28 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         )
         stateStack.push(currentState)
     }
+
+    override fun onDragEvent(event: DragEvent?): Boolean {
+        when (event?.action) {
+            DragEvent.ACTION_DROP -> {
+                val clipData = event.clipData?.getItemAt(0)?.text?.toString()?.toIntOrNull()
+                if (clipData != null) {
+                    val x = (event.x / gridSize).toInt()
+                    val y = (event.y / gridSize).toInt()
+
+                    val obstacleTypes = listOf("Normal", "Up", "Down", "Left", "Right")
+                    val obstacleType = obstacleTypes.getOrNull(clipData)
+
+                    if (obstacleType != null) {
+                        addObstacle(x, y, obstacleType) // Same function as current obstacles
+                        invalidate()
+                    }
+                }
+            }
+        }
+        return true
+    }
+
 }
 
 
