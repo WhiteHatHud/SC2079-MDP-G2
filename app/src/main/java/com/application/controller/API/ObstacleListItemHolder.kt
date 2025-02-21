@@ -11,3 +11,4 @@ class ObstacleListItemHolder (itemView: View) : RecyclerView.ViewHolder(itemView
     val textViewObstacleSub = itemView.findViewById<TextView>(R.id.TextViewObstacleSubtext)
     val buttonRemoveObstacle=itemView.findViewById<Button>(R.id.button_removeObstacle)
 }
+
