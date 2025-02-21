@@ -91,9 +91,11 @@ class MazeFragment : Fragment() {
         // Handle spinner selection changes for SelectObstacleType
         spinnerSelectObstacleType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val obstacleNames = listOf("Normal", "Up", "Down", "Left", "Right")
                 val obstacleType = obstacleNames[position]
+
                 Toast.makeText(requireContext(), "$obstacleType is selected", Toast.LENGTH_SHORT).show()
-                mazeView.setSelectedObstacleType(obstacleType) // Update selection in MazeView
+                mazeView.setSelectedObstacleType(obstacleType) // Update the selected type
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}

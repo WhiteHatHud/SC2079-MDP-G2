@@ -302,21 +302,26 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         when (event?.action) {
             DragEvent.ACTION_DROP -> {
                 val clipData = event.clipData?.getItemAt(0)?.text?.toString()?.toIntOrNull()
-                if (clipData != null) {
-                    val maxX = COLUMN_NUM - 1
-                    val maxY = ROW_NUM - 1
 
-                    val x = ((event.x - leftMargin + gridSize / 2) / gridSize).toInt().coerceIn(0, maxX)
-                    val y = (ROW_NUM - 1 - ((event.y + gridSize / 2) / gridSize).toInt()).coerceIn(0, maxY)
+                val maxX = COLUMN_NUM - 1
+                val maxY = ROW_NUM - 1
 
-                    val obstacleTypes = listOf("Normal", "Up", "Down", "Left", "Right")
-                    if (clipData in obstacleTypes.indices) {
-                        val obstacleType = obstacleTypes[clipData]
-                        Log.d("MazeView", "Dropping obstacle at: ($x, $y) | Raw: (${event.x}, ${event.y})")
-                        addObstacle(x, y, obstacleType)
-                        invalidate()
-                    }
+                val x = ((event.x - leftMargin + gridSize / 2) / gridSize).toInt().coerceIn(0, maxX)
+                val y = (ROW_NUM - 1 - ((event.y + gridSize / 2) / gridSize).toInt()).coerceIn(0, maxY)
+
+                // List of obstacle types
+                val obstacleTypes = listOf("Normal", "Up", "Down", "Left", "Right")
+
+                // Determine which obstacle type to use
+                val obstacleType = if (selectedObstacleType.isNotEmpty()) {
+                    selectedObstacleType  // Use the selected type
+                } else {
+                    clipData?.let { obstacleTypes.getOrNull(it) } ?: "Normal" // Default if dragging without selection
                 }
+
+                Log.d("MazeView", "Dropping obstacle at: ($x, $y) | Type: $obstacleType")
+                addObstacle(x, y, obstacleType)
+                invalidate()
             }
         }
         return true
