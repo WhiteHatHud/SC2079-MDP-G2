@@ -20,6 +20,9 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     private val emptyGridPaint = Paint()
     private val labelPaint = Paint()
     private val zonePaint = Paint()
+    //for the path
+    private val pathMap: MutableList<Pair<Int, Int>> = mutableListOf()
+
 
     // Tank images
     private val robotBitmaps: Map<Int, Bitmap> = mapOf(
@@ -74,7 +77,27 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         drawLabels(canvas)
         drawRobot(canvas)
         drawObstacles(canvas) // Ensure obstacles are drawn
+        drawPath(canvas)
     }
+
+    private fun drawPath(canvas: Canvas) {
+        val pathPaint = Paint().apply {
+            color = Color.BLUE
+            strokeWidth = 5f
+        }
+        for (i in 1 until pathMap.size) {
+            val start = pathMap[i - 1]
+            val end = pathMap[i]
+            canvas.drawLine(
+                (start.first * gridSize + gridSize / 2 + leftMargin).toFloat(),
+                ((ROW_NUM - start.second - 1) * gridSize + gridSize / 2).toFloat(),
+                (end.first * gridSize + gridSize / 2 + leftMargin).toFloat(),
+                ((ROW_NUM - end.second - 1) * gridSize + gridSize / 2).toFloat(),
+                pathPaint
+            )
+        }
+    }
+
 
     private fun drawGrid(canvas: Canvas) {
         for (i in 0 until COLUMN_NUM) {
@@ -140,14 +163,41 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         for ((position, type) in obstacleMap) {
             val (x, y) = position
             val obstacleBitmap = obstacleBitmaps[type]
-            obstacleBitmap?.let {
-                val scaledBitmap = Bitmap.createScaledBitmap(it, gridSize, gridSize, false)
+
+            // Check if the obstacleBitmap is not null before drawing
+            if (obstacleBitmap != null) {
+                val scaledBitmap = Bitmap.createScaledBitmap(obstacleBitmap, gridSize, gridSize, false)
                 val left = x * gridSize + leftMargin
                 val top = (ROW_NUM - y - 1) * gridSize
                 canvas.drawBitmap(scaledBitmap, left.toFloat(), top.toFloat(), null)
+
+                // Check if a number is associated with the obstacle
+                val number = obstacleNumbersMap[position]
+                if (number != null) {
+                    labelPaint.color = Color.RED
+                    labelPaint.textSize = 30f
+                    canvas.drawText(
+                        number.toString(),
+                        (left + gridSize / 2).toFloat(),
+                        (top + gridSize / 1.5).toFloat(),
+                        labelPaint
+                    )
+                }
             }
         }
     }
+
+    private val obstacleNumbersMap: MutableMap<Pair<Int, Int>, Int> = mutableMapOf()
+    fun addObstacleWithNumber(x: Int, y: Int, type: String, number: Int) {
+        if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM && type in obstacleBitmaps.keys) {
+            saveState()
+            obstacleMap[Pair(x, y)] = type
+            obstacleNumbersMap[Pair(x, y)] = number
+            invalidate()
+        }
+    }
+
+
 
     fun addObstacle(x: Int, y: Int, type: String) {
         if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM && type in obstacleBitmaps.keys) {
@@ -163,6 +213,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
             robotX = x
             robotY = y
             robotDirection = direction
+            pathMap.add(Pair(x, y))
             invalidate() // Redraw the view
         }
     }

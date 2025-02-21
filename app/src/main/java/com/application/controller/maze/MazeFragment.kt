@@ -9,6 +9,9 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.application.controller.R
+//libraries for Json Parsing:
+import org.json.JSONObject
+import org.json.JSONArray
 
 class MazeFragment : Fragment() {
 
@@ -45,6 +48,11 @@ class MazeFragment : Fragment() {
         spinnerObstacleX = view.findViewById(R.id.spinner_x)
         spinnerObstacleY = view.findViewById(R.id.spinner_y)
         spinnerObstacleType = view.findViewById(R.id.spinner_obstacle_type)
+
+        view.findViewById<Button>(R.id.button_start).setOnClickListener {
+            val jsonString = getJsonFromApi() // Function to get JSON from API
+            parseJsonAndUpdateMaze(jsonString)
+        }
 
 
         // Handle Undo button
@@ -180,7 +188,64 @@ class MazeFragment : Fragment() {
                 ).show()
             }
         }
-
-
     }
+
+    private fun parseJsonAndUpdateMaze(jsonString: String) {
+        val jsonObject = JSONObject(jsonString)
+        val pathArray = jsonObject.getJSONArray("path")
+        val obstaclesArray = jsonObject.getJSONArray("obstacles")
+
+        // Clear existing obstacles and reset the robot
+        mazeView.resetMaze()
+
+        // Add obstacles with order numbers
+        for (i in 0 until obstaclesArray.length()) {
+            val obstacle = obstaclesArray.getJSONObject(i)
+            val x = obstacle.getInt("x")
+            val y = obstacle.getInt("y")
+            val order = obstacle.getInt("order")
+            mazeView.addObstacleWithNumber(x, y, "Normal", order)
+        }
+
+        // Store path for robot movement
+        val pathList = mutableListOf<Pair<Int, Int>>()
+        for (i in 0 until pathArray.length()) {
+            val point = pathArray.getJSONObject(i)
+            val x = point.getInt("x")
+            val y = point.getInt("y")
+            pathList.add(Pair(x, y))
+        }
+
+        // Move the robot along the path
+        startRobotPath(pathList)
+    }
+
+    private fun startRobotPath(path: List<Pair<Int, Int>>) {
+        Thread {
+            for (point in path) {
+                activity?.runOnUiThread {
+                    mazeView.updateRobotPosition(point.first, point.second, 90)
+                }
+                Thread.sleep(500)  // Adjust speed of movement
+            }
+        }.start()
+    }
+    private fun getJsonFromApi(): String {
+        // Mocking the API response, replace with actual API call
+        return """
+    {
+      "path": [
+        {"x": 1, "y": 1},
+        {"x": 2, "y": 1},
+        {"x": 3, "y": 1}
+      ],
+      "obstacles": [
+        {"x": 4, "y": 4, "order": 1},
+        {"x": 5, "y": 5, "order": 2}
+      ]
+    }
+    """
+    }
+
+
 }
