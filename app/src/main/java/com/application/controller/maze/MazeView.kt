@@ -1,5 +1,6 @@
 package com.application.controller.maze
 
+import android.content.ClipData
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -9,7 +10,9 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.Log
 import android.view.DragEvent
+import android.view.MotionEvent
 import android.view.View
+import android.widget.Toast
 import com.application.controller.R
 import java.util.Stack
 import kotlin.math.min
@@ -57,6 +60,13 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     private val obstacleMap: MutableMap<Pair<Int, Int>, String> = mutableMapOf()
     //stack for states
     private val stateStack: Stack<MazeState> = Stack()
+    //track drag review
+    private var previewX: Int? = null
+    private var previewY: Int? = null
+    private var isDraggingObstacle = false
+    private var previewObstacleType: String? = null
+
+
 
     init {
         gridLinePaint.color = Color.BLACK
@@ -203,6 +213,16 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
                 }
             }
         }
+        if (isDraggingObstacle && previewX != null && previewY != null) {
+            val previewBitmap = obstacleBitmaps[selectedObstacleType] // Show preview of selected type
+            previewBitmap?.let {
+                val left = previewX!! * gridSize + leftMargin
+                val top = (ROW_NUM - previewY!! - 1) * gridSize
+                val paint = Paint()
+                paint.alpha = 120 // Transparent effect
+                canvas.drawBitmap(it, left.toFloat(), top.toFloat(), paint)
+            }
+        }
     }
 
     private val obstacleNumbersMap: MutableMap<Pair<Int, Int>, Int> = mutableMapOf()
@@ -300,8 +320,32 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     override fun onDragEvent(event: DragEvent?): Boolean {
         when (event?.action) {
+
+            DragEvent.ACTION_DRAG_STARTED -> {
+                isDraggingObstacle = true
+                invalidate() // Redraw to show preview
+            }
+
+            DragEvent.ACTION_DRAG_LOCATION -> {
+                val maxX = COLUMN_NUM - 1
+                val maxY = ROW_NUM - 1
+
+                val x = ((event.x - leftMargin + gridSize / 2) / gridSize).toInt().coerceIn(0, maxX)
+                val y = (ROW_NUM - 1 - ((event.y + gridSize / 2) / gridSize).toInt()).coerceIn(0, maxY)
+
+                // Update preview position
+                previewX = x
+                previewY = y
+                invalidate() // Redraw the preview
+            }
+
             DragEvent.ACTION_DROP -> {
-                val clipData = event.clipData?.getItemAt(0)?.text?.toString()?.toIntOrNull()
+                isDraggingObstacle = false
+                val clipData = event.clipData?.getItemAt(0)?.text?.toString()
+                val coordinates = clipData?.split(",")?.map { it.toIntOrNull() }
+
+                previewX = null
+                previewY = null
 
                 val maxX = COLUMN_NUM - 1
                 val maxY = ROW_NUM - 1
@@ -309,33 +353,58 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
                 val x = ((event.x - leftMargin + gridSize / 2) / gridSize).toInt().coerceIn(0, maxX)
                 val y = (ROW_NUM - 1 - ((event.y + gridSize / 2) / gridSize).toInt()).coerceIn(0, maxY)
 
-                // Check if dragging outside the map
-                if (x !in 0..COLUMN_NUM || y !in 0..ROW_NUM) {
-                    removeObstacle(x, y)
+                // List of obstacle types
+                val obstacleTypes = listOf("Normal", "Up", "Down", "Left", "Right")
+
+                // Determine the correct obstacle type
+                val obstacleType = if (selectedObstacleType.isNotEmpty()) {
+                    selectedObstacleType
                 } else {
-                    // List of obstacle types
-                    val obstacleTypes = listOf("Normal", "Up", "Down", "Left", "Right")
+                    clipData?.toIntOrNull()?.let { obstacleTypes.getOrNull(it) } ?: "Normal"
+                }
 
-                    // Determine the correct obstacle type
-                    val obstacleType = if (selectedObstacleType.isNotEmpty()) {
-                        selectedObstacleType
+                // If dragging an existing obstacle
+                if (coordinates != null && coordinates.size == 2) {
+                    val originalX = coordinates[0]!!
+                    val originalY = coordinates[1]!!
+
+                    // If dropped outside the grid, remove the obstacle
+                    if (x !in 0..maxX || y !in 0..maxY) {
+                        removeObstacle(originalX, originalY)
+                        Toast.makeText(context, "Obstacle removed at ($originalX, $originalY)", Toast.LENGTH_SHORT).show()
+                        Log.d("MazeView", "Obstacle removed at: ($originalX, $originalY)")
                     } else {
-                        clipData?.let { obstacleTypes.getOrNull(it) } ?: "Normal"
+                        // Move the obstacle to a new location
+                        if (obstacleMap.containsKey(Pair(originalX, originalY))) {
+                            moveObstacle(originalX, originalY, x, y)
+                            Toast.makeText(context, "Obstacle moved to ($x, $y)", Toast.LENGTH_SHORT).show()
+                            Log.d("MazeView", "Obstacle moved from ($originalX, $originalY) to ($x, $y)")
+                        }
                     }
-
-                    Log.d("MazeView", "Dropping obstacle at: ($x, $y) | Type: $obstacleType")
-
-                    // Ensure obstacle ID increments correctly
+                } else {
+                    // Dropping a new obstacle
                     if (!obstacleIDMap.containsKey(Pair(x, y))) {
-                        addObstacle(x, y, obstacleType) // Add only if it’s a new obstacle
+                        addObstacle(x, y, obstacleType) // Add only if it's a new obstacle
+                        Toast.makeText(context, "Successfully dropped $obstacleType at ($x, $y)", Toast.LENGTH_SHORT).show()
+                        Log.d("MazeView", "Dropping new obstacle at: ($x, $y) | Type: $obstacleType")
+                    } else {
+                        Toast.makeText(context, "Obstacle already exists at ($x, $y)", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 invalidate()
             }
+
+            DragEvent.ACTION_DRAG_ENDED -> {
+                isDraggingObstacle = false
+                previewX = null
+                previewY = null
+                invalidate() // Remove preview
+            }
         }
         return true
     }
+
 
     // Function to update the selected obstacle type
     fun setSelectedObstacleType(type: String) {
@@ -352,27 +421,67 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         }
     }
 
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        when (event?.action) {
+            MotionEvent.ACTION_DOWN -> {
+                val x = ((event.x - leftMargin) / gridSize).toInt()
+                val y = (ROW_NUM - 1 - (event.y / gridSize).toInt())
+
+                // Check if an obstacle exists at this location
+                if (obstacleMap.containsKey(Pair(x, y))) {
+                    startDraggingObstacle(x, y)
+                    return true
+                }
+            }
+        }
+        return super.onTouchEvent(event)
+    }
+
+
+    private fun startDraggingObstacle(x: Int, y: Int) {
+        val clipData = ClipData.newPlainText("obstacle", "$x,$y")
+        val shadowBuilder = View.DragShadowBuilder(this)
+        startDragAndDrop(clipData, shadowBuilder, null, 0)
+
+        previewObstacleType = obstacleMap[Pair(x, y)] // Store obstacle type for preview
+        isDraggingObstacle = true
+        invalidate() // Redraw to show preview
+
+        Log.d("MazeView", "Started dragging obstacle at ($x, $y)")
+    }
+
+
+    fun moveObstacle(oldX: Int, oldY: Int, newX: Int, newY: Int) {
+        if (obstacleMap.containsKey(Pair(oldX, oldY))) {
+            val type = obstacleMap[Pair(oldX, oldY)]!!
+            val id = obstacleIDMap[Pair(oldX, oldY)]!!
+
+            // Remove from old position
+            obstacleMap.remove(Pair(oldX, oldY))
+            obstacleIDMap.remove(Pair(oldX, oldY))
+
+            // Place at new position
+            obstacleMap[Pair(newX, newY)] = type
+            obstacleIDMap[Pair(newX, newY)] = id
+
+            invalidate() // Redraw the grid
+            Log.d("MazeView", "Obstacle moved from ($oldX, $oldY) to ($newX, $newY)")
+        }
+    }
+
+
+
+
+
+
+
+//Code for sending x,y and obstacle ID via bluetooth
+//fun sendObstacleData(x: Int, y: Int, id: Int) {
+//    val data = "OBSTACLE:$id,$x,$y"
+//    bluetoothService.sendData(data) // Assuming a Bluetooth function exists
+//}
+
+    // add the bluetooth call to addObstacle()
+//    sendObstacleData(x, y, obstacleID)
 
 }
-
-
-
-//    private fun drawRobot(canvas: Canvas) {
-//        // Draw the green surrounding area
-//        for (i in robotX - 1..robotX + 1) {
-//            for (j in robotY - 1..robotY + 1) {
-//                if (i in 0 until COLUMN_NUM && j in 0 until ROW_NUM) {
-//                    canvas.drawRect(
-//                        (i * gridSize + leftMargin).toFloat(), ((ROW_NUM - j - 1) * gridSize).toFloat(),
-//                        ((i + 1) * gridSize + leftMargin).toFloat(), ((ROW_NUM - j) * gridSize).toFloat(), zonePaint
-//                    )
-//                }
-//            }
-//        }
-//
-//        // Draw the robot
-//        canvas.drawRect(
-//            (robotX * gridSize + leftMargin).toFloat(), ((ROW_NUM - robotY - 1) * gridSize).toFloat(),
-//            ((robotX + 1) * gridSize + leftMargin).toFloat(), ((ROW_NUM - robotY) * gridSize).toFloat(), robotPaint
-//        )
-//    }
