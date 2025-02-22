@@ -19,6 +19,8 @@ import kotlin.math.min
 
 class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     private var gridSize = 0
+    // Increase the left, right, top, and bottom margin for better dragging
+    private val outerMargin = 150 // Increase this value for more space
 
     // Paint for grid lines
     private val gridLinePaint = Paint()
@@ -86,6 +88,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
         val yLabelMargin = 50 // Space for Y labels
         gridSize = min((width - leftMargin) / COLUMN_NUM, (height - leftMargin) / ROW_NUM)
+        leftMargin = (width - (COLUMN_NUM * gridSize)) / 2 + 50
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -156,12 +159,15 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     private fun drawLabels(canvas: Canvas) {
         val labelOffset = gridSize * 0.5f
         val xLabelMargin = gridSize * 0.2f
+        val yLabelOffset = 20f
+
+        labelPaint.textSize = 16f
 
         for (i in 0 until COLUMN_NUM) {
             canvas.drawText(
                 i.toString(),
                 (i * gridSize + leftMargin + labelOffset).toFloat(),
-                ((ROW_NUM + 0.3) * gridSize).toFloat(),
+                ((ROW_NUM + 0.5) * gridSize - xLabelMargin).toFloat(), // 🛠 Moves X labels slightly higher
                 labelPaint
             )
         }
@@ -169,8 +175,8 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         for (j in 0 until ROW_NUM) {
             canvas.drawText(
                 j.toString(),
-                leftMargin * 0.3f,
-                ((ROW_NUM - j - 0.5) * gridSize).toFloat(),
+                leftMargin * 0.3f, // 🛠 Moves Y labels slightly to the left
+                ((ROW_NUM - j - 0.5) * gridSize + yLabelOffset).toFloat(), // 🛠 Adjusts label position
                 labelPaint
             )
         }
@@ -216,11 +222,17 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         if (isDraggingObstacle && previewX != null && previewY != null) {
             val previewBitmap = obstacleBitmaps[selectedObstacleType] // Show preview of selected type
             previewBitmap?.let {
-                val left = previewX!! * gridSize + leftMargin
-                val top = (ROW_NUM - previewY!! - 1) * gridSize
-                val paint = Paint()
-                paint.alpha = 120 // Transparent effect
-                canvas.drawBitmap(it, left.toFloat(), top.toFloat(), paint)
+                val left = (previewX!! * gridSize + leftMargin).toFloat()
+                val top = ((ROW_NUM - previewY!! - 1) * gridSize).toFloat()
+
+                val paint = Paint().apply { alpha = 120 } // Transparent effect
+                val smallBitmap = Bitmap.createScaledBitmap(it, (gridSize * 0.7).toInt(), (gridSize * 0.7).toInt(), false)
+                canvas.drawBitmap(
+                    smallBitmap,
+                    left.coerceIn(-gridSize.toFloat(), (COLUMN_NUM * gridSize).toFloat()), // Allow out-of-bounds drawing
+                    top.coerceIn(-gridSize.toFloat(), (ROW_NUM * gridSize).toFloat()),
+                    paint
+                )
             }
         }
     }
@@ -270,7 +282,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     companion object {
         const val COLUMN_NUM = 20
         const val ROW_NUM = 20
-        private const val leftMargin = 50
+        private var leftMargin = 50
     }
     data class MazeState(
         val robotX: Int,
@@ -327,11 +339,9 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
             }
 
             DragEvent.ACTION_DRAG_LOCATION -> {
-                val maxX = COLUMN_NUM - 1
-                val maxY = ROW_NUM - 1
 
-                val x = ((event.x - leftMargin + gridSize / 2) / gridSize).toInt().coerceIn(0, maxX)
-                val y = (ROW_NUM - 1 - ((event.y + gridSize / 2) / gridSize).toInt()).coerceIn(0, maxY)
+                val x = ((event.x - leftMargin + gridSize / 2) / gridSize).toInt()
+                val y = (ROW_NUM - 1 - ((event.y + gridSize / 2) / gridSize).toInt())
 
                 // Update preview position
                 previewX = x
@@ -347,12 +357,9 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
                 previewX = null
                 previewY = null
 
-                val maxX = COLUMN_NUM - 1
-                val maxY = ROW_NUM - 1
 
-                val x = ((event.x - leftMargin + gridSize / 2) / gridSize).toInt().coerceIn(0, maxX)
-                val y = (ROW_NUM - 1 - ((event.y + gridSize / 2) / gridSize).toInt()).coerceIn(0, maxY)
-
+                val x = ((event.x - leftMargin + gridSize / 2) / gridSize).toInt()
+                val y = (ROW_NUM - 1 - ((event.y + gridSize / 2) / gridSize).toInt())
                 // List of obstacle types
                 val obstacleTypes = listOf("Normal", "Up", "Down", "Left", "Right")
 
@@ -368,10 +375,9 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
                     val originalX = coordinates[0]!!
                     val originalY = coordinates[1]!!
 
-                    // If dropped outside the grid, remove the obstacle
-                    if (x !in 0..maxX || y !in 0..maxY) {
-                        removeObstacle(originalX, originalY)
-                        Toast.makeText(context, "Obstacle removed at ($originalX, $originalY)", Toast.LENGTH_SHORT).show()
+                    // If dropped outside the grid, remove the obstacle using removeObstacleFromGrid()
+                    if (x < 0 || x >= COLUMN_NUM || y < 0 || y >= ROW_NUM) {
+                        removeObstacleFromGrid(originalX, originalY)
                         Log.d("MazeView", "Obstacle removed at: ($originalX, $originalY)")
                     } else {
                         // Move the obstacle to a new location
@@ -404,6 +410,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         }
         return true
     }
+
 
 
     // Function to update the selected obstacle type
@@ -443,8 +450,10 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         val shadowBuilder = View.DragShadowBuilder(this)
         startDragAndDrop(clipData, shadowBuilder, null, 0)
 
-        previewObstacleType = obstacleMap[Pair(x, y)] // Store obstacle type for preview
+        previewObstacleType = obstacleMap[Pair(x, y)] ?:  "Normal" // Store obstacle type for preview
         isDraggingObstacle = true
+        previewX = x
+        previewY = y
         invalidate() // Redraw to show preview
 
         Log.d("MazeView", "Started dragging obstacle at ($x, $y)")
@@ -468,6 +477,32 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
             Log.d("MazeView", "Obstacle moved from ($oldX, $oldY) to ($newX, $newY)")
         }
     }
+
+    fun removeObstacleFromGrid(x: Int, y: Int) {
+        val position = Pair(x, y)
+
+        // ✅ Check if the obstacle exists before removing it
+        if (obstacleMap.containsKey(position)) {
+            val type = obstacleMap[position]!!
+            val id = obstacleIDMap[position] ?: -1
+
+            // ✅ Remove obstacle
+            obstacleMap.remove(position)
+            obstacleIDMap.remove(position)
+            invalidate()
+
+            // ✅ Show confirmation toast
+            Toast.makeText(context, "Obstacle $id ($type) at ($x, $y) removed from grid", Toast.LENGTH_SHORT).show()
+            Log.d("MazeView", "Obstacle $id ($type) at ($x, $y) removed from grid")
+        } else {
+            // ✅ If no obstacle exists at this location
+            Toast.makeText(context, "No obstacle found at ($x, $y) to remove", Toast.LENGTH_SHORT).show()
+            Log.d("MazeView", "Tried to remove obstacle at ($x, $y) but none found")
+        }
+    }
+
+
+
 
 
 
