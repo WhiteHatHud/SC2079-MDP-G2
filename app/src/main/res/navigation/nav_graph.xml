@@ -74,9 +74,15 @@
         android:label="Maze"
         tools:layout="@layout/fragment_maze">
 
-        <!-- Example: Navigation from SecondFragment to MazeFragment -->
+        <!-- Navigation from SecondFragment to MazeFragment -->
         <action
             android:id="@+id/action_SecondFragment_to_MazeFragment"
             app:destination="@id/MazeFragment" />
+        <!-- Comms link to bluetooth -->
+        <action
+            android:id="@+id/action_MazeFragment_to_BluetoothFragment"
+            app:destination="@id/BluetoothFragment" />
+
+
     </fragment>
 </navigation>

@@ -259,6 +259,8 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     }
 
     fun updateRobotPosition(x: Int, y: Int, direction: Int) {
+        Log.d("MazeDebug", "Updating robot to ($x, $y) with direction: $direction")
+
         if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM) {
             saveState()
             robotX = x
@@ -266,8 +268,11 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
             robotDirection = direction
             pathMap.add(Pair(x, y))
             invalidate() // Redraw the view
+        } else {
+            Log.e("MazeDebug", "Invalid position! ($x, $y) out of bounds.")
         }
     }
+
 
     fun setRobotPosition(x: Int, y: Int, direction: Int) {
         if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM && direction in robotBitmaps.keys) {
@@ -301,6 +306,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         obstacleMap.clear()
         obstacleIDMap.clear()
         obstacleID = 1
+        pathMap.clear()
 
         // Redraw the maze
         invalidate()
