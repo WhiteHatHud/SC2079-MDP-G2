@@ -74,7 +74,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         gridLinePaint.color = Color.BLACK
         gridLinePaint.strokeWidth = 2f
 
-        emptyGridPaint.color = Color.LTGRAY
+        emptyGridPaint.color = Color.parseColor("#C2B280")
 
         labelPaint.color = Color.BLACK
         labelPaint.textSize = 20f
@@ -88,7 +88,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
         val yLabelMargin = 50 // Space for Y labels
         gridSize = min((width - leftMargin) / COLUMN_NUM, (height - leftMargin) / ROW_NUM)
-        leftMargin = (width - (COLUMN_NUM * gridSize)) / 2 + 50
+        leftMargin = (width - (COLUMN_NUM * gridSize)) / 2 + 10
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -157,11 +157,10 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     }
 
     private fun drawLabels(canvas: Canvas) {
-        val labelOffset = gridSize * 0.5f
-        val xLabelMargin = gridSize * 0.2f
-        val yLabelOffset = 20f
+        val labelOffset = gridSize * 0.4f
+        val xLabelMargin = gridSize * 0f
+        val yLabelOffset = 10f
 
-        labelPaint.textSize = 16f
 
         for (i in 0 until COLUMN_NUM) {
             canvas.drawText(
@@ -209,7 +208,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
                 obstacleIDMap[position]?.let { id ->
                     labelPaint.color = Color.BLUE
-                    labelPaint.textSize = 30f
+                    labelPaint.textSize = 20f
                     canvas.drawText(
                         id.toString(),
                         (left + gridSize / 2).toFloat(),

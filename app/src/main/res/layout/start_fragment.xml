@@ -27,6 +27,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/missionText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="280dp"
+        android:background="@drawable/metal_button"
+        android:fontFamily="@font/military_font"
+        android:shadowColor="@android:color/black"
+        android:shadowDx="3"
+        android:shadowDy="3"
+        android:shadowRadius="5"
+        android:text=" Select your mission Cadet: "
+        android:textColor="@android:color/white"
+        android:textSize="30dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/btnStart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/titleText" />
 
     <!-- Start Button -->
 
@@ -41,7 +60,7 @@
         android:layout_marginBottom="30dp"
         android:background="@drawable/metal_button"
         android:fontFamily="@font/military_font"
-        android:text="START"
+        android:text="MISSION 1"
         android:textColor="@android:color/white"
         android:textSize="34sp"
         android:textStyle="bold"

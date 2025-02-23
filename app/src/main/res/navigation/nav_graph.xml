@@ -13,7 +13,7 @@
 
         <action
             android:id="@+id/action_StartFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            app:destination="@id/MazeFragment" />
 
         <action
             android:id="@+id/action_StartFragment_to_SecondFragment"
