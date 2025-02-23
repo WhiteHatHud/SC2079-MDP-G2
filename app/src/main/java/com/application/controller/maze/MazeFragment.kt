@@ -69,6 +69,10 @@ class MazeFragment : Fragment() {
             R.drawable.obs_right
         )
 
+        val catPilot = listOf(
+            R.drawable.cat_pilot
+        )
+
         val obstacleNames = listOf(
             "Normal Obstacle",
             "Obstacle facing Up",
@@ -79,9 +83,9 @@ class MazeFragment : Fragment() {
 
         // Find the spinner and set the adapter
         val spinnerObstacleType: Spinner = view.findViewById(R.id.spinner_obstacle_type)
-        val adapter = ObstacleSpinnerAdapter(requireContext(), obstacleImages)
+        val adapter = ObstacleSpinnerAdapter(requireContext(), catPilot)
         spinnerObstacleType.adapter = adapter
-        val obstacleAdapter = ObstacleSpinnerAdapter(requireContext(), obstacleImages)
+        val obstacleAdapter = ObstacleSpinnerAdapter(requireContext(), catPilot)
         spinnerObstacleType.adapter = obstacleAdapter
 
         // Set up adapter for selecting an obstacle type (SelectObstacleType)
