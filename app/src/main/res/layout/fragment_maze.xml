@@ -1,74 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    android:orientation="vertical">
 
-    <!-- Main Container (Holds MazeView + Sidebar) -->
+
     <LinearLayout
-        android:id="@+id/mainContainer"
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/reset_controls_layout">
+        android:layout_height="431dp"
+        android:orientation="horizontal">
 
         <!-- MazeView for displaying the maze -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="450dp"
             android:layout_height="match_parent"
-            android:layout_weight="3"
             android:orientation="horizontal">
 
             <view
                 android:id="@+id/maze_view"
                 class="com.application.controller.maze.MazeView"
                 android:layout_width="match_parent"
-                android:layout_height="575dp"
+                android:layout_height="430dp"
                 android:background="@android:color/darker_gray"
                 android:padding="20dp" />
         </LinearLayout>
 
-        <!-- Sidebar containing COMMS LINK, MISSION UPLINK, TANK CONDITION -->
+        <!-- Sidebar containing COMMS LINK, MISSION UPLINK, TANK CONDITION, Direction, and Coordinates -->
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginStart="10dp"
+            android:layout_width="150dp"
+            android:layout_height="380dp"
+            android:layout_marginStart="7dp"
             android:gravity="center"
             android:orientation="vertical">
 
-            <!-- COMMS LINK Section -->
+            <!-- COMMS LINK Section (Previously Bluetooth) -->
             <TextView
                 android:id="@+id/commsLink"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="30dp"
                 android:background="@drawable/status_bar"
-                android:paddingVertical="8dp"
                 android:gravity="center"
                 android:text="COMMS LINK"
                 android:textAlignment="center"
                 android:textColor="@color/black"
-                android:textStyle="bold"
-                android:textSize="18sp" />
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:padding="8dp"
                 android:background="@drawable/container_black"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/bluetoothStatus"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
+                    android:layout_height="60dp"
                     android:fontFamily="sans-serif"
                     android:gravity="center"
                     android:text="Disconnected"
@@ -78,7 +69,7 @@
                 <TextView
                     android:id="@+id/bluetoothConnectedDevice"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="30dp"
                     android:fontFamily="sans-serif"
                     android:gravity="center"
                     android:text="No Device Linked"
@@ -86,24 +77,25 @@
                     android:textColor="@color/black" />
             </LinearLayout>
 
-            <!-- MISSION UPLINK Section -->
+            <!-- MISSION UPLINK Section (API Status) -->
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/status_bar"
-                android:paddingVertical="8dp"
+                android:fontFamily="sans-serif"
                 android:gravity="center"
                 android:text="MISSION UPLINK"
                 android:textAlignment="center"
                 android:textColor="@color/black"
-                android:textStyle="bold"
-                android:textSize="18sp" />
+                android:textStyle="bold" />
 
+            <!-- TANK CONDITION Section (Previously Robot Status) -->
             <TextView
                 android:id="@+id/apiStatus"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="5dp"
                 android:background="@drawable/container_black"
                 android:fontFamily="sans-serif"
                 android:gravity="center"
@@ -111,49 +103,142 @@
                 android:textAlignment="center"
                 android:textColor="@color/desert_tan" />
 
-            <!-- TANK CONDITION Section -->
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/status_bar"
-                android:paddingVertical="8dp"
+                android:fontFamily="sans-serif"
                 android:gravity="center"
                 android:text="TANK CONDITION"
                 android:textAlignment="center"
                 android:textColor="@color/black"
-                android:textStyle="bold"
-                android:textSize="18sp" />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/robotStatus"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="5dp"
                 android:background="@drawable/container_black"
                 android:fontFamily="sans-serif"
                 android:gravity="center"
                 android:text="Operational"
                 android:textAlignment="center"
                 android:textColor="@color/desert_tan" />
+
+            <!-- DIRECTION Section -->
+            <TextView
+                android:id="@+id/directionLabel"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/status_bar"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:text="DIRECTION"
+                android:textAlignment="center"
+                android:textColor="@color/army_green" />
+
+            <TextView
+                android:id="@+id/directionAxisTextView"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/container_black"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:text="None"
+                android:textAlignment="center"
+                android:textColor="@color/army_green" />
+
+            <!-- COORDINATES Section -->
+            <TextView
+                android:id="@+id/CoordsLabel"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/status_bar"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:text="COORDINATES"
+                android:textAlignment="center"
+                android:textColor="@color/army_green" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/container_black"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/robotX"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:fontFamily="sans-serif"
+                    android:gravity="center"
+                    android:paddingStart="25dp"
+                    android:text="X:"
+                    android:textAlignment="center"
+                    android:textColor="@color/army_green"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/xAxisTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:paddingStart="7dp"
+                    android:text="0"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/robotY"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="2dp"
+                    android:fontFamily="sans-serif"
+                    android:gravity="center"
+                    android:paddingStart="20dp"
+                    android:text="Y:"
+                    android:textAlignment="center"
+                    android:textColor="@color/army_green"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/yAxisTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:paddingStart="7dp"
+                    android:text="0"
+                    android:textColor="@color/army_green"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Reset Controls Layout -->
+
     <LinearLayout
         android:id="@+id/reset_controls_layout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@id/tv_add_robot_position"
-        app:layout_constraintTop_toBottomOf="@id/mainContainer">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
         <Button
             android:id="@+id/button_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Start" />
+            android:text="Start"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/button_reset"
@@ -170,28 +255,147 @@
             android:text="Undo" />
     </LinearLayout>
 
-    <!-- Add Robot Position -->
+
+    <!-- TextView for Add Robot Position -->
     <TextView
         android:id="@+id/tv_add_robot_position"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="8dp"
+        android:padding="0dp"
         android:text="Add Robot Position"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/reset_controls_layout"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/reset_controls_layout" />
+
+    <!-- Robot Input Box -->
+
+    <!-- TextView for Add Obstacle -->
+
+    <!-- Obstacle Input Box -->
+
+    <LinearLayout
+        android:id="@+id/robot_input_box"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginTop="232dp"
+        android:background="@color/desert_tan"
+        android:orientation="horizontal"
+        android:padding="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_add_robot_position">
+
+        <!-- X Entry -->
+        <Spinner
+            android:id="@+id/spinner_robot_x"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:entries="@array/number_options" />
+
+        <!-- Y Entry -->
+        <Spinner
+            android:id="@+id/spinner_robot_y"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:entries="@array/number_options" />
+
+        <!-- D Option -->
+        <Spinner
+            android:id="@+id/spinner_robot_direction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:entries="@array/direction_options" />
+
+        <!-- Set Button -->
+        <Button
+            android:id="@+id/btn_set_robot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="SET" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_add_obstacles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="136dp"
+        android:padding="0dp"
+        android:text="Add Obstacles"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/robot_input_box" />
+
+    <LinearLayout
+        android:id="@+id/obstacle_input_box"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:background="@color/desert_tan"
+        android:orientation="horizontal"
+        android:padding="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_add_obstacles">
+
+
+    </LinearLayout>
+
 
     <!-- Buttons for movement -->
+    <!-- Buttons for movement -->
+
+    <LinearLayout
+        android:id="@+id/obstacle_selector"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginTop="144dp"
+        android:background="@color/desert_tan"
+        android:orientation="horizontal"
+        android:padding="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@id/tv_add_obstacles">
+
+        <Spinner
+            android:id="@+id/spinner_select_obstacle_type"
+            android:layout_width="1"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:spinnerMode="dropdown" />
+
+        <!-- D Option -->
+        <Spinner
+            android:id="@+id/spinner_obstacle_type"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:entries="@array/obstacle_types"
+            />
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/button_container"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_add_robot_position">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/obstacle_input_box"
+        app:layout_constraintVertical_bias="0.332">
 
         <Button
             android:id="@+id/button_move_up"
@@ -217,5 +421,13 @@
             android:layout_height="wrap_content"
             android:text="Right" />
     </LinearLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="20dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
