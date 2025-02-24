@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    android:orientation="vertical">
 
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="431dp"
-        android:orientation="horizontal">
+        android:layout_height="500dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="50dp"
+        android:padding="0dp">
+
 
         <!-- MazeView for displaying the maze -->
         <LinearLayout
-            android:layout_width="430dp"
+            android:layout_width="450dp"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
@@ -26,28 +28,32 @@
                 class="com.application.controller.maze.MazeView"
                 android:layout_width="match_parent"
                 android:layout_height="430dp"
-                android:background="@android:color/darker_gray" />
+                android:background="@android:color/darker_gray"
+                android:padding="20dp" />
         </LinearLayout>
 
-        <!-- Sidebar containing Bluetooth, Robot Status, Direction, and Coordinates -->
+        <!-- Sidebar containing COMMS LINK, MISSION UPLINK, TANK CONDITION, Direction, and Coordinates -->
         <LinearLayout
             android:layout_width="150dp"
-            android:layout_height="380dp"
+            android:layout_height="500dp"
             android:layout_marginStart="7dp"
             android:gravity="center"
             android:orientation="vertical">
 
-            <!-- Bluetooth Section -->
-            <TextView
-                android:id="@+id/bluetoothConnection"
+            <!-- COMMS LINK Section (Previously Bluetooth) -->
+            <Button
+                android:id="@+id/commsLink"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:background="@drawable/status_bar"
+                android:background="@drawable/metal_button"
                 android:gravity="center"
-                android:text="BLUETOOTH"
+                android:text="COMMS LINK"
                 android:textAlignment="center"
                 android:textColor="@color/black"
-                android:textStyle="bold" />
+                android:fontFamily="@font/military_font"
+                android:textSize="10sp"
+                app:backgroundTint="@null" />
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -59,10 +65,10 @@
                 <TextView
                     android:id="@+id/bluetoothStatus"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="30dp"
                     android:fontFamily="sans-serif"
                     android:gravity="center"
-                    android:text="bluetooth_connection"
+                    android:text="Disconnected"
                     android:textAlignment="center"
                     android:textColor="@android:color/holo_red_dark" />
 
@@ -72,23 +78,55 @@
                     android:layout_height="30dp"
                     android:fontFamily="sans-serif"
                     android:gravity="center"
-                    android:text="Connected Device"
+                    android:text="No Device Linked"
                     android:textAlignment="center"
-                    android:textColor="@color/black" />
+                    android:textColor="@android:color/holo_red_dark" />
             </LinearLayout>
 
-            <!-- Robot Status Section -->
-            <TextView
+            <!-- MISSION UPLINK Section (API Status) -->
+            <Button
+                android:id="@+id/missionUplink"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/status_bar"
-                android:fontFamily="sans-serif"
+                android:background="@drawable/metal_button"
+                android:fontFamily="@font/military_font"
                 android:gravity="center"
-                android:text="ROBOT STATUS"
+                android:text="MISSION UPLINK"
                 android:textAlignment="center"
                 android:textColor="@color/black"
-                android:textStyle="bold" />
+                android:textSize="10sp"
+                app:backgroundTint="@null" />
+
+
+            <!-- TANK CONDITION Section (Previously Robot Status) -->
+            <TextView
+                android:id="@+id/apiStatus"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/container_black"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:text="Successful"
+                android:textAlignment="center"
+                android:textColor="@color/desert_tan" />
+
+            <Button
+                android:id="@+id/tankCondition"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/metal_button"
+                android:fontFamily="@font/military_font"
+                android:gravity="center"
+                android:text="TANK CONDITION"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                app:backgroundTint="@null" />
+
 
             <TextView
                 android:id="@+id/robotStatus"
@@ -98,11 +136,11 @@
                 android:background="@drawable/container_black"
                 android:fontFamily="sans-serif"
                 android:gravity="center"
-                android:text="Ready to Start"
+                android:text="Operational"
                 android:textAlignment="center"
                 android:textColor="@color/desert_tan" />
 
-            <!-- Direction Section -->
+            <!-- DIRECTION Section -->
             <TextView
                 android:id="@+id/directionLabel"
                 android:layout_width="match_parent"
@@ -127,7 +165,7 @@
                 android:textAlignment="center"
                 android:textColor="@color/army_green" />
 
-            <!-- Coordinates Section -->
+            <!-- COORDINATES Section -->
             <TextView
                 android:id="@+id/CoordsLabel"
                 android:layout_width="match_parent"
@@ -192,8 +230,8 @@
             </LinearLayout>
 
         </LinearLayout>
-
     </LinearLayout>
+
 
 
     <LinearLayout
@@ -203,10 +241,20 @@
         android:layout_margin="8dp"
         android:gravity="center"
         android:orientation="horizontal"
+        android:layout_marginTop="50dp"
+        android:padding="0dp"
         app:layout_constraintBottom_toTopOf="@id/tv_add_robot_position"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <Button
+            android:id="@+id/button_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/button_reset"
@@ -229,132 +277,149 @@
         android:id="@+id/tv_add_robot_position"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="0dp"
-        android:text="Add Robot Position"
+        android:layout_marginTop="0dp"
+        android:text="Tank Reposition"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/reset_controls_layout"
+        android:textColor="@android:color/black"
+        android:fontFamily="@font/military"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/reset_controls_layout" />
 
     <!-- Robot Input Box -->
+
+    <!-- TextView for Add Obstacle -->
+
+    <!-- Obstacle Input Box -->
+
     <LinearLayout
         android:id="@+id/robot_input_box"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_margin="0dp"
+        android:layout_marginTop="0dp"
+        android:background="@color/desert_tan"
         android:orientation="horizontal"
         android:padding="0dp"
-        android:background="@color/desert_tan"
-        android:layout_margin="8dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_add_robot_position"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/tv_add_robot_position">
 
         <!-- X Entry -->
         <Spinner
             android:id="@+id/spinner_robot_x"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:entries="@array/number_options"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:entries="@array/number_options" />
 
         <!-- Y Entry -->
         <Spinner
             android:id="@+id/spinner_robot_y"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:entries="@array/number_options"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:entries="@array/number_options" />
 
         <!-- D Option -->
         <Spinner
             android:id="@+id/spinner_robot_direction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:entries="@array/direction_options"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:entries="@array/direction_options" />
 
         <!-- Set Button -->
         <Button
             android:id="@+id/btn_set_robot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SET"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:text="SET" />
     </LinearLayout>
 
-    <!-- TextView for Add Obstacle -->
     <TextView
         android:id="@+id/tv_add_obstacles"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
         android:padding="0dp"
-        android:text="Add Obstacles"
+        android:text="Deploy Mines"
+        android:textColor="@android:color/black"
+        android:fontFamily="@font/military"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/robot_input_box"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/robot_input_box" />
 
-    <!-- Obstacle Input Box -->
+
+    <!-- Buttons for movement -->
+    <!-- Buttons for movement -->
+
     <LinearLayout
         android:id="@+id/obstacle_input_box"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginTop="0dp"
+        android:background="@color/desert_tan"
         android:orientation="horizontal"
         android:padding="0dp"
-        android:background="@color/desert_tan"
-        android:layout_margin="8dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_add_obstacles"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/tv_add_obstacles">
 
-        <!-- X Entry -->
-        <Spinner
-            android:id="@+id/spinner_x"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/number_options"
-            android:layout_weight="0.5" />
 
-        <!-- Y Entry -->
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/obstacle_selector"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="0dp"
+        android:layout_marginTop="0dp"
+        android:background="@color/desert_tan"
+        android:orientation="horizontal"
+        android:padding="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/button_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@id/tv_add_obstacles"
+        >
+
         <Spinner
-            android:id="@+id/spinner_y"
-            android:layout_width="wrap_content"
+            android:id="@+id/spinner_select_obstacle_type"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:entries="@array/number_options"
-            android:layout_weight="0.5" />
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:spinnerMode="dropdown" />
 
         <!-- D Option -->
         <Spinner
             android:id="@+id/spinner_obstacle_type"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/obstacle_types"
-            android:layout_weight="0.5" />
-
-        <!-- Add Button -->
-        <Button
-            android:id="@+id/btn_add_obstacle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ADD"
-            android:layout_weight="1" />
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:entries="@array/obstacle_types" />
     </LinearLayout>
-
-    <!-- Buttons for movement -->
-    <!-- Buttons for movement -->
 
     <LinearLayout
         android:id="@+id/button_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/obstacle_input_box"
+        android:orientation="horizontal"
+        android:padding="0dp"
+        android:layout_marginTop="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="@+id/obstacle_input_box">
 
         <Button
             android:id="@+id/button_move_up"
@@ -380,6 +445,13 @@
             android:layout_height="wrap_content"
             android:text="Right" />
     </LinearLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="20dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

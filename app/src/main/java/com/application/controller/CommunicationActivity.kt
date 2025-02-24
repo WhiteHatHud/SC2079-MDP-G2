@@ -10,6 +10,7 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.ui.AppBarConfiguration
 import com.application.controller.bluetooth.BluetoothService
+import com.application.controller.maze.MazeFragment
 import com.google.android.material.snackbar.Snackbar
 
 
@@ -110,16 +111,26 @@ class CommunicationActivity : AppCompatActivity() {
         return bluetoothService!!
     }*/
         fun updateBluetoothStatusFloatingActionButtonDisplay() {
-            if (CommunicationActivity.Companion.bluetoothService?.isConnectedToBluetoothDevice == true) {
-                CommunicationActivity.Companion.bluetoothStatusFloatingActionButton?.setBackgroundTintList(
-                    ColorStateList.valueOf(Color.CYAN)
-                )
-            } else {
-                CommunicationActivity.Companion.bluetoothStatusFloatingActionButton?.setBackgroundTintList(
-                    ColorStateList.valueOf(Color.LTGRAY)
-                )
-            }
-        }
+              val isConnected = CommunicationActivity.Companion.bluetoothService?.isConnectedToBluetoothDevice == true
+              val deviceName = CommunicationActivity.bluetoothService?.connectedDeviceName
+
+              // Update FloatingActionButton color
+              CommunicationActivity.Companion.bluetoothStatusFloatingActionButton?.setBackgroundTintList(
+                  ColorStateList.valueOf(if (isConnected) Color.CYAN else Color.LTGRAY)
+              )
+
+              CommunicationActivity.bluetoothStatusFloatingActionButton?.setBackgroundTintList(
+                  ColorStateList.valueOf(if (isConnected) Color.CYAN else Color.LTGRAY)
+              )
+
+              // Find the current MazeFragment and update the Bluetooth status TextView
+              val activity = CommunicationActivity.Companion.bluetoothStatusFloatingActionButton?.context as? AppCompatActivity
+              val fragment = activity?.supportFragmentManager?.findFragmentByTag("MazeFragment") as? MazeFragment
+
+              fragment?.updateBluetoothStatus(isConnected)
+              fragment?.updateBluetoothConnectedDevice(deviceName)
+
+          }
 
         fun updateReceivedTextStrings(newReceivedString: String) {
             CommunicationActivity.Companion.receivedTextStrings = """

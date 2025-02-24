@@ -3,7 +3,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/StartFragment"> <!-- Updated start destination -->
+
+    <fragment
+        android:id="@+id/StartFragment"
+        android:name="com.application.controller.start.StartFragment"
+        android:label="Start"
+        tools:layout="@layout/start_fragment">
+
+        <action
+            android:id="@+id/action_StartFragment_to_FirstFragment"
+            app:destination="@id/MazeFragment" />
+
+        <action
+            android:id="@+id/action_StartFragment_to_SecondFragment"
+            app:destination="@id/SecondFragment" />
+
+        <action
+            android:id="@+id/action_StartFragment_to_MazeFragment"
+            app:destination="@id/MazeFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/FirstFragment"
@@ -55,9 +74,15 @@
         android:label="Maze"
         tools:layout="@layout/fragment_maze">
 
-        <!-- Example: Navigation from SecondFragment to MazeFragment -->
+        <!-- Navigation from SecondFragment to MazeFragment -->
         <action
             android:id="@+id/action_SecondFragment_to_MazeFragment"
             app:destination="@id/MazeFragment" />
+        <!-- Comms link to bluetooth -->
+        <action
+            android:id="@+id/action_MazeFragment_to_BluetoothFragment"
+            app:destination="@id/BluetoothFragment" />
+
+
     </fragment>
 </navigation>
