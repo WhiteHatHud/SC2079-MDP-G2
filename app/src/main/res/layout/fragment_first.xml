@@ -21,17 +21,16 @@
             app:layout_constraintTop_toTopOf="parent" />
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_first"
-            app:layout_constraintBottom_toBottomOf="parent">
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/button_first">
+
             <Button
                 android:id="@+id/buttonUp"
                 android:layout_width="200sp"
                 android:layout_height="100sp"
-                android:textSize="24sp"
                 android:padding="16dp"
                 android:text="@string/direct_control_button_forward"
-                app:layout_constraintBottom_toTopOf="@+id/buttonLeft"
+                android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -40,36 +39,56 @@
                 android:id="@+id/buttonDown"
                 android:layout_width="200sp"
                 android:layout_height="100sp"
-                android:textSize="24sp"
                 android:padding="16dp"
                 android:text="@string/direct_control_button_reverse"
+                android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/buttonRight" />
+                app:layout_constraintTop_toBottomOf="@id/buttonBackLeft" />
 
             <Button
                 android:id="@+id/buttonLeft"
                 android:layout_width="150sp"
                 android:layout_height="100sp"
+                android:padding="16dp"
                 android:text="@string/direct_control_button_left"
                 android:textSize="24sp"
-                android:padding="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/buttonRight"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/buttonUp" />
+
+            <Button
+                android:id="@+id/buttonBackLeft"
+                android:layout_width="150sp"
+                android:layout_height="100sp"
+                android:padding="16dp"
+                android:text="Back L"
+                android:textSize="24sp"
+
+                app:layout_constraintStart_toStartOf="@id/buttonLeft"
+                app:layout_constraintTop_toBottomOf="@id/buttonLeft" />
 
             <Button
                 android:id="@+id/buttonRight"
                 android:layout_width="150sp"
                 android:layout_height="100sp"
+                android:padding="16dp"
                 android:text="@string/direct_control_button_right"
                 android:textSize="24sp"
-                android:padding="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/buttonLeft"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toEndOf="@id/buttonLeft"
+                app:layout_constraintTop_toBottomOf="@id/buttonUp" />
+
+            <Button
+                android:id="@+id/buttonBackRight"
+                android:layout_width="150sp"
+                android:layout_height="100sp"
+                android:padding="16dp"
+                android:text="Back R"
+                android:textSize="24sp"
+
+                app:layout_constraintEnd_toEndOf="@id/buttonRight"
+                app:layout_constraintTop_toBottomOf="@id/buttonRight" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

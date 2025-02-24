@@ -66,7 +66,10 @@ class CommunicationFragment : Fragment() {
        // textViewReceivedStrings.setText(RECEIVED_DATA_PLACEHOLDER)
         textViewReceivedStrings.setText(receivedString)
         textViewCommsLog.setText(commsLog)
-
+        val returnButton:Button=root.findViewById<Button>(com.application.controller.R.id.button_second)
+        returnButton.setOnClickListener {
+            activity?.finish()
+        }
         persistentStringSendButton1.setOnClickListener(View.OnClickListener { view ->
             Snackbar.make(
                 view,
@@ -165,6 +168,21 @@ class CommunicationFragment : Fragment() {
                 activity!!.runOnUiThread {
                     if (!CommunicationActivity.getLatestMessage().isEmpty()) {
                         textViewReceivedStrings.setText(CommunicationActivity.getLatestMessage())
+
+                            var parseString=CommunicationActivity.getLatestMessage()
+                            val regex = Regex("FOUND IMG(\\d{2})")
+                            val matchResult = regex.find(parseString)
+
+                            if (matchResult != null) {
+                                val id = matchResult.groupValues[1] // Extract the captured group (the two digits)
+                                println("Found ID: $id in string: $parseString")
+                                textViewPersistentCommunicationString2.setText("Robot has now identified ID: $id")
+                                // Use the id variable here for later processing
+                            } else {
+                                println("No ID found in string: $parseString")
+                            }
+
+
                     }
                     var newLog=CommunicationActivity.getMessageLog()
                     var oldLog=textViewCommsLog.text.toString()

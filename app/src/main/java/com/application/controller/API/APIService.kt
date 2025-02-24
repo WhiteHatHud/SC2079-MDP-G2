@@ -11,7 +11,7 @@ import retrofit2.http.Path
 
 class APIService {
     companion object {
-        private const val BASE_URL = "http://10.91.13.44:8000/" // Replace with your API base URL
+        private const val BASE_URL = "http://10.91.242.113:8000/" // Replace with your API base URL
 
         private val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY // Log request and response bodies

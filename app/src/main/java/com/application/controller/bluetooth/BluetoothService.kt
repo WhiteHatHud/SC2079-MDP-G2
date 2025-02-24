@@ -6,8 +6,13 @@ import android.os.Looper
 import android.os.Message
 import android.util.Log
 import android.widget.Toast
+
+import com.application.controller.API.APIPathData
+import com.application.controller.API.APIResponseInstructions
 import com.application.controller.MainActivity
 import java.util.Locale
+import kotlin.text.startsWith
+import kotlin.text.substring
 
 class BluetoothService {
     /**
@@ -192,6 +197,43 @@ class BluetoothService {
     }
 
 
+    //PATH LOGIC HERE
+    fun processNewMovementData(newInstructionData: APIResponseInstructions)
+    {
+        val sb = StringBuilder()
+        //Distance likely not of use to the Bot, more for display
+        val newDistance=newInstructionData.distance
+        val newDirection:List<APIPathData> = newInstructionData.path
+        var newCommands: MutableList<String> = newInstructionData.commands.toMutableList()
+
+        //Clean or transform turn instructions?
+        val prefixes = listOf("FR", "FL", "BL", "BR")
+
+        newCommands.forEachIndexed { index, string ->
+            if (prefixes.any { string.startsWith(it) }) {
+                newCommands[index] = string.substring(0, 2)
+            }
+        }
+        newCommands.toList()
+
+
+        //TODO Find Out Best way to pass commands to RPi
+        //Iterates through newDirection list
+        for(pathData in newDirection)
+        {
+            //Not sure what to do with Path? Probably moving them to Maze to display it
+            var pathToString=pathData.x.toString()+","+pathData.y.toString()+","+pathData.d.toString()+","+pathData.s.toString()
+        }
+        for(command in newCommands)
+        {
+            //Individually sends out commands separately one after the other?
+            sendOutMessage(command)
+        }
+        //Alternatively maybe sending everything might work?
+        //sendOutMessage(newCommands.toString())
+
+
+    }
 /** TODO MAZE LOGIC
     private fun processMazeUpdateResponseMessage(mazeUpdateResponseMessage: String) {
         // Message format: ROBOT,IDLE/RUNNING/CALIBRATING/ARRIVED,0/90/180/270,X:Y;MDF,STRING;IMAGE,X:Y:ID:DIRECTION

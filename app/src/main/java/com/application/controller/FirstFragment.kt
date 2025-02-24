@@ -75,7 +75,22 @@ class FirstFragment : Fragment() {
                 Toast.makeText(this.context, "No Bluetooth Connection", Toast.LENGTH_SHORT).show()
             }
         }
-
+        binding.buttonBackLeft.setOnClickListener {
+            if (btService != null) {
+                btService.sendOutMessage("BL00")
+            }else
+            {
+                Toast.makeText(this.context, "No Bluetooth Connection", Toast.LENGTH_SHORT).show()
+            }
+        }
+        binding.buttonBackRight.setOnClickListener {
+            if (btService != null) {
+                btService.sendOutMessage("BR00")
+            }else
+            {
+                Toast.makeText(this.context, "No Bluetooth Connection", Toast.LENGTH_SHORT).show()
+            }
+        }
 
     }
 

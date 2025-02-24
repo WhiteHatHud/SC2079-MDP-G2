@@ -1,6 +1,7 @@
 package com.application.controller.API
 
 import com.application.controller.API.APIData
+import com.google.gson.JsonObject
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -23,5 +24,5 @@ interface APIServiceInterface {
 
     //ACTUAL API CALL
     @POST("/path")
-    suspend fun postPathData(@Body postData: APIMovementData): APIResponseInstructions
+    suspend fun postPathData(@Body postData: APIMovementData): APIResponse
 }

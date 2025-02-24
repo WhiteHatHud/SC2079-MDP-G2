@@ -22,10 +22,28 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Send Instructions to RPI"
+        android:id="@+id/button_sendInstrunctionsToBot"
+        android:enabled="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_apiCheckBluetoothService"
+        app:layout_constraintTop_toBottomOf="@id/TextView_APITestData"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Check Bluetooth"
+        android:id="@+id/button_apiCheckBluetoothService"
+        android:enabled="false"
+        app:layout_constraintStart_toEndOf="@id/button_sendInstrunctionsToBot"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/TextView_APITestData"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/button_TestAPIPost"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/TextView_APITestData"
+        app:layout_constraintTop_toBottomOf="@id/button_sendInstrunctionsToBot"
         android:text="Test API POST (/path)"/>
    <!-- <EditText
         android:layout_width="match_parent"
