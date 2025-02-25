@@ -283,6 +283,14 @@
                 app:layout_constraintTop_toBottomOf="@+id/positions_layout">
 
                 <Button
+                    android:id="@+id/C9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="C9"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <Button
                     android:id="@+id/button_start"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -507,6 +515,31 @@
             app:layout_constraintStart_toEndOf="@id/button_move_down"
             app:layout_constraintTop_toTopOf="@id/button_move_down"
             app:layout_constraintBottom_toBottomOf="@id/button_move_down"/>
+
+        <ScrollView
+            android:id="@+id/scrollViewCommsLog"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:fillViewport="true"
+            app:layout_constraintTop_toBottomOf="@id/reset_controls_layout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/button_container">
+
+            <TextView
+                android:id="@+id/textViewMessageLog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:background="@drawable/ic_border"
+                android:maxLines="10"
+                android:scrollbars="vertical"
+                android:scrollbarStyle="insideInset"
+                android:overScrollMode="always"
+                android:text="Communication Log"
+                android:textIsSelectable="false"/>
+        </ScrollView>
+
     </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>

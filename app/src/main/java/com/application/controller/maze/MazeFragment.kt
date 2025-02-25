@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.content.ClipData
 import android.icu.lang.UCharacter.getDirection
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -203,6 +204,30 @@ class MazeFragment : Fragment() {
                     bluetoothStatusTextView.text = "Disconnected"
                     bluetoothStatusTextView.setTextColor(Color.RED) // Change to red if disconnected
                 }
+            }
+        }
+
+        // Reference the communication log TextView
+        val textViewCommsLog: TextView = view.findViewById(R.id.textViewMessageLog)
+        textViewCommsLog.movementMethod = ScrollingMovementMethod()
+
+        // Get the latest communication log
+        val commsLog = CommunicationActivity.getMessageLog()
+        textViewCommsLog.text = commsLog
+
+        // Periodically update the communication log from CommunicationActivity
+        CoroutineScope(Dispatchers.Main).launch {
+            while (isActive) {
+                val newLog = CommunicationActivity.getMessageLog()
+                if (newLog != textViewCommsLog.text.toString()) {
+                    textViewCommsLog.text = newLog
+                    textViewCommsLog.post {
+                        val scrollAmount =
+                            textViewCommsLog.layout.getLineTop(textViewCommsLog.lineCount) - textViewCommsLog.height
+                        textViewCommsLog.scrollTo(0, if (scrollAmount > 0) scrollAmount else 0)
+                    }
+                }
+                delay(500) // Update every 500ms
             }
         }
 
