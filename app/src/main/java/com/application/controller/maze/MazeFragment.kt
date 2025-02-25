@@ -211,6 +211,25 @@ class MazeFragment : Fragment() {
                 }
             }
         }
+        //TODO C9 button
+
+        view.findViewById<Button>(R.id.C9).setOnClickListener {
+            val targetData = getTarget() // Fetch target info from Bluetooth
+            Log.d("MazeFragment", "C9 clicked. Target: $targetData")
+
+            val parsedTargets = parseTargetData(targetData) // Parse multiple target IDs
+
+            if (parsedTargets.isNotEmpty()) {
+                for ((targetId, newId) in parsedTargets) {
+                    Log.d("MazeFragment", "Updating obstacle with ID: $targetId to New ID: $newId")
+                    mazeView.updateObstacleTarget(targetId, newId)
+                }
+            } else {
+                Toast.makeText(requireContext(), "Invalid Target Data", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+
 
         // Reference the communication log TextView
         val textViewCommsLog: TextView = view.findViewById(R.id.textViewMessageLog)
@@ -382,6 +401,31 @@ class MazeFragment : Fragment() {
         return latestPos
     }
 
+    fun parseTargetData(targetData: String): List<Pair<Int, Int>> {
+        val targetList = mutableListOf<Pair<Int, Int>>()
+
+        val lines = targetData.trim().split("\n") // Split multi-line string
+        for (line in lines) {
+            Log.d("MazeFragment", "Processing Target Line: $line")
+
+            val matchResult = Regex("TARGET,\\s*(\\d+),\\s*(\\d+)").find(line)
+            if (matchResult != null) {
+                val targetId = matchResult.groupValues[1].toInt()
+                val newId = matchResult.groupValues[2].toInt()
+
+                Log.d("MazeFragment", "Parsed ID: $targetId, New ID: $newId")
+                targetList.add(Pair(targetId, newId))
+            } else {
+                Log.e("MazeFragment", "Failed to parse target data: $line")
+            }
+        }
+
+        return targetList
+    }
+
+
+
+
 
     private fun getJsonFromApi(): String {
         // Mocking the API response, replace with actual API call
@@ -455,8 +499,10 @@ class MazeFragment : Fragment() {
             setTextColor(if (!deviceName.isNullOrEmpty()) Color.BLUE else Color.RED)
         }
     }
-
-
+    private fun getTarget(): String {
+        return CommunicationActivity.getLatestMessage()
+        // This will return the latest message received via Bluetooth.
+    }
 
 
 }

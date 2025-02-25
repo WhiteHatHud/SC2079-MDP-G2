@@ -27,6 +27,12 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     private val emptyGridPaint = Paint()
     private val labelPaint = Paint()
     private val zonePaint = Paint()
+    private val targetIDPaint = Paint().apply {
+        color = Color.RED   // Make it stand out
+        textSize = 40f      // Bigger size for visibility
+        textAlign = Paint.Align.CENTER
+        isFakeBoldText = true // Make it bold for emphasis
+    }
     //for the path
     private val pathMap: MutableList<Pair<Int, Int>> = mutableListOf()
 
@@ -186,18 +192,25 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
             val (x, y) = position
             val obstacleBitmap = obstacleBitmaps[type]
 
-            // Check if the obstacleBitmap is not null before drawing
             if (obstacleBitmap != null) {
                 val scaledBitmap = Bitmap.createScaledBitmap(obstacleBitmap, gridSize, gridSize, false)
                 val left = x * gridSize + leftMargin
                 val top = (ROW_NUM - y - 1) * gridSize
                 canvas.drawBitmap(scaledBitmap, left.toFloat(), top.toFloat(), null)
 
-                // Check if a number is associated with the obstacle
-                val number = obstacleNumbersMap[position]
-                if (number != null) {
-                    labelPaint.color = Color.RED
-                    labelPaint.textSize = 30f
+                // Check if this obstacle is in the targeted list
+                val isTargeted = targetedObstacles.contains(position)
+
+                // Update text paint properties
+                val textSize = if (isTargeted) 40f else 20f // Make it even larger
+                val textColor = if (isTargeted) Color.RED else Color.BLUE
+
+                // Apply to labelPaint
+                labelPaint.color = textColor
+                labelPaint.textSize = textSize
+
+                // Draw the obstacle number
+                obstacleNumbersMap[position]?.let { number ->
                     canvas.drawText(
                         number.toString(),
                         (left + gridSize / 2).toFloat(),
@@ -206,35 +219,19 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
                     )
                 }
 
+                // Draw the obstacle ID
                 obstacleIDMap[position]?.let { id ->
-                    labelPaint.color = Color.BLUE
-                    labelPaint.textSize = 20f
                     canvas.drawText(
                         id.toString(),
                         (left + gridSize / 2).toFloat(),
-                        (top + gridSize / 1.5).toFloat(),
+                        (top + gridSize / 1.2).toFloat(),
                         labelPaint
                     )
                 }
             }
         }
-        if (isDraggingObstacle && previewX != null && previewY != null) {
-            val previewBitmap = obstacleBitmaps[selectedObstacleType] // Show preview of selected type
-            previewBitmap?.let {
-                val left = (previewX!! * gridSize + leftMargin).toFloat()
-                val top = ((ROW_NUM - previewY!! - 1) * gridSize).toFloat()
-
-                val paint = Paint().apply { alpha = 120 } // Transparent effect
-                val smallBitmap = Bitmap.createScaledBitmap(it, (gridSize * 0.7).toInt(), (gridSize * 0.7).toInt(), false)
-                canvas.drawBitmap(
-                    smallBitmap,
-                    left.coerceIn(-gridSize.toFloat(), (COLUMN_NUM * gridSize).toFloat()), // Allow out-of-bounds drawing
-                    top.coerceIn(-gridSize.toFloat(), (ROW_NUM * gridSize).toFloat()),
-                    paint
-                )
-            }
-        }
     }
+
 
     private val obstacleNumbersMap: MutableMap<Pair<Int, Int>, Int> = mutableMapOf()
     fun addObstacleWithNumber(x: Int, y: Int, type: String, number: Int) {
@@ -505,23 +502,57 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
             Log.d("MazeView", "Tried to remove obstacle at ($x, $y) but none found")
         }
     }
+    private val targetedObstacles: MutableSet<Pair<Int, Int>> = mutableSetOf()
+
+    fun updateObstacleTarget(targetId: Int, newId: Int) {
+        Log.d("MazeView", "Updating obstacle with ID: $targetId to New ID: $newId")
+        Log.d("MazeView", "Existing Obstacle IDs: ${obstacleIDMap.values}")
+
+        var updated = false
+
+        for ((position, id) in obstacleIDMap) {
+            if (id == targetId) {
+                val (x, y) = position
+                val currentType = obstacleMap[position] ?: "Normal"
+
+                // Update the obstacle with new ID
+                obstacleMap[position] = currentType
+                obstacleIDMap[position] = newId // Set new ID
+
+                targetedObstacles.add(position)
+                // Log update for debugging
+                Log.d("MazeView", "Obstacle Updated at ($x, $y) -> New ID: $newId (was $targetId)")
+
+                updated = true
+            }
+        }
+
+        if (!updated) {
+            Log.e("MazeView", "No obstacle found with ID: $targetId")
+            Toast.makeText(context, "No obstacle found with ID: $targetId", Toast.LENGTH_SHORT).show()
+        }
+
+        invalidate() // Redraw the view
+    }
 
 
 
 
-
-
-
-
-/*
-
-//Code for sending x,y and obstacle ID via bluetooth
-fun sendObstacleData(x: Int, y: Int, id: Int) {
-   val data = "OBSTACLE:$id,$x,$y"
-   bluetoothService.sendData(data) // Assuming a Bluetooth function exists
 }
 
-    // add the bluetooth call to addObstacle()
-    sendObstacleData(x, y, obstacleID)
-*/
-}
+
+
+
+
+    /*
+
+    //Code for sending x,y and obstacle ID via bluetooth
+    fun sendObstacleData(x: Int, y: Int, id: Int) {
+       val data = "OBSTACLE:$id,$x,$y"
+       bluetoothService.sendData(data) // Assuming a Bluetooth function exists
+    }
+
+        // add the bluetooth call to addObstacle()
+        sendObstacleData(x, y, obstacleID)
+    */
+
