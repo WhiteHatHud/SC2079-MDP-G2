@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.ui.AppBarConfiguration
+import com.application.controller.bluetooth.BluetoothSendData
 import com.application.controller.bluetooth.BluetoothService
 import com.application.controller.maze.MazeFragment
 import com.google.android.material.snackbar.Snackbar
@@ -320,6 +321,15 @@ class CommunicationActivity : AppCompatActivity() {
             )
             CommunicationActivity.Companion.bluetoothService?.sendOutMessage(communicationMessage)
         }
+
+    fun sendCommunicationData(message: BluetoothSendData) {
+        val communicationMessage: String = MessageStrings.TO_RASPBERRY_PI + message.value
+        Log.d(
+            CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
+            "Sending communication message: $communicationMessage"
+        )
+        CommunicationActivity.Companion.bluetoothService?.sendOutData(message)
+    }
 
         fun sendMoveObstacleMessage(oldx: Int, oldy: Int, newx: Int, newy: Int, obsID: Int) {
             val communicationMessage: String =

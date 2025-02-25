@@ -14,6 +14,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.application.controller.CommunicationActivity
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import java.util.Timer
 import java.util.TimerTask
 
@@ -78,8 +80,13 @@ class CommunicationFragment : Fragment() {
                 Snackbar.LENGTH_LONG
             )
                 .setAction("Action", null).show()
-            CommunicationActivity.sendCommunicationMessage(
-                textViewPersistentCommunicationString1.getText().toString()
+            var data:BluetoothSendData=BluetoothSendData("control",textViewPersistentCommunicationString1.getText().toString())
+            val gson= Gson()
+            val jsonString=gson.toJson(data)
+
+            val byteArray=jsonString.toByteArray()
+            CommunicationActivity.sendCommunicationData(
+                data
             )
         })
         persistentStringSendButton2.setOnClickListener(View.OnClickListener { view ->
@@ -172,8 +179,11 @@ class CommunicationFragment : Fragment() {
                             var parseString=CommunicationActivity.getLatestMessage()
                             val regex = Regex("FOUND IMG(\\d{2})")
                             val regexPostionInfo= Regex("""^ROBOT,\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*([NSEW])$""")
-                            val matchResult = regex.find(parseString)
+                            val regexTarget = Regex("""^TARGET,\s*(\d+)\s*,\s*(\d+)\s*$""")
 
+
+                            val matchResult = regex.find(parseString)
+                            val matchTarget=regexTarget.find(parseString)
                             val matchPositionUpdate=regexPostionInfo.find(parseString)
                             if(matchPositionUpdate!=null)
                             {
@@ -182,13 +192,13 @@ class CommunicationFragment : Fragment() {
                                 {
                                     //Nothing since means bot didnt move
                                     com.application.controller.API.LatestRouteObject.positionChangedFlag=false
-                                    Log.d("Bluetooth COMMS", "Position Unchanged : $currentLatestPosition")
+                                    //Log.d("Bluetooth COMMS", "Position Unchanged : $currentLatestPosition")
                                 }
                                 else
                                 {
                                     com.application.controller.API.LatestRouteObject.latestRobotPosition=parseString
                                     com.application.controller.API.LatestRouteObject.positionChangedFlag=true
-                                    Log.d("Bluetooth COMMS", "Position Changed : $parseString")
+                                    //Log.d("Bluetooth COMMS", "Position Changed : $parseString")
                                 }
                             }
                             if (matchResult != null) {
@@ -198,6 +208,14 @@ class CommunicationFragment : Fragment() {
                                 // Use the id variable here for later processing
                             } else {
                                 println("No ID found in string: $parseString")
+                            }
+                            if(matchTarget!=null)
+                            {
+                                com.application.controller.API.LatestRouteObject.targetObstacle=parseString
+                            }
+                            else
+                            {
+                                //Skip
                             }
 
 

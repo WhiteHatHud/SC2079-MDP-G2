@@ -351,10 +351,20 @@ class MazeFragment : Fragment() {
         }
     }
 
+    //TODO for C10
     private fun getLatestBotPostion():String
     {
         val latestPos=com.application.controller.API.LatestRouteObject.latestRobotPosition
         return latestPos
+        //Returns "ROBOT, <x>, <y>, <direction>"
+    }
+
+    //TODO for C9
+    private fun getTarget():String
+    {
+        val target=com.application.controller.API.LatestRouteObject.targetObstacle
+        return target
+        //Returns "TARGET, <Obstacle ID>, <Order Number>"
     }
 
 
