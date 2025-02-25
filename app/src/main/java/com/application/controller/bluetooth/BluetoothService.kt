@@ -10,6 +10,8 @@ import android.widget.Toast
 import com.application.controller.API.APIPathData
 import com.application.controller.API.APIResponseInstructions
 import com.application.controller.MainActivity
+import com.google.android.material.color.utilities.Blend
+import com.google.gson.Gson
 import java.util.Locale
 import kotlin.text.startsWith
 import kotlin.text.substring
@@ -77,6 +79,20 @@ class BluetoothService {
         //        processMazeUpdateResponseMessage("ROBOT,CALIBRATING,180,5:10;MDF,000000000000000000000000000000011100000000000000000000000000000000000000000000001110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;IMAGE,4:5:10,6:6:8"); // TODO: Remove
 //        processMazeUpdateResponseMessage("ROBOT,IDLE,0,1:1;MDF,000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;IMAGE;"); // TODO: Remove
 //        processMazeUpdateResponseMessage("P1,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA;P2,CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC;"); // TODO: Remove
+    }
+
+    fun sendOutData(message:BluetoothSendData)
+    {
+        Log.d(
+            BLUETOOTH_SERVICE_TAG,
+            "Sending Data Type: ${message.cat}"
+        )
+        val gson=Gson()
+        val jsonString=gson.toJson(message)
+
+        val byteArray=jsonString.toByteArray()
+        bluetoothCommunicationService.write(byteArray)
+
     }
 
 
@@ -218,6 +234,7 @@ class BluetoothService {
 
 
         //TODO Find Out Best way to pass commands to RPi
+        //TODO Most likely way is compiling all commands into the same structure
         //Iterates through newDirection list
         for(pathData in newDirection)
         {

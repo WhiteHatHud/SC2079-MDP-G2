@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.application.controller.databinding.FragmentFirstBinding
 import com.application.controller.MenuActivity
+import com.application.controller.bluetooth.BluetoothSendData
 import com.application.controller.bluetooth.BluetoothService
 
 /**
@@ -42,7 +43,10 @@ class FirstFragment : Fragment() {
         binding.buttonUp.setOnClickListener {
             //Send Forward command via bluetooth
             if (btService != null) {
-                btService.sendOutMessage("FW10")
+                val newBtSendData= BluetoothSendData("control","FW010")
+                btService.sendOutData(newBtSendData)
+               // btService.sendOutMessage("FW010")
+
             }else
             {
                 Toast.makeText(this.context, "No Bluetooth Connection", Toast.LENGTH_SHORT).show()
@@ -51,7 +55,9 @@ class FirstFragment : Fragment() {
         binding.buttonDown.setOnClickListener {
             //Send Backward command via bluetooth
             if (btService != null) {
-                btService.sendOutMessage("BW10")
+                val newBtSendData= BluetoothSendData("control","BW010")
+                btService.sendOutData(newBtSendData)
+                //btService.sendOutMessage("BW010")
             }else
             {
                 Toast.makeText(this.context, "No Bluetooth Connection", Toast.LENGTH_SHORT).show()
@@ -60,7 +66,9 @@ class FirstFragment : Fragment() {
         binding.buttonLeft.setOnClickListener {
             //Send Left command via bluetooth
             if (btService != null) {
-                btService.sendOutMessage("FL00")
+                val newBtSendData= BluetoothSendData("control","FL000")
+                btService.sendOutData(newBtSendData)
+               // btService.sendOutMessage("FL000")
             }else
             {
                 Toast.makeText(this.context, "No Bluetooth Connection", Toast.LENGTH_SHORT).show()
@@ -69,7 +77,9 @@ class FirstFragment : Fragment() {
         binding.buttonRight.setOnClickListener {
             //Send Right command via bluetooth
             if (btService != null) {
-                btService.sendOutMessage("FR00")
+                val newBtSendData= BluetoothSendData("control","FR000")
+                btService.sendOutData(newBtSendData)
+                //btService.sendOutMessage("FR000")
             }else
             {
                 Toast.makeText(this.context, "No Bluetooth Connection", Toast.LENGTH_SHORT).show()
@@ -77,7 +87,9 @@ class FirstFragment : Fragment() {
         }
         binding.buttonBackLeft.setOnClickListener {
             if (btService != null) {
-                btService.sendOutMessage("BL00")
+                val newBtSendData= BluetoothSendData("control","BL000")
+                btService.sendOutData(newBtSendData)
+               // btService.sendOutMessage("BL000")
             }else
             {
                 Toast.makeText(this.context, "No Bluetooth Connection", Toast.LENGTH_SHORT).show()
@@ -85,7 +97,9 @@ class FirstFragment : Fragment() {
         }
         binding.buttonBackRight.setOnClickListener {
             if (btService != null) {
-                btService.sendOutMessage("BR00")
+                val newBtSendData= BluetoothSendData("control","BR000")
+                btService.sendOutData(newBtSendData)
+                //btService.sendOutMessage("BR000")
             }else
             {
                 Toast.makeText(this.context, "No Bluetooth Connection", Toast.LENGTH_SHORT).show()

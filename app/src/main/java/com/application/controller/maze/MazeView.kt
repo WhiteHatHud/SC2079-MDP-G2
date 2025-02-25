@@ -513,15 +513,15 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
 
 
-
+/*
 
 //Code for sending x,y and obstacle ID via bluetooth
-//fun sendObstacleData(x: Int, y: Int, id: Int) {
-//    val data = "OBSTACLE:$id,$x,$y"
-//    bluetoothService.sendData(data) // Assuming a Bluetooth function exists
-//}
+fun sendObstacleData(x: Int, y: Int, id: Int) {
+   val data = "OBSTACLE:$id,$x,$y"
+   bluetoothService.sendData(data) // Assuming a Bluetooth function exists
+}
 
     // add the bluetooth call to addObstacle()
-//    sendObstacleData(x, y, obstacleID)
-
+    sendObstacleData(x, y, obstacleID)
+*/
 }

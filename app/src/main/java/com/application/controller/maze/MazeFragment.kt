@@ -18,11 +18,16 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
+import com.application.controller.API.APIResponseInstructions
+import com.application.controller.API.APITestActivity
 import com.application.controller.CommunicationActivity
 import com.application.controller.R
 import com.application.controller.spinner.ObstacleSpinnerAdapter
 import com.application.controller.spinner.ObstacleSelectorAdapter
 import kotlinx.coroutines.*
+
+//BluetoothService
+import com.application.controller.bluetooth.BluetoothService
 
 //libraries for Json Parsing:
 import org.json.JSONObject
@@ -53,7 +58,7 @@ class MazeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         updateBluetoothStatus(CommunicationActivity.bluetoothService?.isConnectedToBluetoothDevice == true)
         updateBluetoothConnectedDevice(CommunicationActivity.bluetoothService?.connectedDeviceName)
-
+        var test=getLatestBotPostion()
 
 
         // Initialize MazeView
@@ -371,10 +376,20 @@ class MazeFragment : Fragment() {
         }
     }
 
+    private fun getLatestBotPostion():String
+    {
+        val latestPos=com.application.controller.API.LatestRouteObject.latestRobotPosition
+        return latestPos
+    }
 
 
     private fun getJsonFromApi(): String {
         // Mocking the API response, replace with actual API call
+       var latestAPIResponse: APIResponseInstructions?=com.application.controller.API.LatestRouteObject.latestAPIInfo
+        if (latestAPIResponse != null) {
+            return latestAPIResponse.path.toString()
+        }
+
         return """
     {
   "path": [
@@ -440,6 +455,8 @@ class MazeFragment : Fragment() {
             setTextColor(if (!deviceName.isNullOrEmpty()) Color.BLUE else Color.RED)
         }
     }
+
+
 
 
 }

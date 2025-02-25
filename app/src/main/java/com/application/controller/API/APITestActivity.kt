@@ -192,6 +192,7 @@ class APITestActivity : AppCompatActivity(){
                 if (apiResponseInstructions!=null)
                 {
                     latestAPIResponse=apiResponseInstructions
+                    LatestRouteObject.latestAPIInfo=apiResponseInstructions
                    processNewMovementData(apiResponseInstructions)
                 }
             }catch (e: Exception) {
@@ -227,8 +228,9 @@ class APITestActivity : AppCompatActivity(){
         val dummy_distance:Double=65.0
         var dummy_path:List<APIPathData> = listOf(APIPathData(1,1,0,-1),APIPathData(4,2,2,-1),APIPathData(13,2,2,-1),APIPathData(14,2,2,5))
         var dummy_commands:List<String> = listOf("FR00","FW90","FW10","SNAP5_C","BW10","BR00","FW90","FW40","SNAP2_C","BW10","BR00","FW10","SNAP4_C","FIN")
+        var dummy_obstacleOrder:List<Int> = listOf(5,2,4)
         val dummy_error:String="null"
-        val dummyData:APIResponseInstructions=APIResponseInstructions(dummy_distance,dummy_path,dummy_commands,dummy_error)
+        val dummyData:APIResponseInstructions=APIResponseInstructions(dummy_distance,dummy_path,dummy_commands,dummy_obstacleOrder,dummy_error)
         if(BluetoothService.isConnectedToBluetoothDevice)
         {
             try {

@@ -171,8 +171,26 @@ class CommunicationFragment : Fragment() {
 
                             var parseString=CommunicationActivity.getLatestMessage()
                             val regex = Regex("FOUND IMG(\\d{2})")
+                            val regexPostionInfo= Regex("""^ROBOT,\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*([NSEW])$""")
                             val matchResult = regex.find(parseString)
 
+                            val matchPositionUpdate=regexPostionInfo.find(parseString)
+                            if(matchPositionUpdate!=null)
+                            {
+                                val currentLatestPosition=com.application.controller.API.LatestRouteObject.latestRobotPosition
+                                if(parseString.equals(currentLatestPosition))
+                                {
+                                    //Nothing since means bot didnt move
+                                    com.application.controller.API.LatestRouteObject.positionChangedFlag=false
+                                    Log.d("Bluetooth COMMS", "Position Unchanged : $currentLatestPosition")
+                                }
+                                else
+                                {
+                                    com.application.controller.API.LatestRouteObject.latestRobotPosition=parseString
+                                    com.application.controller.API.LatestRouteObject.positionChangedFlag=true
+                                    Log.d("Bluetooth COMMS", "Position Changed : $parseString")
+                                }
+                            }
                             if (matchResult != null) {
                                 val id = matchResult.groupValues[1] // Extract the captured group (the two digits)
                                 println("Found ID: $id in string: $parseString")
