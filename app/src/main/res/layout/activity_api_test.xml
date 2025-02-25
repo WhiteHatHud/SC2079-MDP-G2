@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_TestAPI"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="Test API CALL (/test)"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/TextView_APITestData"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_TestAPI"
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send Instructions to RPI"
+        android:id="@+id/button_sendInstrunctionsToBot"
+        android:enabled="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_apiCheckBluetoothService"
+        app:layout_constraintTop_toBottomOf="@id/TextView_APITestData"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Check Bluetooth"
+        android:id="@+id/button_apiCheckBluetoothService"
+        android:enabled="false"
+        app:layout_constraintStart_toEndOf="@id/button_sendInstrunctionsToBot"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/TextView_APITestData"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_TestAPIPost"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_sendInstrunctionsToBot"
+        android:text="Test API POST (/path)"/>
+   <!-- <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/EditView_APITestData"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:hint="FILL IN YOUR TEST MESSAGE HERE"
+        app:layout_constraintTop_toBottomOf="@id/button_TestAPIPost"
+        />-->
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkBox_Retry"
+        app:layout_constraintTop_toBottomOf="@id/button_TestAPIPost"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/checkBox_BigTurn"
+        android:paddingHorizontal="25dp"
+        android:text="Retrying?"
+        />
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkBox_BigTurn"
+        android:paddingHorizontal="25dp"
+        app:layout_constraintTop_toBottomOf="@id/button_TestAPIPost"
+        app:layout_constraintStart_toEndOf="@id/checkBox_Retry"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Big Turn?"
+        />
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/EditView_XCoord"
+        android:inputType="number"
+        android:paddingHorizontal="10dp"
+        android:hint="Starting X Coordinate"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/EditView_YCoord"
+        app:layout_constraintTop_toBottomOf="@id/checkBox_BigTurn"/>
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/EditView_YCoord"
+        android:inputType="number"
+        android:paddingHorizontal="10dp"
+        android:hint="Starting Y Coordinate"
+        app:layout_constraintStart_toEndOf="@id/EditView_XCoord"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/checkBox_BigTurn"/>
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/EditView_BotDir"
+        android:inputType="number"
+        android:hint="Starting Robot Direction"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/EditView_YCoord"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/EditView_BotDir"
+        android:text="OBSTACLE LIST"
+        android:id="@+id/TextView_ObstacleHeaderLabel"
+        android:paddingHorizontal="25dp"
+        android:textSize="20dp"
+        />
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/EditTextObstacleXCoord"
+        android:inputType="number"
+        android:hint="Obstacle X Coord"
+        android:paddingHorizontal="25dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/EditTextObstacleYCoord"
+        app:layout_constraintTop_toBottomOf="@id/TextView_ObstacleHeaderLabel"/>
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/EditTextObstacleYCoord"
+        android:inputType="number"
+        android:hint="Obstacle Y Coord"
+        android:paddingHorizontal="25dp"
+        app:layout_constraintStart_toEndOf="@id/EditTextObstacleXCoord"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/TextView_ObstacleHeaderLabel"/>
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/EditTextObstacleID"
+        android:inputType="number"
+        android:hint="Obstacle ID"
+        android:paddingHorizontal="25dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/EditTextObstacleD"
+        app:layout_constraintTop_toBottomOf="@id/EditTextObstacleXCoord"/>
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/EditTextObstacleD"
+        android:inputType="number"
+        android:hint="Obstacle D"
+        android:paddingHorizontal="25dp"
+        app:layout_constraintStart_toEndOf="@id/EditTextObstacleID"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/EditTextObstacleXCoord"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_addObstacleToList"
+        app:layout_constraintTop_toBottomOf="@id/EditTextObstacleD"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Add Obstacle"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:id="@+id/RecyclerView_ObstacleList"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_addObstacleToList">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
