@@ -2,7 +2,6 @@ package com.application.controller.maze
 
 import android.graphics.Color
 import android.content.ClipData
-import android.icu.lang.UCharacter.getDirection
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
@@ -16,10 +15,8 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.application.controller.API.APIResponseInstructions
-import com.application.controller.API.APITestActivity
 import com.application.controller.CommunicationActivity
 import com.application.controller.R
 import com.application.controller.spinner.ObstacleSpinnerAdapter
@@ -27,11 +24,9 @@ import com.application.controller.spinner.ObstacleSelectorAdapter
 import kotlinx.coroutines.*
 
 //BluetoothService
-import com.application.controller.bluetooth.BluetoothService
 
 //libraries for Json Parsing:
 import org.json.JSONObject
-import org.json.JSONArray
 
 class MazeFragment : Fragment() {
 
@@ -80,7 +75,6 @@ class MazeFragment : Fragment() {
 
         // Define obstacle images
         val obstacleImages = listOf(
-            R.drawable.obs_normal,
             R.drawable.obs_up,
             R.drawable.obs_down,
             R.drawable.obs_left,
@@ -92,7 +86,6 @@ class MazeFragment : Fragment() {
         )
 
         val obstacleNames = listOf(
-            "Normal Obstacle",
             "Obstacle facing Up",
             "Obstacle facing Down",
             "Obstacle facing Left",
@@ -113,15 +106,22 @@ class MazeFragment : Fragment() {
         // Handle spinner selection changes for SelectObstacleType
         spinnerSelectObstacleType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val obstacleNames = listOf("Normal", "Up", "Down", "Left", "Right")
-                val obstacleType = obstacleNames[position]
+                val obstacleNames = listOf("Up", "Down", "Left", "Right")
+                val obstacleType = obstacleNames.getOrNull(position) ?: "Up" // Default to Up if invalid
 
-                Toast.makeText(requireContext(), "$obstacleType is selected", Toast.LENGTH_SHORT).show()
-                mazeView.setSelectedObstacleType(obstacleType) // Update the selected type
+                val obstacleDirection = mazeView.getObstacleDirection(obstacleType) // Get correct direction
+
+                Toast.makeText(requireContext(), "$obstacleType selected (Direction: $obstacleDirection°)", Toast.LENGTH_SHORT).show()
+
+                mazeView.setSelectedObstacleType(obstacleType) // ✅ Update the selected type
+                mazeView.setSelectedObstacleDirection(obstacleDirection) // ✅ Update the direction too
+
+                Log.d("MazeFragment", "Obstacle selected: $obstacleType with direction: $obstacleDirection")
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+
 
         // Set listener to update obstacle ID
         spinnerObstacleType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -220,10 +220,10 @@ class MazeFragment : Fragment() {
             val parsedTargets = parseTargetData(targetData) // Parse multiple target IDs
 
             if (parsedTargets.isNotEmpty()) {
-                for ((targetId, newId) in parsedTargets) {
-                    Log.d("MazeFragment", "Updating obstacle with ID: $targetId to New ID: $newId")
-                    mazeView.updateObstacleTarget(targetId, newId)
-                }
+                Log.d("MazeFragment", "Updating ${parsedTargets.size} obstacles...")
+
+                // Pass the entire list at once
+                mazeView.updateObstacleTarget(parsedTargets)
             } else {
                 Toast.makeText(requireContext(), "Invalid Target Data", Toast.LENGTH_SHORT).show()
             }
@@ -402,30 +402,32 @@ class MazeFragment : Fragment() {
     }
 
     fun parseTargetData(targetData: String): List<Pair<Int, Int>> {
-        val targetList = mutableListOf<Pair<Int, Int>>()
+        val targets = mutableListOf<Pair<Int, Int>>()
 
-        val lines = targetData.trim().split("\n") // Split multi-line string
+        // Split the data based on "TARGET,"
+        val lines = targetData.split("TARGET,").map { it.trim() }.filter { it.isNotEmpty() }
+
         for (line in lines) {
-            Log.d("MazeFragment", "Processing Target Line: $line")
+            Log.d("MazeFragment", "Processing Target Line: TARGET, $line")
 
-            val matchResult = Regex("TARGET,\\s*(\\d+),\\s*(\\d+)").find(line)
-            if (matchResult != null) {
-                val targetId = matchResult.groupValues[1].toInt()
-                val newId = matchResult.groupValues[2].toInt()
+            val parts = line.split(",").map { it.trim() }
+            if (parts.size == 2) {
+                val targetId = parts[0].toIntOrNull()
+                val newId = parts[1].toIntOrNull()
 
-                Log.d("MazeFragment", "Parsed ID: $targetId, New ID: $newId")
-                targetList.add(Pair(targetId, newId))
+                if (targetId != null && newId != null) {
+                    Log.d("MazeFragment", "Parsed ID: $targetId, New ID: $newId")
+                    targets.add(Pair(targetId, newId))
+                } else {
+                    Log.e("MazeFragment", "Failed to parse target data: TARGET, $line")
+                }
             } else {
-                Log.e("MazeFragment", "Failed to parse target data: $line")
+                Log.e("MazeFragment", "Invalid Target Data Format: TARGET, $line")
             }
         }
 
-        return targetList
+        return targets
     }
-
-
-
-
 
     private fun getJsonFromApi(): String {
         // Mocking the API response, replace with actual API call
