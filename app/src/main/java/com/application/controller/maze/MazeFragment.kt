@@ -229,6 +229,27 @@ class MazeFragment : Fragment() {
             }
         }
 
+       fun getRobotDataFromBluetooth(): String {
+            return CommunicationActivity.getLatestMessage() // Fetch latest message
+        }
+
+        // TODO: Add C10 button to handle robot updates via Bluetooth
+        view.findViewById<Button>(R.id.C10).setOnClickListener {
+            val robotData = getRobotDataFromBluetooth() // Fetch latest robot info from Bluetooth
+            Log.d("MazeFragment", "C10 clicked. Robot Data: $robotData")
+
+            val parsedRobotData = parseRobotData(robotData) // Parse the received data
+
+            if (parsedRobotData != null) {
+                val (x, y, direction) = parsedRobotData
+                Log.d("MazeFragment", "Updating Robot Position -> X: $x, Y: $y, Dir: $direction°")
+                mazeView.updateRobotPosition(x, y, direction) // ✅ Update robot in MazeView
+            } else {
+                Toast.makeText(requireContext(), "Invalid Robot Data", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+
 
 
         // Reference the communication log TextView
@@ -505,6 +526,34 @@ class MazeFragment : Fragment() {
         return CommunicationActivity.getLatestMessage()
         // This will return the latest message received via Bluetooth.
     }
+
+    private fun parseRobotData(robotData: String): Triple<Int, Int, Int>? {
+        // Expected format: "ROBOT, x, y, direction"
+        val parts = robotData.split(",").map { it.trim() }
+
+        if (parts.size == 4 && parts[0] == "ROBOT") {
+            val x = parts[1].toIntOrNull() // Convert x to integer
+            val y = parts[2].toIntOrNull() // Convert y to integer
+            val directionString = parts[3]
+
+            // Validate extracted values
+            if (x != null && y != null) {
+                val direction = when (directionString) {
+                    "N" -> 0    // Facing UP
+                    "E" -> 90   // Facing RIGHT
+                    "S" -> 180  // Facing DOWN
+                    "W" -> 270  // Facing LEFT
+                    else -> return null // Invalid direction
+                }
+
+                return Triple(x, y, direction) // ✅ Return parsed values
+            }
+        }
+
+        Log.e("MazeFragment", "❌ Failed to parse Robot Data: $robotData")
+        return null // Return null if parsing fails
+    }
+
 
 
 }

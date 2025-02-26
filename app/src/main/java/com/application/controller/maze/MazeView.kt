@@ -157,14 +157,24 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     }
 
     private fun drawRobot(canvas: Canvas) {
-        val robotBitmap = robotBitmaps[robotDirection]
-        robotBitmap?.let {
-            val scaledBitmap = Bitmap.createScaledBitmap(it, gridSize * 3, gridSize * 3, false)
+        val robotBitmap = robotBitmaps[robotDirection] // Get correct bitmap for direction
+
+        if (robotBitmap != null) {
+            val scaledBitmap = Bitmap.createScaledBitmap(robotBitmap, gridSize * 3, gridSize * 3, false)
             val left = (robotX - 1) * gridSize + leftMargin
             val top = (ROW_NUM - robotY - 2) * gridSize
-            canvas.drawBitmap(scaledBitmap, left.toFloat(), top.toFloat(), null)
+
+            // 🛠 Ensure robot stays within grid bounds
+            if (robotX in 0 until COLUMN_NUM && robotY in 0 until ROW_NUM) {
+                canvas.drawBitmap(scaledBitmap, left.toFloat(), top.toFloat(), null)
+            } else {
+                Log.e("MazeView", "❌ Robot Position Out of Bounds -> X: $robotX, Y: $robotY")
+            }
+        } else {
+            Log.e("MazeView", "❌ Robot Bitmap Not Found for Direction: $robotDirection°")
         }
     }
+
 
     private fun drawLabels(canvas: Canvas) {
         val labelOffset = gridSize * 0.4f
@@ -281,22 +291,25 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         }
     }
 
-
+    private fun getRobotDataFromBluetooth(): String {
+        return CommunicationActivity.getLatestMessage() // Fetch latest message
+    }
 
     fun updateRobotPosition(x: Int, y: Int, direction: Int) {
-        Log.d("MazeDebug", "Updating robot to ($x, $y) with direction: $direction")
+        Log.d("MazeView", "Updating Robot Position -> X: $x, Y: $y, Dir: $direction°")
 
+        // ✅ Ensure the position is valid before updating
         if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM) {
-            saveState()
+            saveState() // Save previous state for undo
             robotX = x
             robotY = y
             robotDirection = direction
-            pathMap.add(Pair(x, y))
-            invalidate() // Redraw the view
+            invalidate() // ✅ Redraw the view
         } else {
-            Log.e("MazeDebug", "Invalid position! ($x, $y) out of bounds.")
+            Log.e("MazeView", "❌ Invalid Position -> X: $x, Y: $y is out of bounds")
         }
     }
+
 
 
     fun setRobotPosition(x: Int, y: Int, direction: Int) {
@@ -598,6 +611,8 @@ fun resetMaze() {
         selectedObstacleDirection = direction
         Log.d("MazeView", "Selected Obstacle Direction updated to: $selectedObstacleDirection°")
     }
+
+
 
 
 }
