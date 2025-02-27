@@ -2,8 +2,8 @@ package com.application.controller.maze
 
 import android.graphics.Color
 import android.content.ClipData
-import android.icu.lang.UCharacter.getDirection
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -15,10 +15,8 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.application.controller.API.APIResponseInstructions
-import com.application.controller.API.APITestActivity
 import com.application.controller.CommunicationActivity
 import com.application.controller.R
 import com.application.controller.spinner.ObstacleSpinnerAdapter
@@ -26,11 +24,9 @@ import com.application.controller.spinner.ObstacleSelectorAdapter
 import kotlinx.coroutines.*
 
 //BluetoothService
-import com.application.controller.bluetooth.BluetoothService
 
 //libraries for Json Parsing:
 import org.json.JSONObject
-import org.json.JSONArray
 
 class MazeFragment : Fragment() {
 
@@ -79,7 +75,6 @@ class MazeFragment : Fragment() {
 
         // Define obstacle images
         val obstacleImages = listOf(
-            R.drawable.obs_normal,
             R.drawable.obs_up,
             R.drawable.obs_down,
             R.drawable.obs_left,
@@ -91,7 +86,6 @@ class MazeFragment : Fragment() {
         )
 
         val obstacleNames = listOf(
-            "Normal Obstacle",
             "Obstacle facing Up",
             "Obstacle facing Down",
             "Obstacle facing Left",
@@ -112,15 +106,22 @@ class MazeFragment : Fragment() {
         // Handle spinner selection changes for SelectObstacleType
         spinnerSelectObstacleType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val obstacleNames = listOf("Normal", "Up", "Down", "Left", "Right")
-                val obstacleType = obstacleNames[position]
+                val obstacleNames = listOf("Up", "Down", "Left", "Right")
+                val obstacleType = obstacleNames.getOrNull(position) ?: "Up" // Default to Up if invalid
 
-                Toast.makeText(requireContext(), "$obstacleType is selected", Toast.LENGTH_SHORT).show()
-                mazeView.setSelectedObstacleType(obstacleType) // Update the selected type
+                val obstacleDirection = mazeView.getObstacleDirection(obstacleType) // Get correct direction
+
+                Toast.makeText(requireContext(), "$obstacleType selected (Direction: $obstacleDirection°)", Toast.LENGTH_SHORT).show()
+
+                mazeView.setSelectedObstacleType(obstacleType) // ✅ Update the selected type
+                mazeView.setSelectedObstacleDirection(obstacleDirection) // ✅ Update the direction too
+
+                Log.d("MazeFragment", "Obstacle selected: $obstacleType with direction: $obstacleDirection")
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+
 
         // Set listener to update obstacle ID
         spinnerObstacleType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -208,6 +209,70 @@ class MazeFragment : Fragment() {
                     bluetoothStatusTextView.text = "Disconnected"
                     bluetoothStatusTextView.setTextColor(Color.RED) // Change to red if disconnected
                 }
+            }
+        }
+        //TODO C9 button
+
+        view.findViewById<Button>(R.id.C9).setOnClickListener {
+            val targetData = getTarget() // Fetch target info from Bluetooth
+            Log.d("MazeFragment", "C9 clicked. Target: $targetData")
+
+            val parsedTargets = parseTargetData(targetData) // Parse multiple target IDs
+
+            if (parsedTargets.isNotEmpty()) {
+                Log.d("MazeFragment", "Updating ${parsedTargets.size} obstacles...")
+
+                // Pass the entire list at once
+                mazeView.updateObstacleTarget(parsedTargets)
+            } else {
+                Toast.makeText(requireContext(), "Invalid Target Data", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+       fun getRobotDataFromBluetooth(): String {
+            return CommunicationActivity.getLatestMessage() // Fetch latest message
+        }
+
+        // TODO: Add C10 button to handle robot updates via Bluetooth
+        view.findViewById<Button>(R.id.C10).setOnClickListener {
+            val robotData = getRobotDataFromBluetooth() // Fetch latest robot info from Bluetooth
+            Log.d("MazeFragment", "C10 clicked. Robot Data: $robotData")
+
+            val parsedRobotData = parseRobotData(robotData) // Parse the received data
+
+            if (parsedRobotData != null) {
+                val (x, y, direction) = parsedRobotData
+                Log.d("MazeFragment", "Updating Robot Position -> X: $x, Y: $y, Dir: $direction°")
+                mazeView.updateRobotPosition(x, y, direction) // ✅ Update robot in MazeView
+            } else {
+                Toast.makeText(requireContext(), "Invalid Robot Data", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+
+
+
+        // Reference the communication log TextView
+        val textViewCommsLog: TextView = view.findViewById(R.id.textViewMessageLog)
+        textViewCommsLog.movementMethod = ScrollingMovementMethod()
+
+        // Get the latest communication log
+        val commsLog = CommunicationActivity.getMessageLog()
+        textViewCommsLog.text = commsLog
+
+        // Periodically update the communication log from CommunicationActivity
+        CoroutineScope(Dispatchers.Main).launch {
+            while (isActive) {
+                val newLog = CommunicationActivity.getMessageLog()
+                if (newLog != textViewCommsLog.text.toString()) {
+                    textViewCommsLog.text = newLog
+                    textViewCommsLog.post {
+                        val scrollAmount =
+                            textViewCommsLog.layout.getLineTop(textViewCommsLog.lineCount) - textViewCommsLog.height
+                        textViewCommsLog.scrollTo(0, if (scrollAmount > 0) scrollAmount else 0)
+                    }
+                }
+                delay(500) // Update every 500ms
             }
         }
 
@@ -367,6 +432,33 @@ class MazeFragment : Fragment() {
         //Returns "TARGET, <Obstacle ID>, <Order Number>"
     }
 
+    fun parseTargetData(targetData: String): List<Pair<Int, Int>> {
+        val targets = mutableListOf<Pair<Int, Int>>()
+
+        // Split the data based on "TARGET,"
+        val lines = targetData.split("TARGET,").map { it.trim() }.filter { it.isNotEmpty() }
+
+        for (line in lines) {
+            Log.d("MazeFragment", "Processing Target Line: TARGET, $line")
+
+            val parts = line.split(",").map { it.trim() }
+            if (parts.size == 2) {
+                val targetId = parts[0].toIntOrNull()
+                val newId = parts[1].toIntOrNull()
+
+                if (targetId != null && newId != null) {
+                    Log.d("MazeFragment", "Parsed ID: $targetId, New ID: $newId")
+                    targets.add(Pair(targetId, newId))
+                } else {
+                    Log.e("MazeFragment", "Failed to parse target data: TARGET, $line")
+                }
+            } else {
+                Log.e("MazeFragment", "Invalid Target Data Format: TARGET, $line")
+            }
+        }
+
+        return targets
+    }
 
     private fun getJsonFromApi(): String {
         // Mocking the API response, replace with actual API call
@@ -440,7 +532,37 @@ class MazeFragment : Fragment() {
             setTextColor(if (!deviceName.isNullOrEmpty()) Color.BLUE else Color.RED)
         }
     }
+    private fun getTarget(): String {
+        return CommunicationActivity.getLatestMessage()
+        // This will return the latest message received via Bluetooth.
+    }
 
+    private fun parseRobotData(robotData: String): Triple<Int, Int, Int>? {
+        // Expected format: "ROBOT, x, y, direction"
+        val parts = robotData.split(",").map { it.trim() }
+
+        if (parts.size == 4 && parts[0] == "ROBOT") {
+            val x = parts[1].toIntOrNull() // Convert x to integer
+            val y = parts[2].toIntOrNull() // Convert y to integer
+            val directionString = parts[3]
+
+            // Validate extracted values
+            if (x != null && y != null) {
+                val direction = when (directionString) {
+                    "N" -> 0    // Facing UP
+                    "E" -> 90   // Facing RIGHT
+                    "S" -> 180  // Facing DOWN
+                    "W" -> 270  // Facing LEFT
+                    else -> return null // Invalid direction
+                }
+
+                return Triple(x, y, direction) // ✅ Return parsed values
+            }
+        }
+
+        Log.e("MazeFragment", "❌ Failed to parse Robot Data: $robotData")
+        return null // Return null if parsing fails
+    }
 
 
 
