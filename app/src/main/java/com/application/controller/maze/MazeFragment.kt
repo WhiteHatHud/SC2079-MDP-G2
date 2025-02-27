@@ -263,6 +263,34 @@ class MazeFragment : Fragment() {
         // Periodically update the communication log from CommunicationActivity
         CoroutineScope(Dispatchers.Main).launch {
             while (isActive) {
+                val targetData = getTarget() // Fetch target info from Bluetooth
+                Log.d("MazeFragment", "C9 clicked. Target: $targetData")
+
+                val parsedTargets = parseTargetData(targetData) // Parse multiple target IDs
+
+                if (parsedTargets.isNotEmpty()) {
+                    Log.d("MazeFragment", "Updating ${parsedTargets.size} obstacles...")
+
+                    // Pass the entire list at once
+                    mazeView.updateObstacleTarget(parsedTargets)
+                } else {
+                    Toast.makeText(requireContext(), "Invalid Target Data", Toast.LENGTH_SHORT).show()
+                }
+
+                val robotData = getRobotDataFromBluetooth() // Fetch latest robot info from Bluetooth
+                Log.d("MazeFragment", "C10 clicked. Robot Data: $robotData")
+
+                val parsedRobotData = parseRobotData(robotData) // Parse the received data
+
+                if (parsedRobotData != null) {
+                    val (x, y, direction) = parsedRobotData
+                    Log.d("MazeFragment", "Updating Robot Position -> X: $x, Y: $y, Dir: $direction°")
+                    mazeView.updateRobotPosition(x, y, direction) // ✅ Update robot in MazeView
+                } else {
+                    Toast.makeText(requireContext(), "Invalid Robot Data", Toast.LENGTH_SHORT).show()
+                }
+
+
                 val newLog = CommunicationActivity.getMessageLog()
                 if (newLog != textViewCommsLog.text.toString()) {
                     textViewCommsLog.text = newLog
@@ -425,12 +453,13 @@ class MazeFragment : Fragment() {
     }
 
     //TODO for C9
+    /*
     private fun getTarget():String
     {
         val target=com.application.controller.API.LatestRouteObject.targetObstacle
         return target
         //Returns "TARGET, <Obstacle ID>, <Order Number>"
-    }
+    }*/
 
     fun parseTargetData(targetData: String): List<Pair<Int, Int>> {
         val targets = mutableListOf<Pair<Int, Int>>()
@@ -532,6 +561,7 @@ class MazeFragment : Fragment() {
             setTextColor(if (!deviceName.isNullOrEmpty()) Color.BLUE else Color.RED)
         }
     }
+
     private fun getTarget(): String {
         return CommunicationActivity.getLatestMessage()
         // This will return the latest message received via Bluetooth.
