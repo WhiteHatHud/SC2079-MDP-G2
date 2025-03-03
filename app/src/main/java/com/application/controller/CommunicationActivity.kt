@@ -95,6 +95,8 @@ class CommunicationActivity : AppCompatActivity() {
 
     companion object {
         private const val MAIN_ACTIVITY_TAG = "CommunicationActivity"
+    //list info
+        private val obstacleList = mutableListOf<Map<String, Int>>() //
 
         private const val NO_BLUETOOTH_DEVICE_CONNECTED =
             "There is currently no Bluetooth device connected"
@@ -244,15 +246,14 @@ class CommunicationActivity : AppCompatActivity() {
             CommunicationActivity.Companion.bluetoothService?.sendOutMessage(startFastestPathCommand)
         }
 
-        fun sendStartExplorationCommand() {
-            val startExplorationCommand: String =
-                MessageStrings.TO_ALGORITHM + MessageStrings.START_TASK2
-            Log.d(
-                CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
-                "Sending start exploration command: $startExplorationCommand"
-            )
-            CommunicationActivity.Companion.bluetoothService?.sendOutMessage(startExplorationCommand)
-        }
+    fun sendStartExplorationCommand(jsonMessage: String) {
+        Log.d(
+            CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
+            "Sending start exploration command: $jsonMessage"
+        )
+        CommunicationActivity.Companion.bluetoothService?.sendOutMessage(jsonMessage)
+    }
+
 
         fun sendInitiateCalibrationCommand() {
             val initiateCalibrationCommand: String =
@@ -342,6 +343,8 @@ class CommunicationActivity : AppCompatActivity() {
             CommunicationActivity.Companion.bluetoothService?.sendOutMessage((communicationMessage))
         }
 
+
+
         fun sendAddObstacleMessage(x: Int, y: Int, obsID: Int, obsDirection: Int) {
             val communicationMessage: String = MessageStrings.TO_RASPBERRY_PI +
                     "{\"cat\": \"obstacles\", \"value\": " +
@@ -372,5 +375,31 @@ class CommunicationActivity : AppCompatActivity() {
             )
             CommunicationActivity.Companion.bluetoothService?.sendOutMessage((communicationMessage))
         }
+
+        // ✅ Store obstacles in list instead of sending immediately
+        fun addObstacleToList(x: Int, y: Int, obsID: Int, obsDirection: Int) {
+            obstacleList.add(
+                mapOf("x" to x, "y" to y, "id" to obsID, "d" to obsDirection)
+            )
+            Log.d(MAIN_ACTIVITY_TAG, "Obstacle added to list: x=$x, y=$y, id=$obsID, d=$obsDirection")
+        }
+
+        // ✅ Send all obstacles in a single Bluetooth message
+        fun sendAllObstacles() {
+            if (obstacleList.isNotEmpty()) {
+                val message = """{
+                "cat": "obstacles",
+                "value": {
+                    "obstacles": ${obstacleList.map { it }},
+                    "mode": "0"
+                }
+            }""".trimIndent()
+
+                bluetoothService?.sendOutMessage(message)
+                obstacleList.clear() // ✅ Clear list after sending
+                Log.d(MAIN_ACTIVITY_TAG, "Sent all obstacles: $message")
+            }
+        }
     }
+
 }

@@ -27,6 +27,10 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     // Stores obstacle directions
     private val obstacleDirectionMap: MutableMap<Pair<Int, Int>, Int> = mutableMapOf()
 
+    //Store obstacle in a list
+    private val obstacleList = mutableListOf<Map<String, Int>>()
+
+
     // Paint for grid lines
     private val gridLinePaint = Paint()
     private val emptyGridPaint = Paint()
@@ -430,8 +434,10 @@ fun resetMaze() {
                     if (!obstacleIDMap.containsKey(Pair(x, y))) {
                         addObstacle(x, y, obstacleType) // ✅ Add the correct type
                         val obstacleId = obstacleIDMap[Pair(x, y)] ?: 0
+                        obstacleList.add(
+                            mapOf("x" to x, "y" to y, "id" to obstacleId, "d" to obstacleDirection)
+                        )
                         CommunicationActivity.sendAddObstacleMessage(x, y, obstacleId, obstacleDirection)
-
                         Toast.makeText(context, "Dropped $obstacleType at ($x, $y)", Toast.LENGTH_SHORT).show()
                         Log.d("MazeView", "Obstacle added at: ($x, $y) | Type: $obstacleType | Direction: $obstacleDirection°")
                     } else {
@@ -553,8 +559,8 @@ fun resetMaze() {
             Log.d("MazeView", "Tried to remove obstacle at ($x, $y) but none found")
         }
     }
-    private val targetedObstacles: MutableSet<Pair<Int, Int>> = mutableSetOf()
 
+    private val targetedObstacles: MutableSet<Pair<Int, Int>> = mutableSetOf()
     fun updateObstacleTarget(targets: List<Pair<Int, Int>>) {
         Log.d("MazeView", "Updating multiple obstacles with new IDs...")
         Log.d("MazeView", "Existing Obstacle IDs: ${obstacleIDMap.values}")
@@ -611,7 +617,23 @@ fun resetMaze() {
         selectedObstacleDirection = direction
         Log.d("MazeView", "Selected Obstacle Direction updated to: $selectedObstacleDirection°")
     }
+    //Send all obstacles as a batch
 
+    fun sendAllObstacles() {
+        if (obstacleList.isNotEmpty()) {
+            val message = """{
+            "cat": "obstacles",
+            "value": {
+                "obstacles": ${obstacleList.map { it }},
+                "mode": "0"
+            }
+        }""".trimIndent()
+
+            CommunicationActivity.bluetoothService?.sendOutMessage(message)
+            obstacleList.clear() // ✅ Clear list after sending
+            Log.d("MazeView", "Sent all obstacles: $message")
+        }
+    }
 
 
 

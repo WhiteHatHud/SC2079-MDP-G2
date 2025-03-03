@@ -64,6 +64,7 @@ class CommunicationFragment : Fragment() {
         receivedDataClearButton = root.findViewById<Button>(com.application.controller.R.id.receivedDataClearButton)
         textViewCommsLog=root.findViewById<TextView>(com.application.controller.R.id.textViewMessageLog)
         textViewCommsLog.movementMethod = ScrollingMovementMethod()
+
         //textViewCommsLog.movementMethod = ScrollingMovementMethod.getInstance();
        // textViewReceivedStrings.setText(RECEIVED_DATA_PLACEHOLDER)
         textViewReceivedStrings.setText(receivedString)

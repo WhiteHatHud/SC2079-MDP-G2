@@ -69,9 +69,14 @@ class MazeFragment : Fragment() {
 
 
         view.findViewById<Button>(R.id.button_start).setOnClickListener {
-            val jsonString = getJsonFromApi() // Function to get JSON from API
-            parseJsonAndUpdateMaze(jsonString)
+
+            // Create the control message
+            val controlMessage = """{"cat": "control", "value": "start"}"""
+            // Send the message via Bluetooth
+            CommunicationActivity.sendStartExplorationCommand(controlMessage)
+            CommunicationActivity.sendAllObstacles()
         }
+
 
         // Define obstacle images
         val obstacleImages = listOf(
@@ -122,7 +127,6 @@ class MazeFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-
         // Set listener to update obstacle ID
         spinnerObstacleType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
@@ -143,8 +147,6 @@ class MazeFragment : Fragment() {
             }
             return@setOnTouchListener false
         }
-
-
 
         // Handle Undo button
         view.findViewById<Button>(R.id.button_undo).setOnClickListener {
@@ -186,9 +188,6 @@ class MazeFragment : Fragment() {
             findNavController().navigate(R.id.action_MazeFragment_to_BluetoothFragment)
             Toast.makeText(context, "Navigating to COMMS LINK...", Toast.LENGTH_SHORT).show()
         }
-
-
-
 
 
         // Setup Reset button
@@ -250,8 +249,6 @@ class MazeFragment : Fragment() {
         }
 
 
-
-
         // Reference the communication log TextView
         val textViewCommsLog: TextView = view.findViewById(R.id.textViewMessageLog)
         textViewCommsLog.movementMethod = ScrollingMovementMethod()
@@ -267,10 +264,8 @@ class MazeFragment : Fragment() {
                 Log.d("MazeFragment", "C9 clicked. Target: $targetData")
 
                 val parsedTargets = parseTargetData(targetData) // Parse multiple target IDs
-
                 if (parsedTargets.isNotEmpty()) {
                     Log.d("MazeFragment", "Updating ${parsedTargets.size} obstacles...")
-
                     // Pass the entire list at once
                     mazeView.updateObstacleTarget(parsedTargets)
                 } else {
@@ -541,7 +536,6 @@ class MazeFragment : Fragment() {
 }
     """
     }
-
     // All the buttons lol
     //BLUETOOTH CONNECTION:
     fun updateBluetoothStatus(isConnected: Boolean) {
