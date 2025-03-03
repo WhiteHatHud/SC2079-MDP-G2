@@ -263,6 +263,10 @@ class MazeFragment : Fragment() {
         // Periodically update the communication log from CommunicationActivity
         CoroutineScope(Dispatchers.Main).launch {
             while (isActive) {
+                //TODO Clean Up logic, to check for, position updates, Target
+
+
+
                 val targetData = getTarget() // Fetch target info from Bluetooth
                 Log.d("MazeFragment", "C9 clicked. Target: $targetData")
 
@@ -460,6 +464,39 @@ class MazeFragment : Fragment() {
         return target
         //Returns "TARGET, <Obstacle ID>, <Order Number>"
     }*/
+
+    private fun getLatestPosition():String
+    {
+        var latestPosition:String
+        if(com.application.controller.API.LatestRouteObject.positionChangedFlag)
+        {
+            latestPosition=com.application.controller.API.LatestRouteObject.latestRobotPosition
+            com.application.controller.API.LatestRouteObject.positionChangedFlag=false
+        }
+        else
+        {
+            latestPosition=""
+        }
+        return latestPosition
+    }
+    private fun getLatestTarget():String
+    {
+        var latestTarget:String
+        if(com.application.controller.API.LatestRouteObject.newTargetObstacleFlag)
+        {
+            latestTarget=com.application.controller.API.LatestRouteObject.targetObstacle
+            com.application.controller.API.LatestRouteObject.newTargetObstacleFlag=false
+        }
+        else
+        {
+            latestTarget=""
+        }
+        return latestTarget
+    }
+    private fun getRecognisedImageList():MutableList<String>
+    {
+        return com.application.controller.API.LatestRouteObject.foundImageID
+    }
 
     fun parseTargetData(targetData: String): List<Pair<Int, Int>> {
         val targets = mutableListOf<Pair<Int, Int>>()

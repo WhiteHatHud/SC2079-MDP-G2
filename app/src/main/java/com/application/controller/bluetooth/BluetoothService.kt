@@ -9,9 +9,11 @@ import android.widget.Toast
 
 import com.application.controller.API.APIPathData
 import com.application.controller.API.APIResponseInstructions
+import com.application.controller.API.ObstacleData
 import com.application.controller.MainActivity
 import com.google.android.material.color.utilities.Blend
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import java.util.Locale
 import kotlin.text.startsWith
 import kotlin.text.substring
@@ -93,6 +95,26 @@ class BluetoothService {
         val byteArray=jsonString.toByteArray()
         bluetoothCommunicationService.write(byteArray)
 
+    }
+
+    fun sendOutDataObstacle(data:List<ObstacleData>)
+    {
+        Log.d(
+            BLUETOOTH_SERVICE_TAG,
+            "Sending Data Type: Obstacle"
+        )
+        val obstaclesWrapper = ObstaclesWrapper(data, "0")
+
+        // Create an ObstaclesContainer object
+        val obstaclesContainer = ObstaclesContainer("obstacles", obstaclesWrapper)
+
+        // Create a Gson instance
+        val gson = Gson()
+
+        // Convert the ObstaclesContainer object to a JSON string
+        val jsonString = gson.toJson(obstaclesContainer)
+        val byteArray=jsonString.toByteArray()
+        bluetoothCommunicationService.write(byteArray)
     }
 
 

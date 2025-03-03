@@ -177,9 +177,9 @@ class CommunicationFragment : Fragment() {
                         textViewReceivedStrings.setText(CommunicationActivity.getLatestMessage())
 
                             var parseString=CommunicationActivity.getLatestMessage()
-                            val regex = Regex("FOUND IMG(\\d{2})")
-                            val regexPostionInfo= Regex("""^ROBOT,\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*([NSEW])$""")
-                            val regexTarget = Regex("""^TARGET,\s*(\d+)\s*,\s*(\d+)\s*$""")
+                            val regex = Regex("FOUND IMG(\\d{2})") //Regex for Image ID found
+                            val regexPostionInfo= Regex("""^ROBOT,\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*([NSEW])$""") //Regex for new bot position
+                            val regexTarget = Regex("""^TARGET,\s*(\d+)\s*,\s*(\d+)\s*$""") //Regex for new target position
 
 
                             val matchResult = regex.find(parseString)
@@ -202,7 +202,11 @@ class CommunicationFragment : Fragment() {
                                 }
                             }
                             if (matchResult != null) {
-                                val id = matchResult.groupValues[1] // Extract the captured group (the two digits)
+                                val id:Int = matchResult.groupValues[1].toInt() // Extract the captured group (the two digits)
+                                if (id>10&&id<41)//Verify that int is within range on constant
+                                {
+
+                                }
                                 println("Found ID: $id in string: $parseString")
                                 textViewPersistentCommunicationString2.setText("Robot has now identified ID: $id")
                                 // Use the id variable here for later processing
@@ -212,6 +216,7 @@ class CommunicationFragment : Fragment() {
                             if(matchTarget!=null)
                             {
                                 com.application.controller.API.LatestRouteObject.targetObstacle=parseString
+                                com.application.controller.API.LatestRouteObject.newTargetObstacleFlag=true
                             }
                             else
                             {
@@ -256,6 +261,40 @@ class CommunicationFragment : Fragment() {
 
         private const val RECEIVE_DATA_UPDATE_DELAY = 0
         private const val RECEIVE_DATA_UPDATE_INTERVAL = 500
+
+        val IMAGE_ID_LOOKUP:
+                Map<Int,String> = mapOf(
+                    11 to "one",
+                    12 to "two",
+                    13 to "three",
+                    14 to "four",
+                    15 to "five",
+                    16 to "six",
+                    17 to "seven",
+                    18 to "eight",
+                    19 to "nine",
+                    20 to "Alphabet A",
+                    21 to "Alphabet B",
+                    22 to "Alphabet C",
+                    23 to "Alphabet D",
+                    24 to "Alphabet E",
+                    25 to "Alphabet F",
+                    26 to "Alphabet G",
+                    27 to "Alphabet H",
+                    28 to "Alphabet S",
+                    29 to "Alphabet T",
+                    30 to "Alphabet U",
+                    31 to "Alphabet V",
+                    32 to "Alphabet W",
+                    33 to "Alphabet X",
+                    34 to "Alphabet Y",
+                    35 to "Alphabet Z",
+                    36 to "Up arrow",
+                    37 to "Down arrow",
+                    38 to "Right arrow",
+                    39 to "Left arrow",
+                    40 to "Stop"
+                )
     }
 
 }
