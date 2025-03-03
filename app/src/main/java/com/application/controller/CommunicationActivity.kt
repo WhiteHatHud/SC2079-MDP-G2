@@ -9,10 +9,16 @@ import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.ui.AppBarConfiguration
+import com.application.controller.API.ObstacleData
 import com.application.controller.bluetooth.BluetoothSendData
 import com.application.controller.bluetooth.BluetoothService
+import com.application.controller.bluetooth.BluetoothService.Companion.BLUETOOTH_SERVICE_TAG
+import com.application.controller.bluetooth.BluetoothService.Companion.bluetoothCommunicationService
+import com.application.controller.bluetooth.ObstaclesContainer
+import com.application.controller.bluetooth.ObstaclesWrapper
 import com.application.controller.maze.MazeFragment
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 
 
 class CommunicationActivity : AppCompatActivity() {
@@ -28,10 +34,11 @@ class CommunicationActivity : AppCompatActivity() {
 
         setContentView(com.application.controller.R.layout.activity_communication)
 
-       // val toolbar: Toolbar = findViewById(R.id.toolbar)
-      //  setSupportActionBar(toolbar)
+        // val toolbar: Toolbar = findViewById(R.id.toolbar)
+        //  setSupportActionBar(toolbar)
 
-        val BackToBluetoothButton = findViewById<Button>(com.application.controller.R.id.button_fromCommunicationToBluetooth)
+        val BackToBluetoothButton =
+            findViewById<Button>(com.application.controller.R.id.button_fromCommunicationToBluetooth)
         BackToBluetoothButton.setOnClickListener {
             finish()
         }
@@ -63,13 +70,13 @@ class CommunicationActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
 
         mAppBarConfiguration = Builder(
-            R.id.nav_maze, R.id.nav_bluetooth, R.id.nav_communication
+        R.id.nav_maze, R.id.nav_bluetooth, R.id.nav_communication
         )
-            .setDrawerLayout(drawer)
-            .build()
+        .setDrawerLayout(drawer)
+        .build()
 
 
-           val navController = findNavController(this, R.id.nav_host_fragment)
+        val navController = findNavController(this, R.id.nav_host_fragment)
 
 
 
@@ -79,23 +86,24 @@ class CommunicationActivity : AppCompatActivity() {
     }
 
 
-/**
+    /**
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
-        return true
+    // Inflate the menu; this adds items to the action bar if it is present.
+    menuInflater.inflate(R.menu.main, menu)
+    return true
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(this, R.id.nav_host_fragment)
-        return (navigateUp(navController, mAppBarConfiguration!!)
-                || super.onSupportNavigateUp())
+    val navController = findNavController(this, R.id.nav_host_fragment)
+    return (navigateUp(navController, mAppBarConfiguration!!)
+    || super.onSupportNavigateUp())
     }
-*/
+     */
 
     companion object {
         private const val MAIN_ACTIVITY_TAG = "CommunicationActivity"
-    //list info
+
+        //list info
         private val obstacleList = mutableListOf<Map<String, Int>>() //
 
         private const val NO_BLUETOOTH_DEVICE_CONNECTED =
@@ -105,35 +113,39 @@ class CommunicationActivity : AppCompatActivity() {
         private lateinit var bluetoothStatusFloatingActionButton: Button
 
         var bluetoothService: BluetoothService? = null
-         //   get() = CommunicationActivity.Companion.bluetoothService
+        //   get() = CommunicationActivity.Companion.bluetoothService
 
         var receivedTextStrings: String? = null
-          //  get() = CommunicationActivity.Companion.receivedTextStrings
-/*
+
+        //  get() = CommunicationActivity.Companion.receivedTextStrings
+        /*
     fun getBluetoothService(): BluetoothService {
         return bluetoothService!!
     }*/
         fun updateBluetoothStatusFloatingActionButtonDisplay() {
-              val isConnected = CommunicationActivity.Companion.bluetoothService?.isConnectedToBluetoothDevice == true
-              val deviceName = CommunicationActivity.bluetoothService?.connectedDeviceName
+            val isConnected =
+                CommunicationActivity.Companion.bluetoothService?.isConnectedToBluetoothDevice == true
+            val deviceName = CommunicationActivity.bluetoothService?.connectedDeviceName
 
-              // Update FloatingActionButton color
-              CommunicationActivity.Companion.bluetoothStatusFloatingActionButton?.setBackgroundTintList(
-                  ColorStateList.valueOf(if (isConnected) Color.CYAN else Color.LTGRAY)
-              )
+            // Update FloatingActionButton color
+            CommunicationActivity.Companion.bluetoothStatusFloatingActionButton?.setBackgroundTintList(
+                ColorStateList.valueOf(if (isConnected) Color.CYAN else Color.LTGRAY)
+            )
 
-              CommunicationActivity.bluetoothStatusFloatingActionButton?.setBackgroundTintList(
-                  ColorStateList.valueOf(if (isConnected) Color.CYAN else Color.LTGRAY)
-              )
+            CommunicationActivity.bluetoothStatusFloatingActionButton?.setBackgroundTintList(
+                ColorStateList.valueOf(if (isConnected) Color.CYAN else Color.LTGRAY)
+            )
 
-              // Find the current MazeFragment and update the Bluetooth status TextView
-              val activity = CommunicationActivity.Companion.bluetoothStatusFloatingActionButton?.context as? AppCompatActivity
-              val fragment = activity?.supportFragmentManager?.findFragmentByTag("MazeFragment") as? MazeFragment
+            // Find the current MazeFragment and update the Bluetooth status TextView
+            val activity =
+                CommunicationActivity.Companion.bluetoothStatusFloatingActionButton?.context as? AppCompatActivity
+            val fragment =
+                activity?.supportFragmentManager?.findFragmentByTag("MazeFragment") as? MazeFragment
 
-              fragment?.updateBluetoothStatus(isConnected)
-              fragment?.updateBluetoothConnectedDevice(deviceName)
+            fragment?.updateBluetoothStatus(isConnected)
+            fragment?.updateBluetoothConnectedDevice(deviceName)
 
-          }
+        }
 
         fun updateReceivedTextStrings(newReceivedString: String) {
             CommunicationActivity.Companion.receivedTextStrings = """
@@ -150,30 +162,25 @@ class CommunicationActivity : AppCompatActivity() {
             CommunicationActivity.Companion.receivedTextStrings = ""
         }
 
-    fun getReceivedTextStrings1(): String {
-        return receivedTextStrings!!
-    }
+        fun getReceivedTextStrings1(): String {
+            return receivedTextStrings!!
+        }
 
-    fun getLatestMessage(): String
-    {
-         if(bluetoothService?.latestMessage !=null) {
-             return bluetoothService?.latestMessage!!
-         }
-        else
-        {
-            return "No message received"
+        fun getLatestMessage(): String {
+            if (bluetoothService?.latestMessage != null) {
+                return bluetoothService?.latestMessage!!
+            } else {
+                return "No message received"
+            }
         }
-    }
 
-    fun getMessageLog():String{
-        if(bluetoothService?.persistentMessageLog !=null) {
-            return bluetoothService?.persistentMessageLog!!
+        fun getMessageLog(): String {
+            if (bluetoothService?.persistentMessageLog != null) {
+                return bluetoothService?.persistentMessageLog!!
+            } else {
+                return "No messages to display"
+            }
         }
-        else
-        {
-            return "No messages to display"
-        }
-    }
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -233,7 +240,9 @@ class CommunicationActivity : AppCompatActivity() {
                 CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
                 "Sending maze update request message: $mazeUpdateRequestMessage"
             )
-            CommunicationActivity.Companion.bluetoothService?.sendOutMessage(mazeUpdateRequestMessage)
+            CommunicationActivity.Companion.bluetoothService?.sendOutMessage(
+                mazeUpdateRequestMessage
+            )
         }
 
         fun sendStartFastestPathCommand() {
@@ -246,13 +255,13 @@ class CommunicationActivity : AppCompatActivity() {
             CommunicationActivity.Companion.bluetoothService?.sendOutMessage(startFastestPathCommand)
         }
 
-    fun sendStartExplorationCommand(jsonMessage: String) {
-        Log.d(
-            CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
-            "Sending start exploration command: $jsonMessage"
-        )
-        CommunicationActivity.Companion.bluetoothService?.sendOutMessage(jsonMessage)
-    }
+        fun sendStartExplorationCommand(jsonMessage: String) {
+            Log.d(
+                CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
+                "Sending start exploration command: $jsonMessage"
+            )
+            CommunicationActivity.Companion.bluetoothService?.sendOutMessage(jsonMessage)
+        }
 
 
         fun sendInitiateCalibrationCommand() {
@@ -262,7 +271,9 @@ class CommunicationActivity : AppCompatActivity() {
                 CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
                 "Sending initiate calibration command: $initiateCalibrationCommand"
             )
-            CommunicationActivity.Companion.bluetoothService?.sendOutMessage(initiateCalibrationCommand)
+            CommunicationActivity.Companion.bluetoothService?.sendOutMessage(
+                initiateCalibrationCommand
+            )
         }
 
         fun sendResetCommand() {
@@ -301,7 +312,9 @@ class CommunicationActivity : AppCompatActivity() {
                 CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
                 "Sending enable emergency brake command: $enableEmergencyBrakeCommand"
             )
-            CommunicationActivity.Companion.bluetoothService?.sendOutMessage(enableEmergencyBrakeCommand)
+            CommunicationActivity.Companion.bluetoothService?.sendOutMessage(
+                enableEmergencyBrakeCommand
+            )
         }
 
         fun sendDisableEmergencyBrakeCommand() {
@@ -311,7 +324,9 @@ class CommunicationActivity : AppCompatActivity() {
                 CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
                 "Sending disable emergency brake command: $disableEmergencyBrakeCommand"
             )
-            CommunicationActivity.Companion.bluetoothService?.sendOutMessage(disableEmergencyBrakeCommand)
+            CommunicationActivity.Companion.bluetoothService?.sendOutMessage(
+                disableEmergencyBrakeCommand
+            )
         }
 
         fun sendCommunicationMessage(message: String) {
@@ -323,14 +338,14 @@ class CommunicationActivity : AppCompatActivity() {
             CommunicationActivity.Companion.bluetoothService?.sendOutMessage(communicationMessage)
         }
 
-    fun sendCommunicationData(message: BluetoothSendData) {
-        val communicationMessage: String = MessageStrings.TO_RASPBERRY_PI + message.value
-        Log.d(
-            CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
-            "Sending communication message: $communicationMessage"
-        )
-        CommunicationActivity.Companion.bluetoothService?.sendOutData(message)
-    }
+        fun sendCommunicationData(message: BluetoothSendData) {
+            val communicationMessage: String = MessageStrings.TO_RASPBERRY_PI + message.value
+            Log.d(
+                CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
+                "Sending communication message: $communicationMessage"
+            )
+            CommunicationActivity.Companion.bluetoothService?.sendOutData(message)
+        }
 
         fun sendMoveObstacleMessage(oldx: Int, oldy: Int, newx: Int, newy: Int, obsID: Int) {
             val communicationMessage: String =
@@ -342,7 +357,6 @@ class CommunicationActivity : AppCompatActivity() {
             )
             CommunicationActivity.Companion.bluetoothService?.sendOutMessage((communicationMessage))
         }
-
 
 
         fun sendAddObstacleMessage(x: Int, y: Int, obsID: Int, obsDirection: Int) {
@@ -366,40 +380,44 @@ class CommunicationActivity : AppCompatActivity() {
             CommunicationActivity.Companion.bluetoothService?.sendOutMessage((communicationMessage))
         }
 
-        fun sendAllObstaclesMessage(obstacleJson: StringBuilder) {
-            val communicationMessage: String =
-                MessageStrings.TO_RASPBERRY_PI + obstacleJson.toString()
-            Log.d(
-                CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
-                "Sending all obstacles message: $communicationMessage\n"
-            )
-            CommunicationActivity.Companion.bluetoothService?.sendOutMessage((communicationMessage))
+        fun sendAllObstacleMessage(obsList: List<ObstacleData>) {
+            CommunicationActivity.Companion.bluetoothService?.sendOutDataObstacle(obsList)
         }
 
-        // ✅ Store obstacles in list instead of sending immediately
-        fun addObstacleToList(x: Int, y: Int, obsID: Int, obsDirection: Int) {
-            obstacleList.add(
-                mapOf("x" to x, "y" to y, "id" to obsID, "d" to obsDirection)
-            )
-            Log.d(MAIN_ACTIVITY_TAG, "Obstacle added to list: x=$x, y=$y, id=$obsID, d=$obsDirection")
-        }
 
-        // ✅ Send all obstacles in a single Bluetooth message
-        fun sendAllObstacles() {
+
+        fun sendObstacleDropMessage(obstacleList: List<Map<String, Int>>) {
             if (obstacleList.isNotEmpty()) {
-                val message = """{
-                "cat": "obstacles",
-                "value": {
-                    "obstacles": ${obstacleList.map { it }},
-                    "mode": "0"
-                }
-            }""".trimIndent()
+                Log.d("CommunicationActivity", "Sending Obstacle Drop Message...")
 
-                bluetoothService?.sendOutMessage(message)
-                obstacleList.clear() // ✅ Clear list after sending
-                Log.d(MAIN_ACTIVITY_TAG, "Sent all obstacles: $message")
+                // Convert to a list of ObstacleData objects
+                val obstacleDataList = obstacleList.map {
+                    ObstacleData(
+                        x = it["x"] ?: 0,
+                        y = it["y"] ?: 0,
+                        id = it["id"] ?: 0,
+                        d = it["d"] ?: 0
+                    )
+                }
+
+                // Convert to JSON string in required format
+                val gson = Gson()
+                val obstaclesWrapper = ObstaclesWrapper(obstacleDataList, "0")
+                val obstaclesContainer = ObstaclesContainer("obstacles", obstaclesWrapper)
+                val jsonString = gson.toJson(obstaclesContainer)
+
+                // Log the message before sending
+                Log.d(
+                    CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
+                    "Sending obstacle drop message: $jsonString\n"
+                )
+
+                // Send the JSON-formatted message via Bluetooth
+                CommunicationActivity.Companion.bluetoothService?.sendOutMessage(jsonString)
+            } else {
+                Log.d("CommunicationActivity", "No obstacles to send")
             }
         }
-    }
 
+    }
 }

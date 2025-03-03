@@ -352,7 +352,7 @@ class BluetoothService {
     **/
     companion object {
         private const val BLUETOOTH_SERVICE_HANDLER_TAG = "BluetoothService Handler"
-        private const val BLUETOOTH_SERVICE_TAG = "BluetoothService"
+        const val BLUETOOTH_SERVICE_TAG = "BluetoothService"
 
         private const val DEVICE_CONNECTION_WAS_LOST = "device connection was lost"
 
@@ -366,7 +366,7 @@ class BluetoothService {
         private const val LEVEL_2_SEPARATOR = ","
         private const val LEVEL_3_SEPARATOR = ":"
 
-        private lateinit var bluetoothCommunicationService: BluetoothCommunicationService
+        lateinit var bluetoothCommunicationService: BluetoothCommunicationService
         private lateinit var bluetoothAdapter: BluetoothAdapter
     }
 }

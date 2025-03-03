@@ -19,6 +19,7 @@ import androidx.navigation.fragment.findNavController
 import com.application.controller.API.APIResponseInstructions
 import com.application.controller.CommunicationActivity
 import com.application.controller.R
+import com.application.controller.bluetooth.BluetoothService
 import com.application.controller.spinner.ObstacleSpinnerAdapter
 import com.application.controller.spinner.ObstacleSelectorAdapter
 import kotlinx.coroutines.*
@@ -66,17 +67,14 @@ class MazeFragment : Fragment() {
         spinnerObstacleType = view.findViewById(R.id.spinner_obstacle_type)
         spinnerSelectObstacleType = view.findViewById(R.id.spinner_select_obstacle_type)
 
-
-
         view.findViewById<Button>(R.id.button_start).setOnClickListener {
 
             // Create the control message
             val controlMessage = """{"cat": "control", "value": "start"}"""
             // Send the message via Bluetooth
             CommunicationActivity.sendStartExplorationCommand(controlMessage)
-            CommunicationActivity.sendAllObstacles()
+            CommunicationActivity.sendAllObstacleMessage()
         }
-
 
         // Define obstacle images
         val obstacleImages = listOf(
@@ -521,6 +519,9 @@ class MazeFragment : Fragment() {
         return targets
     }
 
+    fun mapToObstacleData(map: Map<Pair<Int, Int>> )
+
+
     private fun getJsonFromApi(): String {
         // Mocking the API response, replace with actual API call
        var latestAPIResponse: APIResponseInstructions?=com.application.controller.API.LatestRouteObject.latestAPIInfo
@@ -623,6 +624,19 @@ class MazeFragment : Fragment() {
 
         Log.e("MazeFragment", "❌ Failed to parse Robot Data: $robotData")
         return null // Return null if parsing fails
+    }
+
+    fun addObstacleToList(x: Int, y: Int, obstacleId: Int, obstacleDirection: Int) {
+        val obstacleData = mapOf(
+            "x" to x,
+            "y" to y,
+            "id" to obstacleId,
+            "d" to obstacleDirection
+        )
+
+        obstacleList.add(obstacleData) // ✅ Store obstacle data in the list
+
+        Log.d("MazeFragment", "Obstacle added to list: $obstacleData")
     }
 
 

@@ -13,6 +13,7 @@ import android.view.DragEvent
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
+import com.application.controller.API.ObstacleData
 import com.application.controller.CommunicationActivity
 import com.application.controller.R
 import java.util.Stack
@@ -22,15 +23,12 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     private var gridSize = 0
     // Increase the left, right, top, and bottom margin for better dragging
     private val outerMargin = 150 // Increase this value for more space
-
+    private val obstacleList = mutableListOf<ObstacleData>()
     //obstacle
     // Stores obstacle directions
     private val obstacleDirectionMap: MutableMap<Pair<Int, Int>, Int> = mutableMapOf()
 
     //Store obstacle in a list
-    private val obstacleList = mutableListOf<Map<String, Int>>()
-
-
     // Paint for grid lines
     private val gridLinePaint = Paint()
     private val emptyGridPaint = Paint()
@@ -434,10 +432,9 @@ fun resetMaze() {
                     if (!obstacleIDMap.containsKey(Pair(x, y))) {
                         addObstacle(x, y, obstacleType) // ✅ Add the correct type
                         val obstacleId = obstacleIDMap[Pair(x, y)] ?: 0
-                        obstacleList.add(
-                            mapOf("x" to x, "y" to y, "id" to obstacleId, "d" to obstacleDirection)
-                        )
-                        CommunicationActivity.sendAddObstacleMessage(x, y, obstacleId, obstacleDirection)
+                        // ✅ Store obstacle in MazeFragment list
+                        addObstacleToList(x,y,obstacleId,obstacleDirection)
+
                         Toast.makeText(context, "Dropped $obstacleType at ($x, $y)", Toast.LENGTH_SHORT).show()
                         Log.d("MazeView", "Obstacle added at: ($x, $y) | Type: $obstacleType | Direction: $obstacleDirection°")
                     } else {
@@ -561,6 +558,8 @@ fun resetMaze() {
     }
 
     private val targetedObstacles: MutableSet<Pair<Int, Int>> = mutableSetOf()
+
+
     fun updateObstacleTarget(targets: List<Pair<Int, Int>>) {
         Log.d("MazeView", "Updating multiple obstacles with new IDs...")
         Log.d("MazeView", "Existing Obstacle IDs: ${obstacleIDMap.values}")
@@ -618,23 +617,15 @@ fun resetMaze() {
         Log.d("MazeView", "Selected Obstacle Direction updated to: $selectedObstacleDirection°")
     }
     //Send all obstacles as a batch
-
-    fun sendAllObstacles() {
-        if (obstacleList.isNotEmpty()) {
-            val message = """{
-            "cat": "obstacles",
-            "value": {
-                "obstacles": ${obstacleList.map { it }},
-                "mode": "0"
-            }
-        }""".trimIndent()
-
-            CommunicationActivity.bluetoothService?.sendOutMessage(message)
-            obstacleList.clear() // ✅ Clear list after sending
-            Log.d("MazeView", "Sent all obstacles: $message")
-        }
+    fun addObstacleToList(x: Int, y: Int, obstacleId: Int, obstacleDirection: Int) {
+        val obstacleData = mapOf(
+            "x" to x,
+            "y" to y,
+            "id" to obstacleId,
+            "d" to obstacleDirection
+        )
+        obstacleList.add(ObstacleData(x, y, obstacleId, obstacleDirection))
     }
-
 
 
 }
