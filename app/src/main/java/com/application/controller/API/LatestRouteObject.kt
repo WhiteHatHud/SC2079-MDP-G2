@@ -5,4 +5,6 @@ object LatestRouteObject {
     var latestRobotPosition:String=""
     var positionChangedFlag:Boolean=false
     var targetObstacle:String=""
+    var newTargetObstacleFlag:Boolean=false
+    var foundImageID:MutableList<String> = mutableListOf()
 }
