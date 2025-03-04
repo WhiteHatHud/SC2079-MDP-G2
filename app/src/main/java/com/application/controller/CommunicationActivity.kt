@@ -322,15 +322,16 @@ class CommunicationActivity : AppCompatActivity() {
             )
             CommunicationActivity.Companion.bluetoothService?.sendOutMessage(communicationMessage)
         }
-
-    fun sendCommunicationData(message: BluetoothSendData) {
-        val communicationMessage: String = MessageStrings.TO_RASPBERRY_PI + message.value
-        Log.d(
-            CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
-            "Sending communication message: $communicationMessage"
-        )
-        CommunicationActivity.Companion.bluetoothService?.sendOutData(message)
-    }
+//        //important send out msg
+//
+//        fun sendCommunicationData(message: BluetoothSendData) {
+//            val communicationMessage: String = MessageStrings.TO_RASPBERRY_PI + message.value
+//            Log.d(
+//                CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
+//                "Sending communication message: $communicationMessage"
+//            )
+//            CommunicationActivity.Companion.bluetoothService?.sendOutData(message)
+//        }
 
         fun sendMoveObstacleMessage(oldx: Int, oldy: Int, newx: Int, newy: Int, obsID: Int) {
             val communicationMessage: String =
