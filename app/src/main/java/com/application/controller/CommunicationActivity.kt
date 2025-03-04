@@ -9,7 +9,9 @@ import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.ui.AppBarConfiguration
+import com.application.controller.API.ObstacleData
 import com.application.controller.bluetooth.BluetoothSendData
+import com.application.controller.bluetooth.BluetoothSendDataObstacle
 import com.application.controller.bluetooth.BluetoothService
 import com.application.controller.maze.MazeFragment
 import com.google.android.material.snackbar.Snackbar
@@ -367,40 +369,40 @@ class CommunicationActivity : AppCompatActivity() {
             CommunicationActivity.Companion.bluetoothService?.sendOutMessage((communicationMessage))
         }
 
-        fun sendAllObstaclesMessage(obstacleJson: StringBuilder) {
-            val communicationMessage: String =
-                MessageStrings.TO_RASPBERRY_PI + obstacleJson.toString()
-            Log.d(
-                CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
-                "Sending all obstacles message: $communicationMessage\n"
-            )
-            CommunicationActivity.Companion.bluetoothService?.sendOutMessage((communicationMessage))
-        }
+//        fun sendAllObstaclesMessage(obstacleJson: StringBuilder) {
+//            val communicationMessage: String =
+//                MessageStrings.TO_RASPBERRY_PI + obstacleJson.toString()
+//            Log.d(
+//                CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
+//                "Sending all obstacles message: $communicationMessage\n"
+//            )
+//            CommunicationActivity.Companion.bluetoothService?.sendOutMessage((communicationMessage))
+//        }
 
-        // ✅ Store obstacles in list instead of sending immediately
-        fun addObstacleToList(x: Int, y: Int, obsID: Int, obsDirection: Int) {
-            obstacleList.add(
-                mapOf("x" to x, "y" to y, "id" to obsID, "d" to obsDirection)
-            )
-            Log.d(MAIN_ACTIVITY_TAG, "Obstacle added to list: x=$x, y=$y, id=$obsID, d=$obsDirection")
-        }
+//        // ✅ Store obstacles in list instead of sending immediately
+//        fun addObstacleToList(x: Int, y: Int, obsID: Int, obsDirection: Int) {
+//            obstacleList.add(
+//                mapOf("x" to x, "y" to y, "id" to obsID, "d" to obsDirection)
+//            )
+//            Log.d(MAIN_ACTIVITY_TAG, "Obstacle added to list: x=$x, y=$y, id=$obsID, d=$obsDirection")
+//        }
 
         // ✅ Send all obstacles in a single Bluetooth message
-        fun sendAllObstacles() {
-            if (obstacleList.isNotEmpty()) {
-                val message = """{
-                "cat": "obstacles",
-                "value": {
-                    "obstacles": ${obstacleList.map { it }},
-                    "mode": "0"
-                }
-            }""".trimIndent()
-
-                bluetoothService?.sendOutMessage(message)
-                obstacleList.clear() // ✅ Clear list after sending
-                Log.d(MAIN_ACTIVITY_TAG, "Sent all obstacles: $message")
-            }
-        }
+//        fun sendAllObstacles() {
+//            if (obstacleList.isNotEmpty()) {
+//                val message = """{
+//                "cat": "obstacles",
+//                "value": {
+//                    "obstacles": ${obstacleList.map { it }},
+//                    "mode": "0"
+//                }
+//            }""".trimIndent()
+//
+//                bluetoothService?.sendOutMessage(message)
+//                obstacleList.clear() // ✅ Clear list after sending
+//                Log.d(MAIN_ACTIVITY_TAG, "Sent all obstacles: $message")
+//            }
+//        }
 
         fun sendCommunicationData(message: BluetoothSendData) {
         val communicationMessage: String = MessageStrings.TO_RASPBERRY_PI + message.value
@@ -411,6 +413,13 @@ class CommunicationActivity : AppCompatActivity() {
         CommunicationActivity.Companion.bluetoothService?.sendOutData(message)
     }
 
+    fun sendObstacleDropMessage(obstacles: List<ObstacleData>){
+        Log.d(
+        MAIN_ACTIVITY_TAG,
+        "Sending Obstacle Data to Bluetooth: $obstacles"
+    )
+        // Call BluetoothService to send data
+        bluetoothService?.sendOutDataObstacle(obstacles)
     }
-
+    }
 }

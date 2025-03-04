@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.application.controller.API.APIResponseInstructions
+import com.application.controller.API.ObstacleData
 import com.application.controller.CommunicationActivity
 import com.application.controller.R
 import com.application.controller.spinner.ObstacleSpinnerAdapter
@@ -49,8 +50,9 @@ class MazeFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_maze, container, false)
     }
     fun getObstacleInfoList(): List<MazeView.ObstacleInfo> {
-        return mazeView.getObstacleInfoList()
+        return mazeView.getObstacleInfoList().toList() // Return a copy of the list to prevent modification
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -70,18 +72,19 @@ class MazeFragment : Fragment() {
         spinnerSelectObstacleType = view.findViewById(R.id.spinner_select_obstacle_type)
 
 
+//To send the obstacle information:
 
         view.findViewById<Button>(R.id.button_start).setOnClickListener {
-
 
             // Create the control message
             val controlMessage = """{"cat": "control", "value": "start"}"""
             // Send the message via Bluetooth
             CommunicationActivity.sendStartExplorationCommand(controlMessage)
-            val obstacle = getObstacleInfoList()
-            CommunicationActivity.sendCommunicationData(obstacle)
-            val jsonString = getJsonFromApi() // Function to get JSON from API
-            parseJsonAndUpdateMaze(jsonString)
+            val obstacleDataList = getObstacleInfoList().map {
+                obstacle ->
+                ObstacleData(obstacle.x, obstacle.y, obstacle.id, obstacle.direction)
+            }
+            CommunicationActivity.sendObstacleDropMessage(obstacleDataList)
         }
 
         // Define obstacle images
@@ -259,9 +262,6 @@ class MazeFragment : Fragment() {
                 Toast.makeText(requireContext(), "Invalid Robot Data", Toast.LENGTH_SHORT).show()
             }
         }
-
-
-
 
         // Reference the communication log TextView
         val textViewCommsLog: TextView = view.findViewById(R.id.textViewMessageLog)
