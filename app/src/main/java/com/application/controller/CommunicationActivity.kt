@@ -401,6 +401,16 @@ class CommunicationActivity : AppCompatActivity() {
                 Log.d(MAIN_ACTIVITY_TAG, "Sent all obstacles: $message")
             }
         }
+
+        fun sendCommunicationData(message: BluetoothSendData) {
+        val communicationMessage: String = MessageStrings.TO_RASPBERRY_PI + message.value
+        Log.d(
+            CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
+            "Sending communication message: $communicationMessage"
+        )
+        CommunicationActivity.Companion.bluetoothService?.sendOutData(message)
+    }
+
     }
 
 }
