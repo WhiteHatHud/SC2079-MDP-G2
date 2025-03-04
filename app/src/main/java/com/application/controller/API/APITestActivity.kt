@@ -14,14 +14,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.application.controller.BluetoothConnectActivity
 import com.application.controller.MainActivity
 import com.application.controller.R
+import com.application.controller.bluetooth.BluetoothSendData
+import com.application.controller.bluetooth.BluetoothSendDataObstacle
 import com.application.controller.bluetooth.BluetoothService
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
+import org.json.JSONArray
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 class APITestActivity : AppCompatActivity(){
     lateinit var DataText:String
@@ -76,7 +81,8 @@ class APITestActivity : AppCompatActivity(){
         //  val testPostText: EditText = findViewById(R.id.EditView_APITestData)
         val testPost: Button = findViewById(R.id.button_TestAPIPost)
         testPost.setOnClickListener {
-            sendPathData()
+            //sendPathData()
+            sendObstacleDataViaBluetooth()
         }
         //Checks Bluetooth status and sets Bluetooth Service
         checkBluetoothStatusChange()
@@ -220,6 +226,36 @@ class APITestActivity : AppCompatActivity(){
             Log.d("sendInstructionsToCar", "No Bluetooth Connection Detected")
         }
     }
+    fun sendObstacleDataViaBluetooth()
+    {
+        val xCoord=editTextXCoord.text.toString().toInt()
+        val yCoord=editTextYCoord.text.toString().toInt()
+        val botDir=editTextBotDir.text.toString().toInt()
+        val retryFlagBool=checkBoxRetryCheckBox.isChecked
+        var bigTurnFlag=0
+        if(checkBoxBigTurnCheckBox.isChecked)
+        {
+            bigTurnFlag=1
+        }
+        else
+        {
+            bigTurnFlag=0
+        }
+
+        val APIPathData=APIMovementData(ObstacleList,retryFlagBool,xCoord,yCoord,botDir,bigTurnFlag)
+        val jsonObj=JsonObject()
+        var obstacleListString=""
+        for(obs:ObstacleData in ObstacleList)
+        {
+            obstacleListString+=obs.toString()
+        }
+        jsonObj.addProperty("obstacle",ObstacleList.toString())
+        jsonObj.addProperty("mode",0)
+        BluetoothSendDataObstacle("obstacle",jsonObj)
+
+        BluetoothService.sendOutDataObstacle(ObstacleList)
+    }
+
     fun sendInstructionsToCar_dummy()
     {
         //SEND DUMMY VERSION HERE FOR TESTING:

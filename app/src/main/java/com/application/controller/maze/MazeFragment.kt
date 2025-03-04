@@ -81,10 +81,8 @@ class MazeFragment : Fragment() {
             val obstacle = getObstacleInfoList()
             CommunicationActivity.sendCommunicationData(obstacle)
             val jsonString = getJsonFromApi() // Function to get JSON from API
-//            parseJsonAndUpdateMaze(jsonString)
-
+            parseJsonAndUpdateMaze(jsonString)
         }
-
 
         // Define obstacle images
         val obstacleImages = listOf(
@@ -135,6 +133,7 @@ class MazeFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
+
         // Set listener to update obstacle ID
         spinnerObstacleType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
@@ -155,6 +154,8 @@ class MazeFragment : Fragment() {
             }
             return@setOnTouchListener false
         }
+
+
 
         // Handle Undo button
         view.findViewById<Button>(R.id.button_undo).setOnClickListener {
@@ -196,6 +197,9 @@ class MazeFragment : Fragment() {
             findNavController().navigate(R.id.action_MazeFragment_to_BluetoothFragment)
             Toast.makeText(context, "Navigating to COMMS LINK...", Toast.LENGTH_SHORT).show()
         }
+
+
+
 
 
         // Setup Reset button
@@ -255,6 +259,8 @@ class MazeFragment : Fragment() {
                 Toast.makeText(requireContext(), "Invalid Robot Data", Toast.LENGTH_SHORT).show()
             }
         }
+
+
 
 
         // Reference the communication log TextView
@@ -464,6 +470,39 @@ class MazeFragment : Fragment() {
         //Returns "TARGET, <Obstacle ID>, <Order Number>"
     }*/
 
+    private fun getLatestPosition():String
+    {
+        var latestPosition:String
+        if(com.application.controller.API.LatestRouteObject.positionChangedFlag)
+        {
+            latestPosition=com.application.controller.API.LatestRouteObject.latestRobotPosition
+            com.application.controller.API.LatestRouteObject.positionChangedFlag=false
+        }
+        else
+        {
+            latestPosition=""
+        }
+        return latestPosition
+    }
+    private fun getLatestTarget():String
+    {
+        var latestTarget:String
+        if(com.application.controller.API.LatestRouteObject.newTargetObstacleFlag)
+        {
+            latestTarget=com.application.controller.API.LatestRouteObject.targetObstacle
+            com.application.controller.API.LatestRouteObject.newTargetObstacleFlag=false
+        }
+        else
+        {
+            latestTarget=""
+        }
+        return latestTarget
+    }
+    private fun getRecognisedImageList():MutableList<String>
+    {
+        return com.application.controller.API.LatestRouteObject.foundImageID
+    }
+
     fun parseTargetData(targetData: String): List<Pair<Int, Int>> {
         val targets = mutableListOf<Pair<Int, Int>>()
 
@@ -544,6 +583,7 @@ class MazeFragment : Fragment() {
 }
     """
     }
+
     // All the buttons lol
     //BLUETOOTH CONNECTION:
     fun updateBluetoothStatus(isConnected: Boolean) {
