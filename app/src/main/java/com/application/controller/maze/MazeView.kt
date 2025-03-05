@@ -10,6 +10,7 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.Log
 import android.view.DragEvent
+import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
@@ -405,91 +406,6 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     }
 
 
-    override fun onDragEvent(event: DragEvent?): Boolean {
-        when (event?.action) {
-
-            DragEvent.ACTION_DRAG_STARTED -> {
-                isDraggingObstacle = true
-                invalidate() // Redraw to show preview
-            }
-
-            DragEvent.ACTION_DRAG_LOCATION -> {
-
-                val x = ((event.x - leftMargin + gridSize / 2) / gridSize).toInt()
-                val y = (ROW_NUM - 1 - ((event.y + gridSize / 2) / gridSize).toInt())
-
-                // Update preview position
-                previewX = x
-                previewY = y
-                invalidate() // Redraw the preview
-            }
-
-            DragEvent.ACTION_DROP -> {
-                isDraggingObstacle = false
-                val clipData = event.clipData?.getItemAt(0)?.text?.toString()
-                val coordinates = clipData?.split(",")?.map { it.toIntOrNull() }
-
-                previewX = null
-                previewY = null
-
-                val x = ((event.x - leftMargin + gridSize / 2) / gridSize).toInt()
-                val y = (ROW_NUM - 1 - ((event.y + gridSize / 2) / gridSize).toInt())
-
-                // Ensure obstacle type is correctly assigned
-                val obstacleDirection = getObstacleDirection(selectedObstacleType)
-
-                if (coordinates != null && coordinates.size == 2) {
-                    val originalX = coordinates[0]!!
-                    val originalY = coordinates[1]!!
-
-                    if (x < 0 || x >= COLUMN_NUM || y < 0 || y >= ROW_NUM) {
-                        removeObstacleFromGrid(originalX, originalY)
-                        Log.d("MazeView", "Obstacle removed at: ($originalX, $originalY)")
-                    } else {
-
-                        //checks if obstacle exists in old location
-                        val existingObstacle = obstacleInfoList.find{ it.x == originalX && it.y == originalY}
-                        if (existingObstacle != null) {
-                            moveObstacle(originalX, originalY, x, y)
-                            Toast.makeText(context, "Obstacle moved to ($x, $y)", Toast.LENGTH_SHORT).show()
-                            Log.d("MazeView", "Obstacle moved from ($originalX, $originalY) to ($x, $y)")
-                        }
-                    }
-                } else {
-                    val existingObstacle = obstacleInfoList.find{ it.x == x && it.y == y}
-
-                    if (existingObstacle == null) {
-                        val obstacleId = obstacleInfoList.size + 1 //adds the new Obstacle ID
-                        val newObstacle = ObstacleInfo(x,y,obstacleId,obstacleDirection)
-
-                        //add to the list
-                        obstacleInfoList.add(newObstacle)
-
-                        //CommunicationActivity.sendAddObstacleMessage(x, y, obstacleId, obstacleDirection)
-
-                        Toast.makeText(context, "Dropped $obstacleDirection at ($x, $y)", Toast.LENGTH_SHORT).show()
-                        Log.d("MazeView", "Obstacle added at: ($x, $y) | Type: $obstacleDirection | Direction: $obstacleDirection°")
-                    } else {
-                        Toast.makeText(context, "Obstacle already exists at ($x, $y)", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-                invalidate()
-            }
-
-
-
-            DragEvent.ACTION_DRAG_ENDED -> {
-                isDraggingObstacle = false
-                previewX = null
-                previewY = null
-                invalidate() // Remove preview
-            }
-        }
-        return true
-    }
-
-
 
     // Function to update the selected obstacle type
     fun setSelectedObstacleType(type: String) {
@@ -499,22 +415,6 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     }
 
 
-
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        when (event?.action) {
-            MotionEvent.ACTION_DOWN -> {
-                val x = ((event.x - leftMargin) / gridSize).toInt()
-                val y = (ROW_NUM - 1 - (event.y / gridSize).toInt())
-                val existingObstacle = obstacleInfoList.find {it.x == x && it.y == y}
-                // Check if an obstacle exists at this location
-                if (existingObstacle != null) {
-                    startDraggingObstacle(x, y)
-                    return true
-                }
-            }
-        }
-        return super.onTouchEvent(event)
-    }
 
 
     private fun startDraggingObstacle(x: Int, y: Int) {
@@ -677,7 +577,160 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         Log.d("MazeView", "Selected Obstacle Direction updated to: $selectedObstacleDirection°")
     }
 
+    // . Functions on tapping and dragging objects
+    private val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+        override fun onSingleTapUp(event: MotionEvent): Boolean {
+            val x = ((event.x - leftMargin) / gridSize).toInt()
+            val y = (ROW_NUM - 1 - (event.y / gridSize).toInt())
+
+            val obstacle = obstacleInfoList.find { it.x == x && it.y == y }
+            if (obstacle != null) {
+                rotateObstacleDirection(obstacle)
+                return true
+            }
+            return false
+        }
+
+        override fun onLongPress(event: MotionEvent) {
+            val x = ((event.x - leftMargin) / gridSize).toInt()
+            val y = (ROW_NUM - 1 - (event.y / gridSize).toInt())
+
+            val obstacle = obstacleInfoList.find { it.x == x && it.y == y }
+            if (obstacle != null) {
+                startDraggingObstacle(x, y)
+            }
+        }
+    })
+
+    //On touch event is modified
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        // Ensure GestureDetector processes events first
+        val gestureHandled = gestureDetector.onTouchEvent(event)
+
+        // ✅ Allow normal touch events to continue after gesture detection
+        if (gestureHandled) {
+            return true
+        }
+
+        // ✅ Prevent drag conflicts (but allow taps)
+        if (isDraggingObstacle && event.action != MotionEvent.ACTION_UP) {
+            return false
+        }
+
+        if (event.action == MotionEvent.ACTION_UP) {
+            performClick()  // 🔹 Calls performClick() to ensure accessibility compatibility
+        }
+
+        return true // ✅ Ensures event is fully processed
+    }
 
 
+    //Rotating the obstacle:
+    private fun rotateObstacleDirection(obstacle: ObstacleInfo){
+        val newDirection = when (obstacle.direction){
+            0 -> 90
+            90 -> 180
+            180 -> 270
+            270 -> 0
+            else -> 0
+        }
+        val index = obstacleInfoList.indexOf(obstacle)
+        if (index != -1){
+            obstacleInfoList[index] = obstacle.copy(direction = newDirection)
+            Toast.makeText(
+                context,
+                "Obstacle ID ${obstacle.id} direction changed to $newDirection°",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        invalidate()
+    }
+
+    override fun performClick(): Boolean {
+        super.performClick()  // Ensure any inherited behavior still works
+        return true  // Indicate that the click was handled
+    }
+
+    override fun onDragEvent(event: DragEvent?): Boolean {
+        when (event?.action) {
+
+            DragEvent.ACTION_DRAG_STARTED -> {
+                isDraggingObstacle = true
+                invalidate() // Redraw to show preview
+            }
+
+            DragEvent.ACTION_DRAG_LOCATION -> {
+
+                val x = ((event.x - leftMargin + gridSize / 2) / gridSize).toInt()
+                val y = (ROW_NUM - 1 - ((event.y + gridSize / 2) / gridSize).toInt())
+
+                // Update preview position
+                previewX = x
+                previewY = y
+                invalidate() // Redraw the preview
+            }
+
+            DragEvent.ACTION_DROP -> {
+                isDraggingObstacle = false
+                val clipData = event.clipData?.getItemAt(0)?.text?.toString()
+                val coordinates = clipData?.split(",")?.map { it.toIntOrNull() }
+
+                previewX = null
+                previewY = null
+
+                val x = ((event.x - leftMargin + gridSize / 2) / gridSize).toInt()
+                val y = (ROW_NUM - 1 - ((event.y + gridSize / 2) / gridSize).toInt())
+
+                // Ensure obstacle type is correctly assigned
+                val obstacleDirection = getObstacleDirection(selectedObstacleType)
+
+                if (coordinates != null && coordinates.size == 2) {
+                    val originalX = coordinates[0]!!
+                    val originalY = coordinates[1]!!
+
+                    if (x < 0 || x >= COLUMN_NUM || y < 0 || y >= ROW_NUM) {
+                        removeObstacleFromGrid(originalX, originalY)
+                        Log.d("MazeView", "Obstacle removed at: ($originalX, $originalY)")
+                    } else {
+
+                        //checks if obstacle exists in old location
+                        val existingObstacle = obstacleInfoList.find{ it.x == originalX && it.y == originalY}
+                        if (existingObstacle != null) {
+                            moveObstacle(originalX, originalY, x, y)
+                            Toast.makeText(context, "Obstacle moved to ($x, $y)", Toast.LENGTH_SHORT).show()
+                            Log.d("MazeView", "Obstacle moved from ($originalX, $originalY) to ($x, $y)")
+                        }
+                    }
+                } else {
+                    val existingObstacle = obstacleInfoList.find{ it.x == x && it.y == y}
+
+                    if (existingObstacle == null) {
+                        val obstacleId = obstacleInfoList.size + 1 //adds the new Obstacle ID
+                        val newObstacle = ObstacleInfo(x,y,obstacleId,obstacleDirection)
+
+                        //add to the list
+                        obstacleInfoList.add(newObstacle)
+
+                        //CommunicationActivity.sendAddObstacleMessage(x, y, obstacleId, obstacleDirection)
+
+                        Toast.makeText(context, "Dropped $obstacleDirection at ($x, $y)", Toast.LENGTH_SHORT).show()
+                        Log.d("MazeView", "Obstacle added at: ($x, $y) | Type: $obstacleDirection | Direction: $obstacleDirection°")
+                    } else {
+                        Toast.makeText(context, "Obstacle already exists at ($x, $y)", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                invalidate()
+            }
+
+            DragEvent.ACTION_DRAG_ENDED -> {
+                isDraggingObstacle = false
+                previewX = null
+                previewY = null
+                invalidate() // Remove preview
+            }
+        }
+        return true
+    }
 
 }

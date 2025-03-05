@@ -421,5 +421,16 @@ class CommunicationActivity : AppCompatActivity() {
         // Call BluetoothService to send data
         bluetoothService?.sendOutDataObstacle(obstacles)
     }
+
+    fun sendOutDataObstacle(obstacleDataList: List<ObstacleData>) {
+        Log.d(
+            CommunicationActivity.Companion.MAIN_ACTIVITY_TAG,
+            "Sending obstacle data: $obstacleDataList"
+        )
+
+        // Call BluetoothService to send the obstacle data
+        CommunicationActivity.Companion.bluetoothService?.sendOutDataObstacle(obstacleDataList)
     }
+
+}
 }

@@ -52,6 +52,7 @@ class MazeFragment : Fragment() {
     fun getObstacleInfoList(): List<MazeView.ObstacleInfo> {
         return mazeView.getObstacleInfoList().toList() // Return a copy of the list to prevent modification
     }
+    // Takes in the obstacle info list and convert into obstacle data list
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -75,16 +76,24 @@ class MazeFragment : Fragment() {
 //To send the obstacle information:
 
         view.findViewById<Button>(R.id.button_start).setOnClickListener {
-
-            // Create the control message
+            // Checks if bluetooth is connected:
+            if (CommunicationActivity.Companion.bluetoothService?.isConnectedToBluetoothDevice == true){
             val controlMessage = """{"cat": "control", "value": "start"}"""
             // Send the message via Bluetooth
             CommunicationActivity.sendStartExplorationCommand(controlMessage)
-            val obstacleDataList = getObstacleInfoList().map {
-                obstacle ->
-                ObstacleData(obstacle.x, obstacle.y, obstacle.id, obstacle.direction)
+                val obstacleDataList = getObstacleInfoList().map { obstacle ->
+                    ObstacleData(
+                        x = obstacle.x,
+                        y = obstacle.y,
+                        id = obstacle.id,
+                        d = obstacle.direction // Ensure direction is correctly mapped
+                    )
+                }
+                CommunicationActivity.sendOutDataObstacle(obstacleDataList)
+            } else {
+                Log.e("MazeFragment", "Bluetooth not connected. Cannot send obstacle data.")
+                Toast.makeText(requireContext(), "Bluetooth not connected. Cannot send obstacle data.", Toast.LENGTH_SHORT).show()
             }
-            CommunicationActivity.sendObstacleDropMessage(obstacleDataList)
         }
 
         // Define obstacle images
@@ -248,20 +257,20 @@ class MazeFragment : Fragment() {
         }
 
         // TODO: Add C10 button to handle robot updates via Bluetooth
-        view.findViewById<Button>(R.id.C10).setOnClickListener {
-            val robotData = getRobotDataFromBluetooth() // Fetch latest robot info from Bluetooth
-            Log.d("MazeFragment", "C10 clicked. Robot Data: $robotData")
-
-            val parsedRobotData = parseRobotData(robotData) // Parse the received data
-
-            if (parsedRobotData != null) {
-                val (x, y, direction) = parsedRobotData
-                Log.d("MazeFragment", "Updating Robot Position -> X: $x, Y: $y, Dir: $direction°")
-                mazeView.updateRobotPosition(x, y, direction) // ✅ Update robot in MazeView
-            } else {
-                Toast.makeText(requireContext(), "Invalid Robot Data", Toast.LENGTH_SHORT).show()
-            }
-        }
+//        view.findViewById<Button>(R.id.C10).setOnClickListener {
+//            val robotData = getRobotDataFromBluetooth() // Fetch latest robot info from Bluetooth
+//            Log.d("MazeFragment", "C10 clicked. Robot Data: $robotData")
+//
+//            val parsedRobotData = parseRobotData(robotData) // Parse the received data
+//
+//            if (parsedRobotData != null) {
+//                val (x, y, direction) = parsedRobotData
+//                Log.d("MazeFragment", "Updating Robot Position -> X: $x, Y: $y, Dir: $direction°")
+//                mazeView.updateRobotPosition(x, y, direction) // ✅ Update robot in MazeView
+//            } else {
+//                Toast.makeText(requireContext(), "Invalid Robot Data", Toast.LENGTH_SHORT).show()
+//            }
+//        }
 
         // Reference the communication log TextView
         val textViewCommsLog: TextView = view.findViewById(R.id.textViewMessageLog)
