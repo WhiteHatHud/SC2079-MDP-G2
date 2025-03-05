@@ -1,0 +1,12 @@
+python-tsp
+fastapi
+uvicorn
+pydantic
+numpy
+requests
+torch
+pillow
+pandas 
+numpy
+opencv-python
+python-multipart
