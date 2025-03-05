@@ -132,8 +132,11 @@ class CommunicationActivity : AppCompatActivity() {
               val activity = CommunicationActivity.Companion.bluetoothStatusFloatingActionButton?.context as? AppCompatActivity
               val fragment = activity?.supportFragmentManager?.findFragmentByTag("MazeFragment") as? MazeFragment
 
-              fragment?.updateBluetoothStatus(isConnected)
-              fragment?.updateBluetoothConnectedDevice(deviceName)
+              fragment?.apply {
+                  updateBluetoothStatus()
+                  updateBluetoothConnectedDevice()
+                  view?.invalidate()
+              }
 
           }
 

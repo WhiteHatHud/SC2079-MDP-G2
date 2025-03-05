@@ -57,12 +57,11 @@ class MazeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        updateBluetoothStatus(CommunicationActivity.bluetoothService?.isConnectedToBluetoothDevice == true)
-        updateBluetoothConnectedDevice(CommunicationActivity.bluetoothService?.connectedDeviceName)
         var test=getLatestBotPostion()
-
-
-        // Initialize MazeView
+        //for bluetooth status
+        updateBluetoothStatus()
+        updateBluetoothConnectedDevice()
+//        // Initialize MazeView
         mazeView = view.findViewById(R.id.maze_view)
 
         // Initialize spinners
@@ -212,45 +211,12 @@ class MazeFragment : Fragment() {
 
 
 
-
-
         // Setup Reset button
         val resetButton: Button = view.findViewById(R.id.button_reset)
         resetButton.setOnClickListener {
             mazeView.resetMaze() // Call the resetMaze function in MazeView
             Toast.makeText(context, "Maze has been reset!", Toast.LENGTH_SHORT).show()
         }
-
-        fun updateBluetoothStatus(isConnected: Boolean) {
-            val bluetoothStatusTextView = view?.findViewById<TextView>(R.id.bluetoothStatus)
-
-            if (bluetoothStatusTextView != null) {
-                if (isConnected) {
-                    bluetoothStatusTextView.text = "Connected"
-                    bluetoothStatusTextView.setTextColor(Color.GREEN) // Change to green if connected
-                } else {
-                    bluetoothStatusTextView.text = "Disconnected"
-                    bluetoothStatusTextView.setTextColor(Color.RED) // Change to red if disconnected
-                }
-            }
-        }
-        //TODO C9 button
-
-//        view.findViewById<Button>(R.id.C9).setOnClickListener {
-//            val targetData = getTarget() // Fetch target info from Bluetooth
-//            Log.d("MazeFragment", "C9 clicked. Target: $targetData")
-//
-//            val parsedTargets = parseTargetData(targetData) // Parse multiple target IDs
-//
-//            if (parsedTargets.isNotEmpty()) {
-//                Log.d("MazeFragment", "Updating ${parsedTargets.size} obstacles...")
-//
-//                // Pass the entire list at once
-//                mazeView.updateObstacleTarget(parsedTargets)
-//            } else {
-//                Toast.makeText(requireContext(), "Invalid Target Data", Toast.LENGTH_SHORT).show()
-//            }
-//        }
 
        fun getRobotDataFromBluetooth(): String {
             return CommunicationActivity.getLatestMessage() // Fetch latest message
@@ -594,31 +560,14 @@ class MazeFragment : Fragment() {
     }
 
     // All the buttons lol
-    //BLUETOOTH CONNECTION:
-    fun updateBluetoothStatus(isConnected: Boolean) {
-        val bluetoothStatusTextView = view?.findViewById<TextView>(R.id.bluetoothStatus)
 
-        if (bluetoothStatusTextView != null) {
-            bluetoothStatusTextView.text = if (isConnected) "Connected" else "Disconnected"
-            bluetoothStatusTextView.setTextColor(if (isConnected) Color.GREEN else Color.RED)
-        }
-    }
-
-    fun updateBluetoothConnectedDevice(deviceName: String?) {
-        val bluetoothDeviceTextView = view?.findViewById<TextView>(R.id.bluetoothConnectedDevice)
-
-        bluetoothDeviceTextView?.apply {
-            text = if (!deviceName.isNullOrEmpty()) " $deviceName" else "No Device"
-            setTextColor(if (!deviceName.isNullOrEmpty()) Color.BLUE else Color.RED)
-        }
-    }
 
     private fun getTarget(): String {
         return CommunicationActivity.getLatestMessage()
         // This will return the latest message received via Bluetooth.
     }
 
-    private fun parseRobotData(robotData: String): Triple<Int, Int, Int>? {
+    fun parseRobotData(robotData: String): Triple<Int, Int, Int>? {
         // Expected format: "ROBOT, x, y, direction"
         val parts = robotData.split(",").map { it.trim() }
 
@@ -646,5 +595,29 @@ class MazeFragment : Fragment() {
     }
 
 
+//Bluetooth Functions
+ fun updateBluetoothStatus() {
+    val bluetoothStatusTextView = view?.findViewById<TextView>(R.id.bluetoothStatus)
 
+    bluetoothStatusTextView?.apply {
+        if (CommunicationActivity.Companion.bluetoothService?.isConnectedToBluetoothDevice == true) {
+            text = "Connected"
+            setTextColor(Color.GREEN)
+        } else {
+            text = "Disconnected"
+            setTextColor(Color.RED)
+        }
+    }
+}
+
+    // Function to update the connected device name
+    fun updateBluetoothConnectedDevice() {
+        val bluetoothDeviceTextView = view?.findViewById<TextView>(R.id.bluetoothConnectedDevice)
+
+        bluetoothDeviceTextView?.apply {
+            val deviceName = CommunicationActivity.Companion.bluetoothService?.connectedDeviceName
+            text = if (!deviceName.isNullOrEmpty()) " $deviceName" else "No Device"
+            setTextColor(if (!deviceName.isNullOrEmpty()) Color.BLUE else Color.RED)
+        }
+    }
 }
