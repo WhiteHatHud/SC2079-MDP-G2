@@ -218,6 +218,8 @@ class CommunicationFragment : Fragment() {
                                 com.application.controller.API.LatestRouteObject.positionChangedFlag=true
                                 com.application.controller.API.LatestRouteObject.robotPosition= mutableListOf(x.toInt(),y.toInt(),d.toInt())
                                 //TODO set correct details for processing movement data
+                                //check if correct:
+                                Log.d("BluetoothService", "🚀 Parsed Robot Position -> X: $x, Y: $y, Dir: $d")
                             }
 
 

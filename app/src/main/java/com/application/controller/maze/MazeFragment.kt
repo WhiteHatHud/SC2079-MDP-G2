@@ -3,7 +3,6 @@ package com.application.controller.maze
 import android.graphics.Color
 import android.content.ClipData
 import android.os.Bundle
-import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -17,19 +16,17 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.application.controller.API.APIResponseInstructions
+import com.application.controller.API.LatestRouteObject
 import com.application.controller.API.ObstacleData
 import com.application.controller.CommunicationActivity
 import com.application.controller.R
 import com.application.controller.spinner.ObstacleSpinnerAdapter
 import com.application.controller.spinner.ObstacleSelectorAdapter
 import kotlinx.coroutines.*
-import com.application.controller.API.LatestRouteObject
-import com.application.controller.maze.MazeView
 
 //BluetoothService
 
 //libraries for Json Parsing:
-import org.json.JSONObject
 
 class MazeFragment : Fragment() {
 
@@ -258,109 +255,137 @@ class MazeFragment : Fragment() {
     private var bluetoothUpdateJob: Job? = null
     private val processedImages = mutableSetOf<Pair<Int, String>>() // ✅ Track processed images globally
 
+//    override fun onResume() {
+//        super.onResume()
+//
+//        // ✅ Apply the latest robot position when fragment resumes
+//        if (com.application.controller.API.LatestRouteObject.robotPosition.size == 3) {
+//            Log.d("MazeFragment", "🚀 Applying latest stored position from API")
+//            mazeView.updateRobotPosition() // ✅ No arguments needed
+//        }
+//
+//        // ✅ Cancel previous coroutine to avoid duplication
+//        positionUpdateJob?.cancel()
+//        bluetoothUpdateJob?.cancel()
+//
+//        // ✅ Reference the communication log TextView safely
+//        val textViewCommsLog: TextView = requireView().findViewById(R.id.textViewMessageLog)
+//        textViewCommsLog.movementMethod = ScrollingMovementMethod()
+//
+//        // ✅ Launch a single coroutine to handle:
+//        //    1. Robot position updates
+//        //    2. Bluetooth data processing
+//        //    3. Communication log updates
+//        positionUpdateJob = CoroutineScope(Dispatchers.Main).launch {
+//            while (isActive) {
+//                // ✅ Check if robot position changed and update MazeView
+//                if (com.application.controller.API.LatestRouteObject.positionChangedFlag) {
+//                    Log.d("MazeFragment", "🚀 Updating MazeView with new position!")
+//                    mazeView.updateRobotPosition() // ✅ No arguments needed
+//
+//                    // ✅ Reset flag after updating
+//                    com.application.controller.API.LatestRouteObject.positionChangedFlag = false
+//                }
+//
+//                // ✅ Continuously check for new Bluetooth data
+//                processBluetoothUpdates()
+//
+//                // ✅ Update communication log if changed
+//                val newLog = CommunicationActivity.getMessageLog()
+//                val commsLog = CommunicationActivity.getMessageLog()
+//                textViewCommsLog.text = commsLog
+//
+//                if (newLog != textViewCommsLog.text.toString()) {
+//                    textViewCommsLog.text = newLog
+//                    textViewCommsLog.post {
+//                        val scrollAmount =
+//                            textViewCommsLog.layout.getLineTop(textViewCommsLog.lineCount) - textViewCommsLog.height
+//                        textViewCommsLog.scrollTo(0, if (scrollAmount > 0) scrollAmount else 0)
+//                    }
+//                }
+//
+//                // ✅ Delay for 500ms before checking again
+//                delay(500)
+//            }
+//        }
+//    }
+
     override fun onResume() {
         super.onResume()
 
-        // ✅ Apply the latest robot position when fragment resumes
-        if (com.application.controller.API.LatestRouteObject.robotPosition.size == 3) {
-            Log.d("MazeFragment", "🚀 Applying latest stored position from API")
-            mazeView.updateRobotPosition() // ✅ No arguments needed
-        }
-
-        // ✅ Cancel previous coroutine to avoid duplication
-        positionUpdateJob?.cancel()
-        bluetoothUpdateJob?.cancel()
-
-        // ✅ Reference the communication log TextView safely
-        val textViewCommsLog: TextView = requireView().findViewById(R.id.textViewMessageLog)
-        textViewCommsLog.movementMethod = ScrollingMovementMethod()
-
-        // ✅ Launch a single coroutine to handle:
-        //    1. Robot position updates
-        //    2. Bluetooth data processing
-        //    3. Communication log updates
-        positionUpdateJob = CoroutineScope(Dispatchers.Main).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             while (isActive) {
-                // ✅ Check if robot position changed and update MazeView
+                // ✅ Check for Robot Position Update
                 if (com.application.controller.API.LatestRouteObject.positionChangedFlag) {
-                    Log.d("MazeFragment", "🚀 Updating MazeView with new position!")
-                    mazeView.updateRobotPosition() // ✅ No arguments needed
-
-                    // ✅ Reset flag after updating
-                    com.application.controller.API.LatestRouteObject.positionChangedFlag = false
+                    val (x, y, d) = com.application.controller.API.LatestRouteObject.robotPosition
+                    Log.d("MazeFragment", "🚀 Updating Robot Position -> X: $x, Y: $y, Dir: $d°")
+                    Log.d("MazeFragment", "📡 Current Robot Position in LatestRouteObject: ${LatestRouteObject.robotPosition}")
+                    mazeView.updateRobotPosition(x, y, d) // ✅ Apply to MazeView
+                    com.application.controller.API.LatestRouteObject.positionChangedFlag = false // ✅ Reset flag
                 }
 
-                // ✅ Continuously check for new Bluetooth data
-//                processBluetoothUpdates()
-                mazeView.updateObstacleImage() // ✅ Update obstacles with images
-
-
-                // ✅ Update communication log if changed
-                val newLog = CommunicationActivity.getMessageLog()
-                val commsLog = CommunicationActivity.getMessageLog()
-                textViewCommsLog.text = commsLog
-
-                if (newLog != textViewCommsLog.text.toString()) {
-                    textViewCommsLog.text = newLog
-                    textViewCommsLog.post {
-                        val scrollAmount =
-                            textViewCommsLog.layout.getLineTop(textViewCommsLog.lineCount) - textViewCommsLog.height
-                        textViewCommsLog.scrollTo(0, if (scrollAmount > 0) scrollAmount else 0)
-                    }
+                // ✅ Check for Found Images Update
+                val foundImages = com.application.controller.API.LatestRouteObject.foundImageID.toList()
+                if (foundImages.isNotEmpty()) {
+                    Log.d("MazeFragment", "📡 Found Image List: $foundImages")
+                    mazeView.updateObstacleImage() // ✅ Assume this function exists
+                }
+                else {
+                    Log.d("MazeFragment", "ERROR NO FOUND IMAGES ID")
                 }
 
-                // ✅ Delay for 500ms before checking again
-                delay(500)
+                delay(500) // ✅ Prevents UI blocking and loops efficiently
             }
         }
     }
 
 
+
     /**
      * Continuously checks for new Bluetooth updates and processes them.
      */
-//    private fun processBluetoothUpdates() {
-//        val latestImages = com.application.controller.API.LatestRouteObject.foundImage.toList()
-//
-//        Log.d("MazeFragment", "📡 Found Image List: $latestImages") // ✅ Log all found images
-//
-//        if (latestImages.isNotEmpty()) {
-//            Log.d("MazeFragment", "Received ${latestImages.size} new found images.")
-//
-//            val updatedTargets = mutableListOf<MazeView.ObstacleInfo>()
-//
-//            for (image in latestImages) {
-//                val obstacleID = image.obstacleID.toInt()
-//                val imageID = image.imageID
-//
-//                Log.d("MazeFragment", "📝 Processing Obstacle $obstacleID → Image ID: $imageID")
-//
-//                if (!processedImages.contains(Pair(obstacleID, imageID))) {
-//                    val matchingObstacle = mazeView.obstacleInfoList.find { it.id == obstacleID }
-//
-//                    if (matchingObstacle != null) {
-//                        Log.d("MazeFragment", "✅ Updating Obstacle $obstacleID with Image ID: $imageID")
-//                        mazeView.updateObstacleImageMapping(obstacleID, imageID)
-//                        processedImages.add(Pair(obstacleID, imageID))
-//
-//                        // ✅ Add obstacle to updatedTargets
-//                        updatedTargets.add(matchingObstacle.copy(id = obstacleID, direction = matchingObstacle.direction))
-//                    } else {
-//                        Log.e("MazeFragment", "❌ No matching obstacle found for Obstacle ID: $obstacleID")
-//                    }
-//                } else {
-//                    Log.d("MazeFragment", "⚠️ Skipping duplicate mapping for Obstacle $obstacleID → Image ID: $imageID")
-//                }
-//            }
-//
-//            if (updatedTargets.isNotEmpty()) {
-//                Log.d("MazeFragment", "🔄 Updating obstacles in MazeView: $updatedTargets")
-//                mazeView.updateObstacleImage(updatedTargets)
-//            } else {
-//                Log.d("MazeFragment", "⚠️ No new obstacles to update.")
-//            }
-//        }
-//    }
+    private fun processBluetoothUpdates() {
+        val latestImages = com.application.controller.API.LatestRouteObject.foundImage.toList()
+
+        Log.d("MazeFragment", "📡 Found Image List: $latestImages") // ✅ Log all found images
+
+        if (latestImages.isNotEmpty()) {
+            Log.d("MazeFragment", "Received ${latestImages.size} new found images.")
+
+            val updatedTargets = mutableListOf<MazeView.ObstacleInfo>()
+
+            for (image in latestImages) {
+                val obstacleID = image.obstacleID.toInt()
+                val imageID = image.imageID
+
+                Log.d("MazeFragment", "📝 Processing Obstacle $obstacleID → Image ID: $imageID")
+
+                if (!processedImages.contains(Pair(obstacleID, imageID))) {
+                    val matchingObstacle = mazeView.obstacleInfoList.find { it.id == obstacleID }
+
+                    if (matchingObstacle != null) {
+                        Log.d("MazeFragment", "✅ Updating Obstacle $obstacleID with Image ID: $imageID")
+                        mazeView.updateObstacleImageMapping(obstacleID, imageID)
+                        processedImages.add(Pair(obstacleID, imageID))
+
+                        // ✅ Add obstacle to updatedTargets
+                        updatedTargets.add(matchingObstacle.copy(id = obstacleID, direction = matchingObstacle.direction))
+                    } else {
+                        Log.e("MazeFragment", "❌ No matching obstacle found for Obstacle ID: $obstacleID")
+                    }
+                } else {
+                    Log.d("MazeFragment", "⚠️ Skipping duplicate mapping for Obstacle $obstacleID → Image ID: $imageID")
+                }
+            }
+
+            if (updatedTargets.isNotEmpty()) {
+                Log.d("MazeFragment", "🔄 Updating obstacles in MazeView: $updatedTargets")
+                mazeView.updateObstacleImage()
+            } else {
+                Log.d("MazeFragment", "⚠️ No new obstacles to update.")
+            }
+        }
+    }
 
 
 
@@ -477,17 +502,17 @@ class MazeFragment : Fragment() {
         }
     }
 
-    private fun checkAndUpdateRobotPosition() {
-        if (com.application.controller.API.LatestRouteObject.positionChangedFlag) {
-            Log.d("MazeFragment", "🚀 New Robot Position Detected!")
-
-            // ✅ Call update in MazeView
-            mazeView.updateRobotPosition()
-
-            // ✅ Reset flag after updating to prevent duplicate calls
-            com.application.controller.API.LatestRouteObject.positionChangedFlag = false
-        }
-    }
+//    private fun checkAndUpdateRobotPosition() {
+//        if (com.application.controller.API.LatestRouteObject.positionChangedFlag) {
+//            Log.d("MazeFragment", "🚀 New Robot Position Detected!")
+//
+//            // ✅ Call update in MazeView
+//            mazeView.updateRobotPosition()
+//
+//            // ✅ Reset flag after updating to prevent duplicate calls
+//            com.application.controller.API.LatestRouteObject.positionChangedFlag = false
+//        }
+//    }
 
 
 

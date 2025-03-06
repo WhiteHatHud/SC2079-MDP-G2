@@ -18,7 +18,6 @@ import com.application.controller.CommunicationActivity
 import com.application.controller.R
 import java.util.Stack
 import kotlin.math.min
-import com.application.controller.API.LatestRouteObject
 
 class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     private var gridSize = 0
@@ -257,8 +256,11 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
                 // ✅ Correctly fetch `imageID`, if available
                 val displayedLabel = if (obstacleImageMap.containsKey(id)) {
-                    obstacleImageMap[id] ?: id.toString()
+                    val mappedLabel = obstacleImageMap[id]
+                    Log.d("MazeView", "🔍 Obstacle $id has a mapped label: $mappedLabel")
+                    mappedLabel ?: id.toString()
                 } else {
+                    Log.d("MazeView", "🚫 Obstacle $id is NOT targeted (No image ID found)")
                     id.toString() // Default to obstacleID if no mapping exists
                 }
 
@@ -347,43 +349,43 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         return CommunicationActivity.getLatestMessage() // Fetch latest message
     }
 
-//    fun updateRobotPosition(x: Int, y: Int, direction: Int) {
-//        Log.d("MazeView", "Updating Robot Position -> X: $x, Y: $y, Dir: $direction°")
-//
-//        // ✅ Ensure the position is valid before updating
-//        if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM) {
-//            saveState() // Save previous state for undo
-//            robotX = x
-//            robotY = y
-//            robotDirection = direction
-//            invalidate() // ✅ Redraw the view
-//        } else {
-//            Log.e("MazeView", "❌ Invalid Position -> X: $x, Y: $y is out of bounds")
-//        }
-//    }
+    fun updateRobotPosition(x: Int, y: Int, direction: Int) {
+        Log.d("MazeView", "Updating Robot Position -> X: $x, Y: $y, Dir: $direction°")
 
-    fun updateRobotPosition() {
-        val positionData = com.application.controller.API.LatestRouteObject.robotPosition
-
-        if (positionData.size == 3) {
-            val x = positionData[0]
-            val y = positionData[1]
-            val direction = positionData[2]
-
-            Log.d("MazeView", "🟢 updateRobotPosition() CALLED -> X: $x, Y: $y, Dir: $direction°")
-
-            if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM) {
-                robotX = x
-                robotY = y
-                robotDirection = direction
-                invalidate() // ✅ Redraw
-            } else {
-                Log.e("MazeView", "❌ Position Out of Bounds -> X: $x, Y: $y")
-            }
+        // ✅ Ensure the position is valid before updating
+        if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM) {
+            saveState() // Save previous state for undo
+            robotX = x
+            robotY = y
+            robotDirection = direction
+            invalidate() // ✅ Redraw the view
         } else {
-            Log.e("MazeView", "❌ Invalid Position Data: $positionData")
+            Log.e("MazeView", "❌ Invalid Position -> X: $x, Y: $y is out of bounds")
         }
     }
+
+//    fun updateRobotPosition() {
+//        val positionData = com.application.controller.API.LatestRouteObject.robotPosition
+//
+//        if (positionData.size == 3) {
+//            val x = positionData[0]
+//            val y = positionData[1]
+//            val direction = positionData[2]
+//
+//            Log.d("MazeView", "🟢 updateRobotPosition() CALLED -> X: $x, Y: $y, Dir: $direction°")
+//
+//            if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM) {
+//                robotX = x
+//                robotY = y
+//                robotDirection = direction
+//                invalidate() // ✅ Redraw
+//            } else {
+//                Log.e("MazeView", "❌ Position Out of Bounds -> X: $x, Y: $y")
+//            }
+//        } else {
+//            Log.e("MazeView", "❌ Invalid Position Data: $positionData")
+//        }
+//    }
 
 
 
@@ -786,7 +788,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     }
 
     //code to update target ID
-//    fun updateObstacleImage(targets: List<ObstacleInfo>) {
+//    fun updateObstacleImage(targets: List<String>) {
 //        Log.d("MazeView", "Updating obstacles...")
 //
 //        var updated = false
@@ -820,10 +822,12 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
             val obstacleId = image.obstacleID.toInt()
             val imageId = image.imageID
 
+            Log.d("MazeView", "📝 Attempting to map Obstacle $obstacleId → Image ID: $imageId")
+
             // ✅ Update map directly
             obstacleImageMap[obstacleId] = imageId
 
-            Log.d("MazeView", "✅ Mapped Obstacle $obstacleId → Image ID: $imageId")
+            Log.d("MazeView", "✅ Mapped Obstacle $obstacleId → Image ID: ${obstacleImageMap[obstacleId]}")
         }
 
         invalidate() // ✅ Redraw maze
