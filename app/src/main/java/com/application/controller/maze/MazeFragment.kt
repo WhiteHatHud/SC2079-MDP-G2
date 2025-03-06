@@ -23,6 +23,8 @@ import com.application.controller.R
 import com.application.controller.spinner.ObstacleSpinnerAdapter
 import com.application.controller.spinner.ObstacleSelectorAdapter
 import kotlinx.coroutines.*
+import com.application.controller.API.LatestRouteObject
+import com.application.controller.maze.MazeView
 
 //BluetoothService
 
@@ -50,7 +52,7 @@ class MazeFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_maze, container, false)
     }
     fun getObstacleInfoList(): List<MazeView.ObstacleInfo> {
-        return mazeView.getObstacleInfoList().toList() // Return a copy of the list to prevent modification
+        return mazeView.fetchObstacleInfoList().toList() // Return a copy of the list to prevent modification
     }
     // Takes in the obstacle info list and convert into obstacle data list
 
@@ -182,30 +184,30 @@ class MazeFragment : Fragment() {
             Toast.makeText(context, "Last action undone!", Toast.LENGTH_SHORT).show()
         }
 
-        // Handle robot movement buttons
-        view.findViewById<Button>(R.id.button_move_up).setOnClickListener {
-            robotY = (robotY + 1).coerceAtMost(MazeView.ROW_NUM - 1) // Ensure within bounds
-            mazeView.updateRobotPosition(robotX, robotY, 0) // Update in the MazeView
-            robotDirection = 0 // Update direction
-        }
-
-        view.findViewById<Button>(R.id.button_move_down).setOnClickListener {
-            robotY = (robotY - 1).coerceAtLeast(0) // Ensure within bounds
-            mazeView.updateRobotPosition(robotX, robotY, 180) // Update in the MazeView
-            robotDirection = 180 // Update direction
-        }
-
-        view.findViewById<Button>(R.id.button_move_left).setOnClickListener {
-            robotX = (robotX - 1).coerceAtLeast(0) // Ensure within bounds
-            mazeView.updateRobotPosition(robotX, robotY, 270) // Update in the MazeView
-            robotDirection = 270 // Update direction
-        }
-
-        view.findViewById<Button>(R.id.button_move_right).setOnClickListener {
-            robotX = (robotX + 1).coerceAtMost(MazeView.COLUMN_NUM - 1) // Ensure within bounds
-            mazeView.updateRobotPosition(robotX, robotY, 90) // Update in the MazeView
-            robotDirection = 90 // Update direction
-        }
+//        // Handle robot movement buttons
+//        view.findViewById<Button>(R.id.button_move_up).setOnClickListener {
+//            robotY = (robotY + 1).coerceAtMost(MazeView.ROW_NUM - 1) // Ensure within bounds
+//            mazeView.updateRobotPosition(robotX, robotY, 0) // Update in the MazeView
+//            robotDirection = 0 // Update direction
+//        }
+//
+//        view.findViewById<Button>(R.id.button_move_down).setOnClickListener {
+//            robotY = (robotY - 1).coerceAtLeast(0) // Ensure within bounds
+//            mazeView.updateRobotPosition(robotX, robotY, 180) // Update in the MazeView
+//            robotDirection = 180 // Update direction
+//        }
+//
+//        view.findViewById<Button>(R.id.button_move_left).setOnClickListener {
+//            robotX = (robotX - 1).coerceAtLeast(0) // Ensure within bounds
+//            mazeView.updateRobotPosition(robotX, robotY, 270) // Update in the MazeView
+//            robotDirection = 270 // Update direction
+//        }
+//
+//        view.findViewById<Button>(R.id.button_move_right).setOnClickListener {
+//            robotX = (robotX + 1).coerceAtMost(MazeView.COLUMN_NUM - 1) // Ensure within bounds
+//            mazeView.updateRobotPosition(robotX, robotY, 90) // Update in the MazeView
+//            robotDirection = 90 // Update direction
+//        }
 
         // Handle "Set Robot" button
 //        view.findViewById<Button>(R.id.btn_set_robot).setOnClickListener {
@@ -246,57 +248,123 @@ class MazeFragment : Fragment() {
 //            }
 //        }
 
-        // Reference the communication log TextView
-        val textViewCommsLog: TextView = view.findViewById(R.id.textViewMessageLog)
-        textViewCommsLog.movementMethod = ScrollingMovementMethod()
 
-        // Get the latest communication log
-        val commsLog = CommunicationActivity.getMessageLog()
-        textViewCommsLog.text = commsLog
 
-        // Periodically update the communication log from CommunicationActivity
-//        CoroutineScope(Dispatchers.Main).launch {
-//            while (isActive) {
-//                val targetData = getTarget() // Fetch target info from Bluetooth
-//                Log.d("MazeFragment", "C9 clicked. Target: $targetData")
-//
-//                val parsedTargets = parseTargetData(targetData) // Parse multiple target IDs
-//                if (parsedTargets.isNotEmpty()) {
-//                    Log.d("MazeFragment", "Updating ${parsedTargets.size} obstacles...")
-//                    // Pass the entire list at once
-//                    mazeView.updateObstacleTarget(parsedTargets)
-//                } else {
-//                    Toast.makeText(requireContext(), "Invalid Target Data", Toast.LENGTH_SHORT).show()
-//                }
-//
-//                val robotData = getRobotDataFromBluetooth() // Fetch latest robot info from Bluetooth
-//                Log.d("MazeFragment", "C10 clicked. Robot Data: $robotData")
-//
-//                val parsedRobotData = parseRobotData(robotData) // Parse the received data
-//
-//                if (parsedRobotData != null) {
-//                    val (x, y, direction) = parsedRobotData
-//                    Log.d("MazeFragment", "Updating Robot Position -> X: $x, Y: $y, Dir: $direction°")
-//                    mazeView.updateRobotPosition(x, y, direction) // ✅ Update robot in MazeView
-//                } else {
-//                    Toast.makeText(requireContext(), "Invalid Robot Data", Toast.LENGTH_SHORT).show()
-//                }
-//
-//
-//                val newLog = CommunicationActivity.getMessageLog()
-//                if (newLog != textViewCommsLog.text.toString()) {
-//                    textViewCommsLog.text = newLog
-//                    textViewCommsLog.post {
-//                        val scrollAmount =
-//                            textViewCommsLog.layout.getLineTop(textViewCommsLog.lineCount) - textViewCommsLog.height
-//                        textViewCommsLog.scrollTo(0, if (scrollAmount > 0) scrollAmount else 0)
-//                    }
-//                }
-//                delay(500) // Update every 500ms
-//            }
-//        }
+
 
     }
+
+    private var positionUpdateJob: Job? = null
+    private var bluetoothUpdateJob: Job? = null
+    private val processedImages = mutableSetOf<Pair<Int, String>>() // ✅ Track processed images globally
+
+    override fun onResume() {
+        super.onResume()
+
+        // ✅ Apply the latest robot position when fragment resumes
+        if (com.application.controller.API.LatestRouteObject.robotPosition.size == 3) {
+            Log.d("MazeFragment", "🚀 Applying latest stored position from API")
+            mazeView.updateRobotPosition() // ✅ No arguments needed
+        }
+
+        // ✅ Cancel previous coroutine to avoid duplication
+        positionUpdateJob?.cancel()
+        bluetoothUpdateJob?.cancel()
+
+        // ✅ Reference the communication log TextView safely
+        val textViewCommsLog: TextView = requireView().findViewById(R.id.textViewMessageLog)
+        textViewCommsLog.movementMethod = ScrollingMovementMethod()
+
+        // ✅ Launch a single coroutine to handle:
+        //    1. Robot position updates
+        //    2. Bluetooth data processing
+        //    3. Communication log updates
+        positionUpdateJob = CoroutineScope(Dispatchers.Main).launch {
+            while (isActive) {
+                // ✅ Check if robot position changed and update MazeView
+                if (com.application.controller.API.LatestRouteObject.positionChangedFlag) {
+                    Log.d("MazeFragment", "🚀 Updating MazeView with new position!")
+                    mazeView.updateRobotPosition() // ✅ No arguments needed
+
+                    // ✅ Reset flag after updating
+                    com.application.controller.API.LatestRouteObject.positionChangedFlag = false
+                }
+
+                // ✅ Continuously check for new Bluetooth data
+//                processBluetoothUpdates()
+                mazeView.updateObstacleImage() // ✅ Update obstacles with images
+
+
+                // ✅ Update communication log if changed
+                val newLog = CommunicationActivity.getMessageLog()
+                val commsLog = CommunicationActivity.getMessageLog()
+                textViewCommsLog.text = commsLog
+
+                if (newLog != textViewCommsLog.text.toString()) {
+                    textViewCommsLog.text = newLog
+                    textViewCommsLog.post {
+                        val scrollAmount =
+                            textViewCommsLog.layout.getLineTop(textViewCommsLog.lineCount) - textViewCommsLog.height
+                        textViewCommsLog.scrollTo(0, if (scrollAmount > 0) scrollAmount else 0)
+                    }
+                }
+
+                // ✅ Delay for 500ms before checking again
+                delay(500)
+            }
+        }
+    }
+
+
+    /**
+     * Continuously checks for new Bluetooth updates and processes them.
+     */
+//    private fun processBluetoothUpdates() {
+//        val latestImages = com.application.controller.API.LatestRouteObject.foundImage.toList()
+//
+//        Log.d("MazeFragment", "📡 Found Image List: $latestImages") // ✅ Log all found images
+//
+//        if (latestImages.isNotEmpty()) {
+//            Log.d("MazeFragment", "Received ${latestImages.size} new found images.")
+//
+//            val updatedTargets = mutableListOf<MazeView.ObstacleInfo>()
+//
+//            for (image in latestImages) {
+//                val obstacleID = image.obstacleID.toInt()
+//                val imageID = image.imageID
+//
+//                Log.d("MazeFragment", "📝 Processing Obstacle $obstacleID → Image ID: $imageID")
+//
+//                if (!processedImages.contains(Pair(obstacleID, imageID))) {
+//                    val matchingObstacle = mazeView.obstacleInfoList.find { it.id == obstacleID }
+//
+//                    if (matchingObstacle != null) {
+//                        Log.d("MazeFragment", "✅ Updating Obstacle $obstacleID with Image ID: $imageID")
+//                        mazeView.updateObstacleImageMapping(obstacleID, imageID)
+//                        processedImages.add(Pair(obstacleID, imageID))
+//
+//                        // ✅ Add obstacle to updatedTargets
+//                        updatedTargets.add(matchingObstacle.copy(id = obstacleID, direction = matchingObstacle.direction))
+//                    } else {
+//                        Log.e("MazeFragment", "❌ No matching obstacle found for Obstacle ID: $obstacleID")
+//                    }
+//                } else {
+//                    Log.d("MazeFragment", "⚠️ Skipping duplicate mapping for Obstacle $obstacleID → Image ID: $imageID")
+//                }
+//            }
+//
+//            if (updatedTargets.isNotEmpty()) {
+//                Log.d("MazeFragment", "🔄 Updating obstacles in MazeView: $updatedTargets")
+//                mazeView.updateObstacleImage(updatedTargets)
+//            } else {
+//                Log.d("MazeFragment", "⚠️ No new obstacles to update.")
+//            }
+//        }
+//    }
+
+
+
+
 
 
     private fun setRobotPosition() {
@@ -409,32 +477,43 @@ class MazeFragment : Fragment() {
         }
     }
 
+    private fun checkAndUpdateRobotPosition() {
+        if (com.application.controller.API.LatestRouteObject.positionChangedFlag) {
+            Log.d("MazeFragment", "🚀 New Robot Position Detected!")
 
+            // ✅ Call update in MazeView
+            mazeView.updateRobotPosition()
 
-
-
-    private fun startRobotPath(path: List<Pair<Int, Int>>) {
-        CoroutineScope(Dispatchers.Main).launch {
-            if (path.isEmpty()) {
-                Log.e("MazeDebug", "ERROR: Path is empty, robot has nowhere to go.")
-                return@launch
-            }
-
-            var prevPoint: Pair<Int, Int>? = null
-
-            for (point in path) {
-                if (prevPoint != null) {
-                    val direction = getDirection(prevPoint, point) // Get the correct direction
-                    mazeView.updateRobotPosition(point.first, point.second, direction)
-                } else {
-                    mazeView.updateRobotPosition(point.first, point.second, 90) // Default start direction
-                }
-
-                prevPoint = point
-                delay(500) // Adjust speed of movement
-            }
+            // ✅ Reset flag after updating to prevent duplicate calls
+            com.application.controller.API.LatestRouteObject.positionChangedFlag = false
         }
     }
+
+
+
+
+//    private fun startRobotPath(path: List<Pair<Int, Int>>) {
+//        CoroutineScope(Dispatchers.Main).launch {
+//            if (path.isEmpty()) {
+//                Log.e("MazeDebug", "ERROR: Path is empty, robot has nowhere to go.")
+//                return@launch
+//            }
+//
+//            var prevPoint: Pair<Int, Int>? = null
+//
+//            for (point in path) {
+//                if (prevPoint != null) {
+//                    val direction = getDirection(prevPoint, point) // Get the correct direction
+//                    mazeView.updateRobotPosition(point.first, point.second, direction)
+//                } else {
+//                    mazeView.updateRobotPosition(point.first, point.second, 90) // Default start direction
+//                }
+//
+//                prevPoint = point
+//                delay(500) // Adjust speed of movement
+//            }
+//        }
+//    }
 
     //TODO for C10
     private fun getLatestBotPostion():String

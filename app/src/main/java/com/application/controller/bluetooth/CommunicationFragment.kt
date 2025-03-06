@@ -205,8 +205,7 @@ class CommunicationFragment : Fragment() {
                                 val obstacleID=imageRecogCheck.groupValues[2] //grabs obstacle ID
                                 if(imageID != "NA") //NA means no image recognised
                                 {
-                                    var newRecImg=RecognisedImage(imageID,obstacleID.toInt())
-                                    com.application.controller.API.LatestRouteObject.foundImage.add(newRecImg)
+
                                  //   com.application.controller.API.LatestRouteObject.foundImageID.add(imageID)
                                  //   com.application.controller.API.LatestRouteObject.targetMovementOrder.add(obstacleID.toInt())
                                 }
