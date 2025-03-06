@@ -65,21 +65,33 @@ class MazeFragment : Fragment() {
         mazeView = view.findViewById(R.id.maze_view)
 
         // Initialize spinners
-        spinnerRobotX = view.findViewById(R.id.spinner_robot_x)
-        spinnerRobotY = view.findViewById(R.id.spinner_robot_y)
-        spinnerRobotDirection = view.findViewById(R.id.spinner_robot_direction)
+//        spinnerRobotX = view.findViewById(R.id.spinner_robot_x)
+//        spinnerRobotY = view.findViewById(R.id.spinner_robot_y)
+//        spinnerRobotDirection = view.findViewById(R.id.spinner_robot_direction)
         spinnerObstacleType = view.findViewById(R.id.spinner_obstacle_type)
         spinnerSelectObstacleType = view.findViewById(R.id.spinner_select_obstacle_type)
 
 
 //To send the obstacle information:
 
-        view.findViewById<Button>(R.id.button_start).setOnClickListener {
+        view.findViewById<Button>(R.id.button_start) .setOnClickListener {
             // Checks if bluetooth is connected:
-            if (CommunicationActivity.Companion.bluetoothService?.isConnectedToBluetoothDevice == true){
-            val controlMessage = """{"cat": "control", "value": "start"}"""
-            // Send the message via Bluetooth
-            CommunicationActivity.sendStartExplorationCommand(controlMessage)
+            if (CommunicationActivity.Companion.bluetoothService?.isConnectedToBluetoothDevice == true) {
+                val controlMessage = """{"cat": "control", "value": "start"}"""
+                // Send the message via Bluetooth
+                CommunicationActivity.sendStartExplorationCommand(controlMessage)
+            }else {
+                    Log.e("MazeFragment", "Bluetooth not connected. Cannot send obstacle data.")
+                    Toast.makeText(
+                        requireContext(),
+                        "Bluetooth not connected. Cannot send obstacle data.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                }
+
+        }
+        view.findViewById<Button>(R.id.button_drop).setOnClickListener {
                 val obstacleDataList = getObstacleInfoList().map { obstacle ->
                     ObstacleData(
                         x = obstacle.x,
@@ -89,10 +101,6 @@ class MazeFragment : Fragment() {
                     )
                 }
                 CommunicationActivity.sendOutDataObstacle(obstacleDataList)
-            } else {
-                Log.e("MazeFragment", "Bluetooth not connected. Cannot send obstacle data.")
-                Toast.makeText(requireContext(), "Bluetooth not connected. Cannot send obstacle data.", Toast.LENGTH_SHORT).show()
-            }
         }
 
         // Define obstacle images
@@ -200,9 +208,9 @@ class MazeFragment : Fragment() {
         }
 
         // Handle "Set Robot" button
-        view.findViewById<Button>(R.id.btn_set_robot).setOnClickListener {
-            setRobotPosition()
-        }
+//        view.findViewById<Button>(R.id.btn_set_robot).setOnClickListener {
+//            setRobotPosition()
+//        }
 
         view.findViewById<Button>(R.id.commsLink).setOnClickListener {
             findNavController().navigate(R.id.action_MazeFragment_to_BluetoothFragment)
