@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.application.controller.BluetoothConnectActivity
+import com.application.controller.CommunicationActivity
 import com.application.controller.MainActivity
 import com.application.controller.R
 import com.application.controller.bluetooth.BluetoothSendData
@@ -48,6 +49,7 @@ class APITestActivity : AppCompatActivity(){
     lateinit var ObstacleListItemAdapter: ObstacleListItemAdapter
     var latestAPIResponse: APIResponseInstructions? =null
     private lateinit var BluetoothService : BluetoothService
+    lateinit var sendStartTestButton:Button
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,7 +79,16 @@ class APITestActivity : AppCompatActivity(){
         ObstacleListItemAdapter=ObstacleListItemAdapter(ObstacleList)
         obstacleRecyclerView.adapter=ObstacleListItemAdapter
         obstacleRecyclerView.layoutManager= LinearLayoutManager(this)
-
+        sendStartTestButton=findViewById(R.id.button_testStart)
+        sendStartTestButton.setOnClickListener {
+            //val controlMessage = """{"cat": "control", "value": "start"}"""
+            // Send the message via Bluetooth
+            var data:BluetoothSendData=BluetoothSendData("control","start")
+            BluetoothService.sendOutData(data)
+          /*  CommunicationActivity.sendCommunicationData(
+                data
+            )*/
+        }
         //  val testPostText: EditText = findViewById(R.id.EditView_APITestData)
         val testPost: Button = findViewById(R.id.button_TestAPIPost)
         testPost.setOnClickListener {
