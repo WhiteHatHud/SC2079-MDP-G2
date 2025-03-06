@@ -17,9 +17,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.application.controller.API.APIResponseInstructions
+import com.application.controller.API.ObstacleData
 import com.application.controller.CommunicationActivity
 import com.application.controller.R
-import com.application.controller.bluetooth.BluetoothService
 import com.application.controller.spinner.ObstacleSpinnerAdapter
 import com.application.controller.spinner.ObstacleSelectorAdapter
 import kotlinx.coroutines.*
@@ -49,15 +49,19 @@ class MazeFragment : Fragment() {
     ): View {
         return inflater.inflate(R.layout.fragment_maze, container, false)
     }
+    fun getObstacleInfoList(): List<MazeView.ObstacleInfo> {
+        return mazeView.getObstacleInfoList().toList() // Return a copy of the list to prevent modification
+    }
+    // Takes in the obstacle info list and convert into obstacle data list
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        updateBluetoothStatus(CommunicationActivity.bluetoothService?.isConnectedToBluetoothDevice == true)
-        updateBluetoothConnectedDevice(CommunicationActivity.bluetoothService?.connectedDeviceName)
         var test=getLatestBotPostion()
-
-
-        // Initialize MazeView
+        //for bluetooth status
+        updateBluetoothStatus()
+        updateBluetoothConnectedDevice()
+//        // Initialize MazeView
         mazeView = view.findViewById(R.id.maze_view)
 
         // Initialize spinners
@@ -67,13 +71,28 @@ class MazeFragment : Fragment() {
         spinnerObstacleType = view.findViewById(R.id.spinner_obstacle_type)
         spinnerSelectObstacleType = view.findViewById(R.id.spinner_select_obstacle_type)
 
-        view.findViewById<Button>(R.id.button_start).setOnClickListener {
 
-            // Create the control message
+//To send the obstacle information:
+
+        view.findViewById<Button>(R.id.button_start).setOnClickListener {
+            // Checks if bluetooth is connected:
+            if (CommunicationActivity.Companion.bluetoothService?.isConnectedToBluetoothDevice == true){
             val controlMessage = """{"cat": "control", "value": "start"}"""
             // Send the message via Bluetooth
             CommunicationActivity.sendStartExplorationCommand(controlMessage)
-            CommunicationActivity.sendAllObstacleMessage()
+                val obstacleDataList = getObstacleInfoList().map { obstacle ->
+                    ObstacleData(
+                        x = obstacle.x,
+                        y = obstacle.y,
+                        id = obstacle.id,
+                        d = obstacle.direction // Ensure direction is correctly mapped
+                    )
+                }
+                CommunicationActivity.sendOutDataObstacle(obstacleDataList)
+            } else {
+                Log.e("MazeFragment", "Bluetooth not connected. Cannot send obstacle data.")
+                Toast.makeText(requireContext(), "Bluetooth not connected. Cannot send obstacle data.", Toast.LENGTH_SHORT).show()
+            }
         }
 
         // Define obstacle images
@@ -125,6 +144,7 @@ class MazeFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
+
         // Set listener to update obstacle ID
         spinnerObstacleType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
@@ -145,6 +165,8 @@ class MazeFragment : Fragment() {
             }
             return@setOnTouchListener false
         }
+
+
 
         // Handle Undo button
         view.findViewById<Button>(R.id.button_undo).setOnClickListener {
@@ -188,6 +210,7 @@ class MazeFragment : Fragment() {
         }
 
 
+
         // Setup Reset button
         val resetButton: Button = view.findViewById(R.id.button_reset)
         resetButton.setOnClickListener {
@@ -195,57 +218,25 @@ class MazeFragment : Fragment() {
             Toast.makeText(context, "Maze has been reset!", Toast.LENGTH_SHORT).show()
         }
 
-        fun updateBluetoothStatus(isConnected: Boolean) {
-            val bluetoothStatusTextView = view?.findViewById<TextView>(R.id.bluetoothStatus)
-
-            if (bluetoothStatusTextView != null) {
-                if (isConnected) {
-                    bluetoothStatusTextView.text = "Connected"
-                    bluetoothStatusTextView.setTextColor(Color.GREEN) // Change to green if connected
-                } else {
-                    bluetoothStatusTextView.text = "Disconnected"
-                    bluetoothStatusTextView.setTextColor(Color.RED) // Change to red if disconnected
-                }
-            }
-        }
-        //TODO C9 button
-
-        view.findViewById<Button>(R.id.C9).setOnClickListener {
-            val targetData = getTarget() // Fetch target info from Bluetooth
-            Log.d("MazeFragment", "C9 clicked. Target: $targetData")
-
-            val parsedTargets = parseTargetData(targetData) // Parse multiple target IDs
-
-            if (parsedTargets.isNotEmpty()) {
-                Log.d("MazeFragment", "Updating ${parsedTargets.size} obstacles...")
-
-                // Pass the entire list at once
-                mazeView.updateObstacleTarget(parsedTargets)
-            } else {
-                Toast.makeText(requireContext(), "Invalid Target Data", Toast.LENGTH_SHORT).show()
-            }
-        }
-
        fun getRobotDataFromBluetooth(): String {
             return CommunicationActivity.getLatestMessage() // Fetch latest message
         }
 
         // TODO: Add C10 button to handle robot updates via Bluetooth
-        view.findViewById<Button>(R.id.C10).setOnClickListener {
-            val robotData = getRobotDataFromBluetooth() // Fetch latest robot info from Bluetooth
-            Log.d("MazeFragment", "C10 clicked. Robot Data: $robotData")
-
-            val parsedRobotData = parseRobotData(robotData) // Parse the received data
-
-            if (parsedRobotData != null) {
-                val (x, y, direction) = parsedRobotData
-                Log.d("MazeFragment", "Updating Robot Position -> X: $x, Y: $y, Dir: $direction°")
-                mazeView.updateRobotPosition(x, y, direction) // ✅ Update robot in MazeView
-            } else {
-                Toast.makeText(requireContext(), "Invalid Robot Data", Toast.LENGTH_SHORT).show()
-            }
-        }
-
+//        view.findViewById<Button>(R.id.C10).setOnClickListener {
+//            val robotData = getRobotDataFromBluetooth() // Fetch latest robot info from Bluetooth
+//            Log.d("MazeFragment", "C10 clicked. Robot Data: $robotData")
+//
+//            val parsedRobotData = parseRobotData(robotData) // Parse the received data
+//
+//            if (parsedRobotData != null) {
+//                val (x, y, direction) = parsedRobotData
+//                Log.d("MazeFragment", "Updating Robot Position -> X: $x, Y: $y, Dir: $direction°")
+//                mazeView.updateRobotPosition(x, y, direction) // ✅ Update robot in MazeView
+//            } else {
+//                Toast.makeText(requireContext(), "Invalid Robot Data", Toast.LENGTH_SHORT).show()
+//            }
+//        }
 
         // Reference the communication log TextView
         val textViewCommsLog: TextView = view.findViewById(R.id.textViewMessageLog)
@@ -256,50 +247,46 @@ class MazeFragment : Fragment() {
         textViewCommsLog.text = commsLog
 
         // Periodically update the communication log from CommunicationActivity
-        CoroutineScope(Dispatchers.Main).launch {
-            while (isActive) {
-                //TODO Clean Up logic, to check for, position updates, Target
-
-
-
-                val targetData = getTarget() // Fetch target info from Bluetooth
-                Log.d("MazeFragment", "C9 clicked. Target: $targetData")
-
-                val parsedTargets = parseTargetData(targetData) // Parse multiple target IDs
-                if (parsedTargets.isNotEmpty()) {
-                    Log.d("MazeFragment", "Updating ${parsedTargets.size} obstacles...")
-                    // Pass the entire list at once
-                    mazeView.updateObstacleTarget(parsedTargets)
-                } else {
-                    Toast.makeText(requireContext(), "Invalid Target Data", Toast.LENGTH_SHORT).show()
-                }
-
-                val robotData = getRobotDataFromBluetooth() // Fetch latest robot info from Bluetooth
-                Log.d("MazeFragment", "C10 clicked. Robot Data: $robotData")
-
-                val parsedRobotData = parseRobotData(robotData) // Parse the received data
-
-                if (parsedRobotData != null) {
-                    val (x, y, direction) = parsedRobotData
-                    Log.d("MazeFragment", "Updating Robot Position -> X: $x, Y: $y, Dir: $direction°")
-                    mazeView.updateRobotPosition(x, y, direction) // ✅ Update robot in MazeView
-                } else {
-                    Toast.makeText(requireContext(), "Invalid Robot Data", Toast.LENGTH_SHORT).show()
-                }
-
-
-                val newLog = CommunicationActivity.getMessageLog()
-                if (newLog != textViewCommsLog.text.toString()) {
-                    textViewCommsLog.text = newLog
-                    textViewCommsLog.post {
-                        val scrollAmount =
-                            textViewCommsLog.layout.getLineTop(textViewCommsLog.lineCount) - textViewCommsLog.height
-                        textViewCommsLog.scrollTo(0, if (scrollAmount > 0) scrollAmount else 0)
-                    }
-                }
-                delay(500) // Update every 500ms
-            }
-        }
+//        CoroutineScope(Dispatchers.Main).launch {
+//            while (isActive) {
+//                val targetData = getTarget() // Fetch target info from Bluetooth
+//                Log.d("MazeFragment", "C9 clicked. Target: $targetData")
+//
+//                val parsedTargets = parseTargetData(targetData) // Parse multiple target IDs
+//                if (parsedTargets.isNotEmpty()) {
+//                    Log.d("MazeFragment", "Updating ${parsedTargets.size} obstacles...")
+//                    // Pass the entire list at once
+//                    mazeView.updateObstacleTarget(parsedTargets)
+//                } else {
+//                    Toast.makeText(requireContext(), "Invalid Target Data", Toast.LENGTH_SHORT).show()
+//                }
+//
+//                val robotData = getRobotDataFromBluetooth() // Fetch latest robot info from Bluetooth
+//                Log.d("MazeFragment", "C10 clicked. Robot Data: $robotData")
+//
+//                val parsedRobotData = parseRobotData(robotData) // Parse the received data
+//
+//                if (parsedRobotData != null) {
+//                    val (x, y, direction) = parsedRobotData
+//                    Log.d("MazeFragment", "Updating Robot Position -> X: $x, Y: $y, Dir: $direction°")
+//                    mazeView.updateRobotPosition(x, y, direction) // ✅ Update robot in MazeView
+//                } else {
+//                    Toast.makeText(requireContext(), "Invalid Robot Data", Toast.LENGTH_SHORT).show()
+//                }
+//
+//
+//                val newLog = CommunicationActivity.getMessageLog()
+//                if (newLog != textViewCommsLog.text.toString()) {
+//                    textViewCommsLog.text = newLog
+//                    textViewCommsLog.post {
+//                        val scrollAmount =
+//                            textViewCommsLog.layout.getLineTop(textViewCommsLog.lineCount) - textViewCommsLog.height
+//                        textViewCommsLog.scrollTo(0, if (scrollAmount > 0) scrollAmount else 0)
+//                    }
+//                }
+//                delay(500) // Update every 500ms
+//            }
+//        }
 
     }
 
@@ -359,46 +346,46 @@ class MazeFragment : Fragment() {
     }
 
 
-    private fun parseJsonAndUpdateMaze(jsonString: String) {
-        try {
-            val jsonObject = JSONObject(jsonString)
-            val pathArray = jsonObject.getJSONArray("path")
-            val obstaclesArray = jsonObject.getJSONArray("obstacles")
-
-            // Reset maze before placing obstacles
-            mazeView.resetMaze()
-
-            // Add obstacles
-            for (i in 0 until obstaclesArray.length()) {
-                val obstacle = obstaclesArray.getJSONObject(i)
-                val x = obstacle.getInt("x")
-                val y = obstacle.getInt("y")
-                val order = obstacle.getInt("order")
-                mazeView.addObstacleWithNumber(x, y, "Normal", order)
-            }
-
-            // Extract robot path (filter out diagonal moves)
-            val pathList = mutableListOf<Pair<Int, Int>>()
-            for (i in 0 until pathArray.length()) {
-                val point = pathArray.getJSONObject(i)
-                val x = point.getInt("x")
-                val y = point.getInt("y")
-
-                // Only allow horizontal or vertical movement (not diagonal)
-                if (pathList.isEmpty() || isStraightMove(pathList.last(), Pair(x, y))) {
-                    pathList.add(Pair(x, y))
-                }
-            }
-
-            Log.d("MazeDebug", "Parsed Path (No Diagonals): $pathList")
-
-            // Move the robot
-            startRobotPath(pathList)
-
-        } catch (e: Exception) {
-            Log.e("MazeDebug", "Error parsing JSON: ${e.message}")
-        }
-    }
+//    private fun parseJsonAndUpdateMaze(jsonString: String) {
+//        try {
+//            val jsonObject = JSONObject(jsonString)
+//            val pathArray = jsonObject.getJSONArray("path")
+//            val obstaclesArray = jsonObject.getJSONArray("obstacles")
+//
+//            // Reset maze before placing obstacles
+//            mazeView.resetMaze()
+//
+//            // Add obstacles
+//            for (i in 0 until obstaclesArray.length()) {
+//                val obstacle = obstaclesArray.getJSONObject(i)
+//                val x = obstacle.getInt("x")
+//                val y = obstacle.getInt("y")
+//                val order = obstacle.getInt("order")
+//                mazeView.addObstacleWithNumber(x, y, "Normal", order)
+//            }
+//
+//            // Extract robot path (filter out diagonal moves)
+//            val pathList = mutableListOf<Pair<Int, Int>>()
+//            for (i in 0 until pathArray.length()) {
+//                val point = pathArray.getJSONObject(i)
+//                val x = point.getInt("x")
+//                val y = point.getInt("y")
+//
+//                // Only allow horizontal or vertical movement (not diagonal)
+//                if (pathList.isEmpty() || isStraightMove(pathList.last(), Pair(x, y))) {
+//                    pathList.add(Pair(x, y))
+//                }
+//            }
+//
+//            Log.d("MazeDebug", "Parsed Path (No Diagonals): $pathList")
+//
+//            // Move the robot
+//            startRobotPath(pathList)
+//
+//        } catch (e: Exception) {
+//            Log.e("MazeDebug", "Error parsing JSON: ${e.message}")
+//        }
+//    }
     private fun isStraightMove(from: Pair<Int, Int>, to: Pair<Int, Int>): Boolean {
         return from.first == to.first || from.second == to.second // Ensure movement is only horizontal or vertical
     }
@@ -519,9 +506,6 @@ class MazeFragment : Fragment() {
         return targets
     }
 
-    fun mapToObstacleData(map: Map<Pair<Int, Int>> )
-
-
     private fun getJsonFromApi(): String {
         // Mocking the API response, replace with actual API call
        var latestAPIResponse: APIResponseInstructions?=com.application.controller.API.LatestRouteObject.latestAPIInfo
@@ -574,32 +558,16 @@ class MazeFragment : Fragment() {
 }
     """
     }
+
     // All the buttons lol
-    //BLUETOOTH CONNECTION:
-    fun updateBluetoothStatus(isConnected: Boolean) {
-        val bluetoothStatusTextView = view?.findViewById<TextView>(R.id.bluetoothStatus)
 
-        if (bluetoothStatusTextView != null) {
-            bluetoothStatusTextView.text = if (isConnected) "Connected" else "Disconnected"
-            bluetoothStatusTextView.setTextColor(if (isConnected) Color.GREEN else Color.RED)
-        }
-    }
-
-    fun updateBluetoothConnectedDevice(deviceName: String?) {
-        val bluetoothDeviceTextView = view?.findViewById<TextView>(R.id.bluetoothConnectedDevice)
-
-        bluetoothDeviceTextView?.apply {
-            text = if (!deviceName.isNullOrEmpty()) " $deviceName" else "No Device"
-            setTextColor(if (!deviceName.isNullOrEmpty()) Color.BLUE else Color.RED)
-        }
-    }
 
     private fun getTarget(): String {
         return CommunicationActivity.getLatestMessage()
         // This will return the latest message received via Bluetooth.
     }
 
-    private fun parseRobotData(robotData: String): Triple<Int, Int, Int>? {
+    fun parseRobotData(robotData: String): Triple<Int, Int, Int>? {
         // Expected format: "ROBOT, x, y, direction"
         val parts = robotData.split(",").map { it.trim() }
 
@@ -626,19 +594,30 @@ class MazeFragment : Fragment() {
         return null // Return null if parsing fails
     }
 
-    fun addObstacleToList(x: Int, y: Int, obstacleId: Int, obstacleDirection: Int) {
-        val obstacleData = mapOf(
-            "x" to x,
-            "y" to y,
-            "id" to obstacleId,
-            "d" to obstacleDirection
-        )
 
-        obstacleList.add(obstacleData) // ✅ Store obstacle data in the list
+//Bluetooth Functions
+ fun updateBluetoothStatus() {
+    val bluetoothStatusTextView = view?.findViewById<TextView>(R.id.bluetoothStatus)
 
-        Log.d("MazeFragment", "Obstacle added to list: $obstacleData")
+    bluetoothStatusTextView?.apply {
+        if (CommunicationActivity.Companion.bluetoothService?.isConnectedToBluetoothDevice == true) {
+            text = "Connected"
+            setTextColor(Color.GREEN)
+        } else {
+            text = "Disconnected"
+            setTextColor(Color.RED)
+        }
     }
+}
 
+    // Function to update the connected device name
+    fun updateBluetoothConnectedDevice() {
+        val bluetoothDeviceTextView = view?.findViewById<TextView>(R.id.bluetoothConnectedDevice)
 
-
+        bluetoothDeviceTextView?.apply {
+            val deviceName = CommunicationActivity.Companion.bluetoothService?.connectedDeviceName
+            text = if (!deviceName.isNullOrEmpty()) " $deviceName" else "No Device"
+            setTextColor(if (!deviceName.isNullOrEmpty()) Color.BLUE else Color.RED)
+        }
+    }
 }
