@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.application.controller.API.RecognisedImage
 import com.application.controller.CommunicationActivity
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -34,6 +35,7 @@ class CommunicationFragment : Fragment() {
     private lateinit var persistentStringSendButton2: Button
     private lateinit var volatileStringSendButton: Button
     private lateinit var receivedDataClearButton: Button
+    private lateinit var testStartButton:Button
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,6 +65,7 @@ class CommunicationFragment : Fragment() {
         volatileStringSendButton = root.findViewById<Button>(com.application.controller.R.id.stringSendButton)
         receivedDataClearButton = root.findViewById<Button>(com.application.controller.R.id.receivedDataClearButton)
         textViewCommsLog=root.findViewById<TextView>(com.application.controller.R.id.textViewMessageLog)
+        testStartButton=root.findViewById<Button>(com.application.controller.R.id.button_testStart)
         textViewCommsLog.movementMethod = ScrollingMovementMethod()
 
         //textViewCommsLog.movementMethod = ScrollingMovementMethod.getInstance();
@@ -72,6 +75,14 @@ class CommunicationFragment : Fragment() {
         val returnButton:Button=root.findViewById<Button>(com.application.controller.R.id.button_second)
         returnButton.setOnClickListener {
             activity?.finish()
+        }
+        testStartButton.setOnClickListener {
+            //val controlMessage = """{"cat": "control", "value": "start"}"""
+            // Send the message via Bluetooth
+            var data:BluetoothSendData=BluetoothSendData("control","start")
+            CommunicationActivity.sendCommunicationData(
+                data
+            )
         }
         persistentStringSendButton1.setOnClickListener(View.OnClickListener { view ->
             Snackbar.make(
@@ -181,6 +192,34 @@ class CommunicationFragment : Fragment() {
                             val regex = Regex("FOUND IMG(\\d{2})") //Regex for Image ID found
                             val regexPostionInfo= Regex("""^ROBOT,\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*([NSEW])$""") //Regex for new bot position
                             val regexTarget = Regex("""^TARGET,\s*(\d+)\s*,\s*(\d+)\s*$""") //Regex for new target position
+
+                            val imageRecogRegex=Regex("""\{"cat": "image-rec", "value": \{\s*"image_id": "([^"]+)",\s*"obstacle_id":\s*"(\d+)"\s*\}\}""")
+                            val locationUpdateRegex= Regex("""\{"cat": "location", "value": \{\s*"x":\s*(\d{1,3}),\s*"y":\s*(\d{1,3}),\s*"d":\s*(\d{1,3})\s*\}\}""")
+
+                            val imageRecogCheck=imageRecogRegex.find(parseString)
+                            val locationUpdateCheck=locationUpdateRegex.find(parseString)
+
+                            if(imageRecogCheck!=null)
+                            {
+                                val imageID=imageRecogCheck.groupValues[1] // grabs image ID
+                                val obstacleID=imageRecogCheck.groupValues[2] //grabs obstacle ID
+                                if(imageID != "NA") //NA means no image recognised
+                                {
+                                    var newRecImg=RecognisedImage(imageID,obstacleID.toInt())
+                                    com.application.controller.API.LatestRouteObject.foundImage.add(newRecImg)
+                                 //   com.application.controller.API.LatestRouteObject.foundImageID.add(imageID)
+                                 //   com.application.controller.API.LatestRouteObject.targetMovementOrder.add(obstacleID.toInt())
+                                }
+                            }
+                            if(locationUpdateCheck!=null)
+                            {
+                                val x=locationUpdateCheck.groupValues[1]
+                                val y=locationUpdateCheck.groupValues[2]
+                                val d=locationUpdateCheck.groupValues[3]
+                                com.application.controller.API.LatestRouteObject.positionChangedFlag=true
+                                com.application.controller.API.LatestRouteObject.robotPosition= mutableListOf(x.toInt(),y.toInt(),d.toInt())
+                                //TODO set correct details for processing movement data
+                            }
 
 
                             val matchResult = regex.find(parseString)
