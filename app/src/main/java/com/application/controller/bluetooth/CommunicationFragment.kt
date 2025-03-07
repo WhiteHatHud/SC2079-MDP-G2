@@ -193,7 +193,7 @@ class CommunicationFragment : Fragment() {
                             val regexPostionInfo= Regex("""^ROBOT,\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*([NSEW])$""") //Regex for new bot position
                             val regexTarget = Regex("""^TARGET,\s*(\d+)\s*,\s*(\d+)\s*$""") //Regex for new target position
 
-                            val imageRecogRegex=Regex("""\{"cat": "image-rec", "value": \{\s*"image_id": "([^"]+)",\s*"obstacle_id":\s*"(\d+)"\s*\}\}""")
+                        val imageRecogRegex = Regex("""\{"cat":\s*"image-rec",\s*"value":\s*\{\s*"image_id":\s*"([^"]+)",\s*"obstacle_id":\s*"(\d+)"\s*\}\}""")
                             val locationUpdateRegex= Regex("""\{"cat": "location", "value": \{\s*"x":\s*(\d{1,3}),\s*"y":\s*(\d{1,3}),\s*"d":\s*(\d{1,3})\s*\}\}""")
 
                             val imageRecogCheck=imageRecogRegex.find(parseString)
@@ -202,12 +202,25 @@ class CommunicationFragment : Fragment() {
                             if(imageRecogCheck!=null)
                             {
                                 val imageID=imageRecogCheck.groupValues[1] // grabs image ID
-                                val obstacleID=imageRecogCheck.groupValues[2] //grabs obstacle ID
-                                if(imageID != "NA") //NA means no image recognised
-                                {
+                                val obstacleID=imageRecogCheck.groupValues[2].toInt() //grabs obstacle ID
+                                Log.d("BluetoothService", "📡 Image Recognition Data: Obstacle $obstacleID → Image ID: $imageID")
 
-                                 //   com.application.controller.API.LatestRouteObject.foundImageID.add(imageID)
-                                 //   com.application.controller.API.LatestRouteObject.targetMovementOrder.add(obstacleID.toInt())
+                                if (imageID.isNotEmpty() && imageID != "NA") { // ✅ Ensure valid ID
+                                    val newImage = RecognisedImage(imageID, obstacleID)
+
+                                    // ✅ Allow duplicate imageIDs, but for different obstacles
+                                    if (!com.application.controller.API.LatestRouteObject.foundImage.any { it.obstacleID == obstacleID }) {
+                                        com.application.controller.API.LatestRouteObject.foundImage.add(
+                                            newImage
+                                        )
+                                        Log.d(
+                                            "BluetoothService",
+                                            "✅ Added New Mapping: Obstacle $obstacleID → Image $imageID"
+                                        )
+                                    }
+                                }
+                                else {
+                                    Log.e("BluetoothService", "❌ Invalid Image ID received for Obstacle $obstacleID")
                                 }
                             }
                             if(locationUpdateCheck!=null)

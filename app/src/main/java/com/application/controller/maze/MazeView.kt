@@ -16,6 +16,7 @@ import android.view.View
 import android.widget.Toast
 import com.application.controller.CommunicationActivity
 import com.application.controller.R
+import com.google.gson.Gson
 import java.util.Stack
 import kotlin.math.min
 
@@ -40,9 +41,11 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     fun updateObstacleImageMapping(obstacleID: Int, imageID: String) {
         Log.d("MazeView", "📝 Storing Mapping → Obstacle $obstacleID → Image ID: $imageID")
+        Log.d("MazeView", "🛠 Existing Obstacles: ${obstacleInfoList.map { it.id }}")
 
         obstacleImageMap[obstacleID] = imageID
         Log.d("MazeView", "✅ Updated Mappings: ${obstacleImageMap.toString()}")
+        Log.d("MazeView", "📌 Final Obstacle Image Mapping: ${Gson().toJson(obstacleImageMap)}")
 
         post {
             invalidate()
@@ -814,8 +817,9 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 //    }
 
     fun updateObstacleImage() {
+        Log.d("MazeView", "🔄 Found Image List Before Mapping: ${Gson().toJson(com.application.controller.API.LatestRouteObject.foundImage)}")
         val foundImages = com.application.controller.API.LatestRouteObject.foundImage
-
+        Log.d("MazeView", "📡 Found Image List Before Update: ${com.application.controller.API.LatestRouteObject.foundImage}")
         Log.d("MazeView", "🔄 Updating Obstacle Images from foundImage List: $foundImages")
 
         for (image in foundImages) {
@@ -824,11 +828,15 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
             Log.d("MazeView", "📝 Attempting to map Obstacle $obstacleId → Image ID: $imageId")
 
-            // ✅ Update map directly
-            obstacleImageMap[obstacleId] = imageId
-
-            Log.d("MazeView", "✅ Mapped Obstacle $obstacleId → Image ID: ${obstacleImageMap[obstacleId]}")
+            // ✅ Check if the obstacle exists
+            if (obstacleInfoList.any { it.id == obstacleId }) {
+                obstacleImageMap[obstacleId] = imageId
+                Log.d("MazeView", "✅ Mapped Obstacle $obstacleId → Image ID: ${obstacleImageMap[obstacleId]}")
+            } else {
+                Log.e("MazeView", "❌ No matching obstacle found for ID: $obstacleId")
+            }
         }
+        Log.d("MazeView", "🗺 Final Mapped Obstacle Data: $obstacleImageMap")
 
         invalidate() // ✅ Redraw maze
     }

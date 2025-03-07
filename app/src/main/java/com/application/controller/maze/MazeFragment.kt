@@ -3,6 +3,7 @@ package com.application.controller.maze
 import android.graphics.Color
 import android.content.ClipData
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -23,6 +24,7 @@ import com.application.controller.R
 import com.application.controller.spinner.ObstacleSpinnerAdapter
 import com.application.controller.spinner.ObstacleSelectorAdapter
 import kotlinx.coroutines.*
+import com.google.gson.Gson
 
 //BluetoothService
 
@@ -323,15 +325,32 @@ class MazeFragment : Fragment() {
                     mazeView.updateRobotPosition(x, y, d) // ✅ Apply to MazeView
                     com.application.controller.API.LatestRouteObject.positionChangedFlag = false // ✅ Reset flag
                 }
+                Log.d("MazeFragment", "📡 Found Image List (RAW): ${com.application.controller.API.LatestRouteObject.foundImage}")
 
+// Use Gson to convert objects into JSON string (makes it easier to debug)
+                val foundImageJson = Gson().toJson(com.application.controller.API.LatestRouteObject.foundImage)
+                Log.d("MazeFragment", "📡 Found Image List (JSON): $foundImageJson")
                 // ✅ Check for Found Images Update
-                val foundImages = com.application.controller.API.LatestRouteObject.foundImageID.toList()
+                val foundImages = com.application.controller.API.LatestRouteObject.foundImage.toList()
                 if (foundImages.isNotEmpty()) {
                     Log.d("MazeFragment", "📡 Found Image List: $foundImages")
                     mazeView.updateObstacleImage() // ✅ Assume this function exists
                 }
                 else {
                     Log.d("MazeFragment", "ERROR NO FOUND IMAGES ID")
+                }
+
+                val newLog = CommunicationActivity.getMessageLog()
+                val textViewCommsLog: TextView = view?.findViewById(R.id.textViewMessageLog) ?: return@launch
+                textViewCommsLog.movementMethod = ScrollingMovementMethod()
+
+                if (newLog != textViewCommsLog.text.toString()) {
+                    textViewCommsLog.text = newLog
+                    textViewCommsLog.post {
+                        val scrollAmount =
+                            textViewCommsLog.layout.getLineTop(textViewCommsLog.lineCount) - textViewCommsLog.height
+                        textViewCommsLog.scrollTo(0, if (scrollAmount > 0) scrollAmount else 0)
+                    }
                 }
 
                 delay(500) // ✅ Prevents UI blocking and loops efficiently
@@ -359,6 +378,8 @@ class MazeFragment : Fragment() {
                 val imageID = image.imageID
 
                 Log.d("MazeFragment", "📝 Processing Obstacle $obstacleID → Image ID: $imageID")
+                Log.d("MazeView", "🔄 Found Image List Before Mapping: ${Gson().toJson(com.application.controller.API.LatestRouteObject.foundImage)}")
+
 
                 if (!processedImages.contains(Pair(obstacleID, imageID))) {
                     val matchingObstacle = mazeView.obstacleInfoList.find { it.id == obstacleID }
