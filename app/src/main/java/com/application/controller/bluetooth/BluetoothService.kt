@@ -10,6 +10,7 @@ import android.widget.Toast
 import com.application.controller.API.APIPathData
 import com.application.controller.API.APIResponseInstructions
 import com.application.controller.API.ObstacleData
+import com.application.controller.API.RecognisedImage
 import com.application.controller.MainActivity
 import com.google.android.material.color.utilities.Blend
 import com.google.gson.Gson
@@ -160,6 +161,7 @@ class BluetoothService {
                     )
                     storeLatestMessage(readMessage)
                     storeMessageLogRecieve(readMessage)
+                    processMazeUpdates(readMessage)
                     // Always display the received text in receive data section in CommunicationFragment
                     //TODO MAZE LOGIC IS HERE
                     // Update maze display if it is maze update response message
@@ -350,6 +352,96 @@ class BluetoothService {
         }
     }
     **/
+    fun processMazeUpdates(parseString: String)
+    {
+        val regex = Regex("FOUND IMG(\\d{2})") //Regex for Image ID found
+        val regexPostionInfo= Regex("""^ROBOT,\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*([NSEW])$""") //Regex for new bot position
+        val regexTarget = Regex("""^TARGET,\s*(\d+)\s*,\s*(\d+)\s*$""") //Regex for new target position
+
+        val imageRecogRegex = Regex("""\{"cat":\s*"image-rec",\s*"value":\s*\{\s*"image_id":\s*"([^"]+)",\s*"obstacle_id":\s*"(\d+)"\s*\}\}""")
+        val locationUpdateRegex= Regex("""\{"cat": "location", "value": \{\s*"x":\s*(\d{1,3}),\s*"y":\s*(\d{1,3}),\s*"d":\s*(\d{1,3})\s*\}\}""")
+
+        val imageRecogCheck=imageRecogRegex.find(parseString)
+        val locationUpdateCheck=locationUpdateRegex.find(parseString)
+
+        if(imageRecogCheck!=null)
+        {
+            val imageID=imageRecogCheck.groupValues[1] // grabs image ID
+            val obstacleID=imageRecogCheck.groupValues[2].toInt() //grabs obstacle ID
+            Log.d("BluetoothService", "📡 Image Recognition Data: Obstacle $obstacleID → Image ID: $imageID")
+
+            if (imageID.isNotEmpty() && imageID != "NA") { // ✅ Ensure valid ID
+                val newImage = RecognisedImage(imageID, obstacleID)
+
+                // ✅ Allow duplicate imageIDs, but for different obstacles
+                if (!com.application.controller.API.LatestRouteObject.foundImage.any { it.obstacleID == obstacleID }) {
+                    com.application.controller.API.LatestRouteObject.foundImage.add(
+                        newImage
+                    )
+                    Log.d(
+                        "BluetoothService",
+                        "✅ Added New Mapping: Obstacle $obstacleID → Image $imageID"
+                    )
+                }
+            }
+            else {
+                Log.e("BluetoothService", "❌ Invalid Image ID received for Obstacle $obstacleID")
+            }
+        }
+        if(locationUpdateCheck!=null && !com.application.controller.API.LatestRouteObject.positionChangedFlag)
+        {
+            val x=locationUpdateCheck.groupValues[1]
+            val y=locationUpdateCheck.groupValues[2]
+            val d=locationUpdateCheck.groupValues[3]
+            com.application.controller.API.LatestRouteObject.positionChangedFlag=true
+            com.application.controller.API.LatestRouteObject.robotPosition= mutableListOf(x.toInt(),y.toInt(),d.toInt())
+            //TODO set correct details for processing movement data
+            //check if correct:
+            Log.d("BluetoothService", "🚀 Parsed Robot Position -> X: $x, Y: $y, Dir: $d")
+        }
+
+
+        val matchResult = regex.find(parseString)
+        val matchTarget=regexTarget.find(parseString)
+        val matchPositionUpdate=regexPostionInfo.find(parseString)
+        if(matchPositionUpdate!=null)
+        {
+            val currentLatestPosition=com.application.controller.API.LatestRouteObject.latestRobotPosition
+            if(parseString.equals(currentLatestPosition))
+            {
+                //Nothing since means bot didnt move
+                com.application.controller.API.LatestRouteObject.positionChangedFlag=false
+                //Log.d("Bluetooth COMMS", "Position Unchanged : $currentLatestPosition")
+            }
+            else
+            {
+                com.application.controller.API.LatestRouteObject.latestRobotPosition=parseString
+                com.application.controller.API.LatestRouteObject.positionChangedFlag=true
+                //Log.d("Bluetooth COMMS", "Position Changed : $parseString")
+            }
+        }
+        if (matchResult != null) {
+            val id:Int = matchResult.groupValues[1].toInt() // Extract the captured group (the two digits)
+            if (id>10&&id<41)//Verify that int is within range on constant
+            {
+
+            }
+            // Use the id variable here for later processing
+        } else {
+            println("No ID found in string: $parseString")
+        }
+        if(matchTarget!=null)
+        {
+            com.application.controller.API.LatestRouteObject.targetObstacle=parseString
+            com.application.controller.API.LatestRouteObject.newTargetObstacleFlag=true
+        }
+        else
+        {
+            //Skip
+        }
+    }
+
+
     companion object {
         private const val BLUETOOTH_SERVICE_HANDLER_TAG = "BluetoothService Handler"
         const val BLUETOOTH_SERVICE_TAG = "BluetoothService"
