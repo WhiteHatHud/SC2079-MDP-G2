@@ -83,6 +83,9 @@ dependencies {
 
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
 
+    //Gif
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation("io.coil-kt:coil-compose:2.2.2") // Coil alternative
 
     // GSON
 

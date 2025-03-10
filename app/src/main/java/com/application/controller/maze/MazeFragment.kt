@@ -16,15 +16,20 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.application.controller.API.APIResponseInstructions
 import com.application.controller.API.LatestRouteObject
 import com.application.controller.API.ObstacleData
 import com.application.controller.CommunicationActivity
+import com.application.controller.MenuActivity
 import com.application.controller.R
+import com.application.controller.bluetooth.BluetoothSendData
 import com.application.controller.spinner.ObstacleSpinnerAdapter
 import com.application.controller.spinner.ObstacleSelectorAdapter
 import kotlinx.coroutines.*
 import com.google.gson.Gson
+import com.application.controller.ObstacleListAdapter
 
 //BluetoothService
 
@@ -44,12 +49,33 @@ class MazeFragment : Fragment() {
     private var robotY = 1
     private var robotDirection = 0
 
+    //recycler view things
+//    private lateinit var obstacleRecyclerView: RecyclerView
+//    private lateinit var obstacleListAdapter: ObstacleListAdapter
+//    private var obstacleInfoList = mutableListOf<MazeView.ObstacleInfo>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         return inflater.inflate(R.layout.fragment_maze, container, false)
+//        val view = inflater.inflate(R.layout.fragment_maze, container, false)
+//
+//        // ✅ Setup RecyclerView
+//        obstacleRecyclerView = view.findViewById(R.id.RecyclerView_ObstacleList)
+//        obstacleListAdapter = ObstacleListAdapter(obstacleInfoList)
+//        obstacleRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+//        obstacleRecyclerView.adapter = obstacleListAdapter
+//
+//        return view
+
     }
+//    fun updateObstacleList(newList: List<MazeView.ObstacleInfo>) {
+//        obstacleInfoList.clear()
+//        obstacleInfoList.addAll(newList)
+//        obstacleListAdapter.notifyDataSetChanged()
+//    }
+
     fun getObstacleInfoList(): List<MazeView.ObstacleInfo> {
         return mazeView.fetchObstacleInfoList().toList() // Return a copy of the list to prevent modification
     }
@@ -58,19 +84,31 @@ class MazeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        var btService  = com.application.controller.MenuActivity.getBluetoothService()
         var test=getLatestBotPostion()
         //for bluetooth status
-        updateBluetoothStatus()
-        updateBluetoothConnectedDevice()
+        val bluetoothStatusTextView = view.findViewById<TextView>(R.id.bluetoothStatus)
+        val bluetoothDeviceTextView = view.findViewById<TextView>(R.id.bluetoothConnectedDevice)
+
 //        // Initialize MazeView
         mazeView = view.findViewById(R.id.maze_view)
-
-        // Initialize spinners
-//        spinnerRobotX = view.findViewById(R.id.spinner_robot_x)
-//        spinnerRobotY = view.findViewById(R.id.spinner_robot_y)
-//        spinnerRobotDirection = view.findViewById(R.id.spinner_robot_direction)
         spinnerObstacleType = view.findViewById(R.id.spinner_obstacle_type)
         spinnerSelectObstacleType = view.findViewById(R.id.spinner_select_obstacle_type)
+
+        //bluetooth check:
+        // ✅ Check Bluetooth Status Directly
+        if (btService != null) {
+            bluetoothStatusTextView.text = "Connected"
+            bluetoothStatusTextView.setTextColor(Color.GREEN)
+        } else {
+            bluetoothStatusTextView.text = "Disconnected"
+            bluetoothStatusTextView.setTextColor(Color.RED)
+        }
+
+        // ✅ Check Connected Device Name Directly
+        val deviceName = CommunicationActivity.Companion.bluetoothService?.connectedDeviceName
+        bluetoothDeviceTextView.text = if (!deviceName.isNullOrEmpty()) " $deviceName" else "No Device"
+        bluetoothDeviceTextView.setTextColor(if (!deviceName.isNullOrEmpty()) Color.BLUE else Color.RED)
 
 
 //To send the obstacle information:
@@ -178,35 +216,73 @@ class MazeFragment : Fragment() {
 
 
         // Handle Undo button
-        view.findViewById<Button>(R.id.button_undo).setOnClickListener {
-            mazeView.undoLastAction()
-            Toast.makeText(context, "Last action undone!", Toast.LENGTH_SHORT).show()
-        }
+//        view.findViewById<Button>(R.id.button_undo).setOnClickListener {
+//            mazeView.undoLastAction()
+//            Toast.makeText(context, "Last action undone!", Toast.LENGTH_SHORT).show()
+//        }
 
 //        // Handle robot movement buttons
-//        view.findViewById<Button>(R.id.button_move_up).setOnClickListener {
+       view.findViewById<Button>(R.id.button_move_up).setOnClickListener {
+           if (btService != null) {
+               val newBtSendData = BluetoothSendData("control", "FW010")
+               btService.sendOutData(newBtSendData)
+               // btService.sendOutMessage("FW010")
+
+           } else {
+               Toast.makeText(this.context, "No Bluetooth Connection", Toast.LENGTH_SHORT).show()
 //            robotY = (robotY + 1).coerceAtMost(MazeView.ROW_NUM - 1) // Ensure within bounds
 //            mazeView.updateRobotPosition(robotX, robotY, 0) // Update in the MazeView
 //            robotDirection = 0 // Update direction
-//        }
+           }
+       }
 //
-//        view.findViewById<Button>(R.id.button_move_down).setOnClickListener {
+        view.findViewById<Button>(R.id.button_move_down).setOnClickListener {
+
+            //Send Backward command via bluetooth
+            if (btService != null) {
+                val newBtSendData= BluetoothSendData("control","BW010")
+                btService.sendOutData(newBtSendData)
+                //btService.sendOutMessage("BW010")
+            }else
+            {
+                Toast.makeText(this.context, "No Bluetooth Connection", Toast.LENGTH_SHORT).show()
+            }
+
 //            robotY = (robotY - 1).coerceAtLeast(0) // Ensure within bounds
 //            mazeView.updateRobotPosition(robotX, robotY, 180) // Update in the MazeView
 //            robotDirection = 180 // Update direction
-//        }
+        }
+
 //
-//        view.findViewById<Button>(R.id.button_move_left).setOnClickListener {
+        view.findViewById<Button>(R.id.button_move_left).setOnClickListener {
 //            robotX = (robotX - 1).coerceAtLeast(0) // Ensure within bounds
 //            mazeView.updateRobotPosition(robotX, robotY, 270) // Update in the MazeView
 //            robotDirection = 270 // Update direction
-//        }
+
+            //Send Left command via bluetooth
+            if (btService != null) {
+                val newBtSendData= BluetoothSendData("control","FL000")
+                btService.sendOutData(newBtSendData)
+                // btService.sendOutMessage("FL000")
+            }else
+            {
+                Toast.makeText(this.context, "No Bluetooth Connection", Toast.LENGTH_SHORT).show()
+            }
+        }
 //
-//        view.findViewById<Button>(R.id.button_move_right).setOnClickListener {
+        view.findViewById<Button>(R.id.button_move_right).setOnClickListener {
 //            robotX = (robotX + 1).coerceAtMost(MazeView.COLUMN_NUM - 1) // Ensure within bounds
 //            mazeView.updateRobotPosition(robotX, robotY, 90) // Update in the MazeView
 //            robotDirection = 90 // Update direction
-//        }
+            if (btService != null) {
+                val newBtSendData= BluetoothSendData("control","FR000")
+                btService.sendOutData(newBtSendData)
+                //btService.sendOutMessage("FR000")
+            }else
+            {
+                Toast.makeText(this.context, "No Bluetooth Connection", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         // Handle "Set Robot" button
 //        view.findViewById<Button>(R.id.btn_set_robot).setOnClickListener {
@@ -245,7 +321,9 @@ class MazeFragment : Fragment() {
 //            } else {
 //                Toast.makeText(requireContext(), "Invalid Robot Data", Toast.LENGTH_SHORT).show()
 //            }
+//
 //        }
+
 
 
 
@@ -334,6 +412,10 @@ class MazeFragment : Fragment() {
                 val foundImages = com.application.controller.API.LatestRouteObject.foundImage.toList()
                 if (foundImages.isNotEmpty()) {
                     Log.d("MazeFragment", "📡 Found Image List: $foundImages")
+                    //updates the mapp continously
+                    for (image in foundImages) {
+                        mazeView.updateObstacleImageMapping(image.obstacleID, image.imageID)
+                    }
                     mazeView.updateObstacleImage() // ✅ Assume this function exists
                 }
                 else {
@@ -729,28 +811,28 @@ class MazeFragment : Fragment() {
 
 
 //Bluetooth Functions
- fun updateBluetoothStatus() {
-    val bluetoothStatusTextView = view?.findViewById<TextView>(R.id.bluetoothStatus)
+// fun updateBluetoothStatus() {
+//    val bluetoothStatusTextView = view?.findViewById<TextView>(R.id.bluetoothStatus)
+//
+//    bluetoothStatusTextView?.apply {
+//        if (btService != null) {
+//            text = "Connected"
+//            setTextColor(Color.GREEN)
+//        } else {
+//            text = "Disconnected"
+//            setTextColor(Color.RED)
+//        }
+//    }
+//}
 
-    bluetoothStatusTextView?.apply {
-        if (CommunicationActivity.Companion.bluetoothService?.isConnectedToBluetoothDevice == true) {
-            text = "Connected"
-            setTextColor(Color.GREEN)
-        } else {
-            text = "Disconnected"
-            setTextColor(Color.RED)
-        }
-    }
-}
-
-    // Function to update the connected device name
-    fun updateBluetoothConnectedDevice() {
-        val bluetoothDeviceTextView = view?.findViewById<TextView>(R.id.bluetoothConnectedDevice)
-
-        bluetoothDeviceTextView?.apply {
-            val deviceName = CommunicationActivity.Companion.bluetoothService?.connectedDeviceName
-            text = if (!deviceName.isNullOrEmpty()) " $deviceName" else "No Device"
-            setTextColor(if (!deviceName.isNullOrEmpty()) Color.BLUE else Color.RED)
-        }
-    }
+//    // Function to update the connected device name
+//    fun updateBluetoothConnectedDevice() {
+//        val bluetoothDeviceTextView = view?.findViewById<TextView>(R.id.bluetoothConnectedDevice)
+//
+//        bluetoothDeviceTextView?.apply {
+//            val deviceName = CommunicationActivity.Companion.bluetoothService?.connectedDeviceName
+//            text = if (!deviceName.isNullOrEmpty()) " $deviceName" else "No Device"
+//            setTextColor(if (!deviceName.isNullOrEmpty()) Color.BLUE else Color.RED)
+//        }
+//    }
 }

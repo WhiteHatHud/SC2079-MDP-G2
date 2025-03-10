@@ -205,22 +205,24 @@ class CommunicationFragment : Fragment() {
                                 val obstacleID=imageRecogCheck.groupValues[2].toInt() //grabs obstacle ID
                                 Log.d("BluetoothService", "📡 Image Recognition Data: Obstacle $obstacleID → Image ID: $imageID")
 
-                                if (imageID.isNotEmpty() && imageID != "NA") { // ✅ Ensure valid ID
-                                    val newImage = RecognisedImage(imageID, obstacleID)
-
-                                    // ✅ Allow duplicate imageIDs, but for different obstacles
-                                    if (!com.application.controller.API.LatestRouteObject.foundImage.any { it.obstacleID == obstacleID }) {
-                                        com.application.controller.API.LatestRouteObject.foundImage.add(
-                                            newImage
-                                        )
-                                        Log.d(
-                                            "BluetoothService",
-                                            "✅ Added New Mapping: Obstacle $obstacleID → Image $imageID"
-                                        )
-                                    }
-                                }
-                                else {
-                                    Log.e("BluetoothService", "❌ Invalid Image ID received for Obstacle $obstacleID")
+                                if (imageID != "NA") { // ✅ Ensure valid ID
+                                    var newRecImg = RecognisedImage(imageID,obstacleID.toInt())
+                                    com.application.controller.API.LatestRouteObject.foundImage.add(newRecImg)
+//                                    val newImage = RecognisedImage(imageID, obstacleID)
+//
+//                                    // ✅ Allow duplicate imageIDs, but for different obstacles
+//                                    if (!com.application.controller.API.LatestRouteObject.foundImage.any { it.obstacleID == obstacleID }) {
+//                                        com.application.controller.API.LatestRouteObject.foundImage.add(
+//                                            newImage
+//                                        )
+//                                        Log.d(
+//                                            "BluetoothService",
+//                                            "✅ Added New Mapping: Obstacle $obstacleID → Image $imageID"
+//                                        )
+//                                    }
+//                                }
+//                                else {
+//                                    Log.e("BluetoothService", "❌ Invalid Image ID received for Obstacle $obstacleID")
                                 }
                             }
                             if(locationUpdateCheck!=null)

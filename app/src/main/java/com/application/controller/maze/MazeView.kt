@@ -22,8 +22,6 @@ import kotlin.math.min
 
 class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     private var gridSize = 0
-    private val outerMargin = 150 // Increase this value for more space
-
     //obstacle variables
     // Stores obstacle directions
     private var obstacleID = 1
@@ -38,6 +36,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     val obstacleInfoList: MutableList<ObstacleInfo> = mutableListOf()
     //Mapping the obstacle ID to new target ID
     private val obstacleImageMap: MutableMap<Int, String> = mutableMapOf() // ✅ Map ObstacleID → ImageID
+
 
     fun updateObstacleImageMapping(obstacleID: Int, imageID: String) {
         Log.d("MazeView", "📝 Storing Mapping → Obstacle $obstacleID → Image ID: $imageID")
@@ -73,12 +72,6 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     private val emptyGridPaint = Paint()
     private val labelPaint = Paint()
     private val zonePaint = Paint()
-    private val targetIDPaint = Paint().apply {
-        color = Color.RED   // Make it stand out
-        textSize = 40f      // Bigger size for visibility
-        textAlign = Paint.Align.CENTER
-        isFakeBoldText = true // Make it bold for emphasis
-    }
     //for the path
     private val pathMap: MutableList<Pair<Int, Int>> = mutableListOf()
 
@@ -86,9 +79,9 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     // Tank images
     private val robotBitmaps: Map<Int, Bitmap> = mapOf(
         0 to BitmapFactory.decodeResource(resources, R.drawable.tank_up),
-        90 to BitmapFactory.decodeResource(resources, R.drawable.tank_right),
-        180 to BitmapFactory.decodeResource(resources, R.drawable.tank_down),
-        270 to BitmapFactory.decodeResource(resources, R.drawable.tank_left)
+        2 to BitmapFactory.decodeResource(resources, R.drawable.tank_right),
+        4 to BitmapFactory.decodeResource(resources, R.drawable.tank_down),
+        6 to BitmapFactory.decodeResource(resources, R.drawable.tank_left)
     )
 
     // Obstacle images
@@ -139,6 +132,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        updateObstacleImage()
         drawGrid(canvas)
         drawLabels(canvas)
         drawRobot(canvas)
@@ -238,6 +232,8 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     }
 
     private fun drawObstacles(canvas: Canvas) {
+        Log.d("MazeView", "🔄 Drawing Obstacles...")
+
         for (obstacle in obstacleInfoList) {
             val (x, y, id, d) = obstacle
             val left = x * gridSize + leftMargin
@@ -257,25 +253,15 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
                 val scaledBitmap = Bitmap.createScaledBitmap(obstacleBitmap, gridSize, gridSize, false)
                 canvas.drawBitmap(scaledBitmap, left.toFloat(), top.toFloat(), null)
 
-                // ✅ Correctly fetch `imageID`, if available
-                val displayedLabel = if (obstacleImageMap.containsKey(id)) {
-                    val mappedLabel = obstacleImageMap[id]
-                    Log.d("MazeView", "🔍 Obstacle $id has a mapped label: $mappedLabel")
-                    mappedLabel ?: id.toString()
-                } else {
-                    Log.d("MazeView", "🚫 Obstacle $id is NOT targeted (No image ID found)")
-                    id.toString() // Default to obstacleID if no mapping exists
-                }
+                // ✅ Fetch mapped image ID directly from foundImage
+                val mappedLabel = com.application.controller.API.LatestRouteObject.foundImage
+                    .find { it.obstacleID == id }?.imageID
 
                 // ✅ Check if this obstacle has been mapped with an `imageID`
-                val isTargeted = if (obstacleImageMap.containsKey(id)) {
-                    Log.d("MazeView", "🎯 Obstacle $id is targeted with Image ID: ${obstacleImageMap[id]}")
-                    true
-                } else {
-                    Log.d("MazeView", "🚫 Obstacle $id is NOT targeted")
-                    false
-                }
+                val isTargeted = mappedLabel != null
+                val displayedLabel = mappedLabel ?: id.toString()
 
+                Log.d("MazeView", if (isTargeted) "🎯 Obstacle $id is targeted with Image ID: $mappedLabel" else "🚫 Obstacle $id is NOT targeted")
 
                 // Update text paint properties
                 val textSize = if (isTargeted) 40f else 20f
@@ -300,58 +286,6 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         }
     }
 
-
-
-
-    private fun rotateBitmap(source: Bitmap, angle: Int): Bitmap {
-        val matrix = android.graphics.Matrix()
-        matrix.postRotate(angle.toFloat())
-        return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
-    }
-
-
-
-//    fun addObstacleWithNumber(x: Int, y: Int, id: Int, d: Int) {
-//        if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM && type in obstacleBitmaps.keys) {
-//            saveState()
-//
-//            obstacleMap[Pair(x, y)] = type
-//            obstacleNumbersMap[Pair(x, y)] = number
-//
-//            invalidate()
-//        }
-//    }
-
-    fun addObstacle(x: Int, y: Int, type: String) {
-        if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM) {
-            saveState()
-
-            val id = obstacleInfoList.size + 1
-            val direction = getDirectionFromType(type)
-            val obstacle = ObstacleInfo(x , y, id, direction)
-            obstacleInfoList.add(obstacle)
-
-//            val validTypes = listOf("Up", "Down", "Left", "Right")
-//            val validatedType = if (type in validTypes) type else "Up" // ✅ Ensure valid type
-//            obstacleMap[Pair(x, y)] = validatedType
-//            obstacleIDMap[Pair(x, y)] = obstacleID++
-//
-//            val obstacleDirection = getObstacleDirection(validatedType)
-//            obstacleDirectionMap[Pair(x, y)] = obstacleDirection
-//
-//            // Send Add Obstacle Message via Bluetooth
-//            val obstacleId = obstacleIDMap[Pair(x, y)] ?: 0
-//            CommunicationActivity.sendAddObstacleMessage(x, y, obstacleId, obstacleDirection)
-
-            Log.d("MazeView", "Added Obstacle at ($x, $y) with ID: $id and Direction: $direction°")
-            invalidate()
-        }
-    }
-
-    private fun getRobotDataFromBluetooth(): String {
-        return CommunicationActivity.getLatestMessage() // Fetch latest message
-    }
-
     fun updateRobotPosition(x: Int, y: Int, direction: Int) {
         Log.d("MazeView", "Updating Robot Position -> X: $x, Y: $y, Dir: $direction°")
 
@@ -366,32 +300,6 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
             Log.e("MazeView", "❌ Invalid Position -> X: $x, Y: $y is out of bounds")
         }
     }
-
-//    fun updateRobotPosition() {
-//        val positionData = com.application.controller.API.LatestRouteObject.robotPosition
-//
-//        if (positionData.size == 3) {
-//            val x = positionData[0]
-//            val y = positionData[1]
-//            val direction = positionData[2]
-//
-//            Log.d("MazeView", "🟢 updateRobotPosition() CALLED -> X: $x, Y: $y, Dir: $direction°")
-//
-//            if (x in 0 until COLUMN_NUM && y in 0 until ROW_NUM) {
-//                robotX = x
-//                robotY = y
-//                robotDirection = direction
-//                invalidate() // ✅ Redraw
-//            } else {
-//                Log.e("MazeView", "❌ Position Out of Bounds -> X: $x, Y: $y")
-//            }
-//        } else {
-//            Log.e("MazeView", "❌ Invalid Position Data: $positionData")
-//        }
-//    }
-
-
-
 
 
     fun setRobotPosition(x: Int, y: Int, direction: Int) {
@@ -414,21 +322,17 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         val robotDirection: Int,
         val obstacleList: List<ObstacleInfo>
     )
-    //reset maZe stuff
     fun resetMaze() {
         // Reset robot to initial position and direction
         saveState()
         robotX = 1
         robotY = 1
         robotDirection = 0
-
         // Clear all obstacles
         obstacleInfoList.clear()
         obstacleID = 1
-        pathMap.clear()
-
         // Send Bluetooth Reset Command
-        CommunicationActivity.sendResetCommand()
+        //CommunicationActivity.sendResetCommand()
 
         // Redraw the maze
         invalidate()
@@ -472,8 +376,6 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     }
 
 
-
-
     private fun startDraggingObstacle(x: Int, y: Int) {
         val clipData = ClipData.newPlainText("obstacle", "$x,$y")
         val shadowBuilder = View.DragShadowBuilder(this)
@@ -512,29 +414,6 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
             Log.d("MazeView", "Tried to move obstacle at ($oldX, $oldY) but none found")
         }
     }
-//        if (obstacleMap.containsKey(Pair(oldX, oldY))) {
-//            val type = obstacleMap[Pair(oldX, oldY)]!!
-//            val id = obstacleIDMap[Pair(oldX, oldY)]!!
-//            val direction = obstacleDirectionMap[Pair(oldX, oldY)] ?: 0 // Maintain direction
-//
-//            // Remove from old position
-//            obstacleMap.remove(Pair(oldX, oldY))
-//            obstacleIDMap.remove(Pair(oldX, oldY))
-//            obstacleDirectionMap.remove(Pair(oldX, oldY))
-//
-//            // Place at new position
-//            obstacleMap[Pair(newX, newY)] = type
-//            obstacleIDMap[Pair(newX, newY)] = id
-//            obstacleDirectionMap[Pair(newX, newY)] = direction
-//
-//            // Send Bluetooth Message for Obstacle Movement
-//            CommunicationActivity.sendMoveObstacleMessage(oldX, oldY, newX, newY, id)
-//
-//            invalidate() // Redraw the grid
-//            Log.d("MazeView", "Obstacle moved from ($oldX, $oldY) to ($newX, $newY)")
-//        }
-
-
 
     fun removeObstacleFromGrid(x: Int, y: Int) {
         // ✅ Check if the obstacle exists before removing it
@@ -564,45 +443,6 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
             // ✅ If no obstacle exists at this location
             Toast.makeText(context, "No obstacle found at ($x, $y) to remove", Toast.LENGTH_SHORT).show()
             Log.d("MazeView", "Tried to remove obstacle at ($x, $y) but none found")
-        }
-    }
-
-
-
-    private val targetedObstacles: MutableSet<ObstacleInfo> = mutableSetOf()
-
-    fun updateObstacleTarget(targets: List<ObstacleInfo>) {
-        Log.d("MazeView", "Updating multiple obstacles with new IDs...")
-        Log.d("MazeView", "Existing Obstacle IDs: ${obstacleInfoList.map {it.id}}")
-
-        var updated = false
-        val updatedObstacles = mutableListOf<ObstacleInfo>() // Track updated positions
-
-        for (target in targets) {
-            val existingObstacle = obstacleInfoList.find { it.x == target.x && it.y == target.y }
-
-            if (existingObstacle != null) {
-                // ✅ Update the obstacle's ID and direction while keeping the same (x, y)
-                val updatedObstacle = ObstacleInfo(target.x, target.y, target.id, target.direction)
-
-                // ✅ Add to updated list (instead of modifying original directly)
-                updatedObstacles.add(updatedObstacle)
-
-                Log.d("MazeView", "Updated obstacle at (${target.x}, ${target.y}) -> New ID: ${target.id}, New Direction: ${target.direction}")
-                updated = true
-            } else {
-                Log.e("MazeView", "No obstacle found at (${target.x}, ${target.y}) to update.")
-            }
-        }
-
-        if (updated) {
-            // ✅ Replace existing obstacles with updated ones
-            obstacleInfoList.removeAll { existing -> targets.any { it.x == existing.x && it.y == existing.y } }
-            obstacleInfoList.addAll(updatedObstacles)
-
-            invalidate() // ✅ Redraw the view
-        } else {
-            Toast.makeText(context, "No matching obstacles found!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -767,11 +607,15 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
                         //add to the list
                         obstacleInfoList.add(newObstacle)
+  //                       ✅ Use addObstacle() function instead of manually creating an obstacle
+//                        addObstacle(x, y, selectedObstacleType)
 
                         //CommunicationActivity.sendAddObstacleMessage(x, y, obstacleId, obstacleDirection)
 
                         Toast.makeText(context, "Dropped $obstacleDirection at ($x, $y)", Toast.LENGTH_SHORT).show()
                         Log.d("MazeView", "Obstacle added at: ($x, $y) | Type: $obstacleDirection | Direction: $obstacleDirection°")
+ //                       mazeFragment?.updateObstacleList(obstacleInfoList)
+
                     } else {
                         Toast.makeText(context, "Obstacle already exists at ($x, $y)", Toast.LENGTH_SHORT).show()
                     }
@@ -790,56 +634,24 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         return true
     }
 
-    //code to update target ID
-//    fun updateObstacleImage(targets: List<String>) {
-//        Log.d("MazeView", "Updating obstacles...")
-//
-//        var updated = false
-//        val updatedObstacles = mutableListOf<ObstacleInfo>()
-//
-//        for (target in targets) {
-//            val existingObstacle = obstacleInfoList.find { it.id == target.id }
-//
-//            if (existingObstacle != null) {
-//                // ✅ Keep the original obstacle ID but update its mapped image ID
-//                updatedObstacles.add(existingObstacle)
-//                updated = true
-//            } else {
-//                Log.e("MazeView", "No obstacle found for ID: ${target.id}")
-//            }
-//        }
-//
-//        if (updated) {
-//            invalidate() // ✅ Redraw the view
-//        } else {
-//            Toast.makeText(context, "No matching obstacles found!", Toast.LENGTH_SHORT).show()
-//        }
-//    }
 
     fun updateObstacleImage() {
-        Log.d("MazeView", "🔄 Found Image List Before Mapping: ${Gson().toJson(com.application.controller.API.LatestRouteObject.foundImage)}")
         val foundImages = com.application.controller.API.LatestRouteObject.foundImage
-        Log.d("MazeView", "📡 Found Image List Before Update: ${com.application.controller.API.LatestRouteObject.foundImage}")
+
         Log.d("MazeView", "🔄 Updating Obstacle Images from foundImage List: $foundImages")
 
+        // ✅ Clear old mappings before updating
+        obstacleImageMap.clear()
+
         for (image in foundImages) {
-            val obstacleId = image.obstacleID.toInt()
-            val imageId = image.imageID
-
-            Log.d("MazeView", "📝 Attempting to map Obstacle $obstacleId → Image ID: $imageId")
-
-            // ✅ Check if the obstacle exists
-            if (obstacleInfoList.any { it.id == obstacleId }) {
-                obstacleImageMap[obstacleId] = imageId
-                Log.d("MazeView", "✅ Mapped Obstacle $obstacleId → Image ID: ${obstacleImageMap[obstacleId]}")
-            } else {
-                Log.e("MazeView", "❌ No matching obstacle found for ID: $obstacleId")
-            }
+            obstacleImageMap[image.obstacleID] = image.imageID
+            Log.d("MazeView", "✅ Mapped Obstacle ${image.obstacleID} → Image ID: ${image.imageID}")
         }
-        Log.d("MazeView", "🗺 Final Mapped Obstacle Data: $obstacleImageMap")
 
-        invalidate() // ✅ Redraw maze
+        invalidate() // ✅ Redraw the maze
     }
+
+
 
 
     // ✅ Function to update the image ID mapping
