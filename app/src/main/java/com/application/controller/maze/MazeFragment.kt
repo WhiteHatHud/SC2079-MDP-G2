@@ -87,8 +87,8 @@ class MazeFragment : Fragment() {
         var btService  = com.application.controller.MenuActivity.getBluetoothService()
         var test=getLatestBotPostion()
         //for bluetooth status
-        val bluetoothStatusTextView = view.findViewById<TextView>(R.id.bluetoothStatus)
-        val bluetoothDeviceTextView = view.findViewById<TextView>(R.id.bluetoothConnectedDevice)
+//        val bluetoothStatusTextView = view.findViewById<TextView>(R.id.bluetoothStatus)
+//        val bluetoothDeviceTextView = view.findViewById<TextView>(R.id.bluetoothConnectedDevice)
 
 //        // Initialize MazeView
         mazeView = view.findViewById(R.id.maze_view)
@@ -97,22 +97,22 @@ class MazeFragment : Fragment() {
 
         //bluetooth check:
         // ✅ Check Bluetooth Status Directly
-        if (btService != null) {
-            bluetoothStatusTextView.text = "Connected"
-            bluetoothStatusTextView.setTextColor(Color.GREEN)
-        } else {
-            bluetoothStatusTextView.text = "Disconnected"
-            bluetoothStatusTextView.setTextColor(Color.RED)
-        }
-
-        // ✅ Check Connected Device Name Directly
-        var deviceName = ""
-        if (btService!=null)
-        {
-            deviceName = btService.connectedDeviceName.toString()
-        }
-        bluetoothDeviceTextView.text = if (!deviceName.isNullOrEmpty()) " $deviceName" else "No Device"
-        bluetoothDeviceTextView.setTextColor(if (!deviceName.isNullOrEmpty()) Color.BLUE else Color.RED)
+//        if (btService != null) {
+//            bluetoothStatusTextView.text = "Connected"
+//            bluetoothStatusTextView.setTextColor(Color.GREEN)
+//        } else {
+//            bluetoothStatusTextView.text = "Disconnected"
+//            bluetoothStatusTextView.setTextColor(Color.RED)
+//        }
+//
+//        // ✅ Check Connected Device Name Directly
+//        var deviceName = ""
+//        if (btService!=null)
+//        {
+//            deviceName = btService.connectedDeviceName.toString()
+//        }
+//        bluetoothDeviceTextView.text = if (!deviceName.isNullOrEmpty()) " $deviceName" else "No Device"
+//        bluetoothDeviceTextView.setTextColor(if (!deviceName.isNullOrEmpty()) Color.BLUE else Color.RED)
 
 
 //To send the obstacle information:
@@ -301,10 +301,10 @@ class MazeFragment : Fragment() {
 //            setRobotPosition()
 //        }
 
-        view.findViewById<Button>(R.id.commsLink).setOnClickListener {
-            findNavController().navigate(R.id.action_MazeFragment_to_BluetoothFragment)
-            Toast.makeText(context, "Navigating to COMMS LINK...", Toast.LENGTH_SHORT).show()
-        }
+//        view.findViewById<Button>(R.id.commsLink).setOnClickListener {
+//            findNavController().navigate(R.id.action_MazeFragment_to_BluetoothFragment)
+//            Toast.makeText(context, "Navigating to COMMS LINK...", Toast.LENGTH_SHORT).show()
+//        }
 
 
 

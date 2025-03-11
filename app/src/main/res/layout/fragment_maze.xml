@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/mazebackground"
+    android:background="@drawable/maze_background"
     android:orientation="vertical">
 
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="450dp"
+        android:layout_height="600dp"
         android:orientation="horizontal"
         android:layout_marginTop="0dp"
         android:padding="0dp"
@@ -20,7 +20,7 @@
 
         <!-- MazeView for displaying the maze -->
         <LinearLayout
-            android:layout_width="430dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:layout_weight="1">
@@ -30,61 +30,61 @@
                 class="com.application.controller.maze.MazeView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@android:color/darker_gray"
-                android:padding="20dp" />
+                android:background="@drawable/maze_background"
+                android:layout_margin="50dp"/>
         </LinearLayout>
 
         <!-- Sidebar containing COMMS LINK, MISSION UPLINK, TANK CONDITION, Direction, and Coordinates -->
-        <LinearLayout
-            android:layout_width="125dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="2dp"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:layout_weight="1">
+<!--        <LinearLayout-->
+<!--            android:layout_width="125dp"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_marginStart="2dp"-->
+<!--            android:gravity="center"-->
+<!--            android:orientation="vertical"-->
+<!--            android:layout_weight="1">-->
 
-            <!-- COMMS LINK Section (Previously Bluetooth) -->
-            <Button
-                android:id="@+id/commsLink"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:background="@drawable/metal_button"
-                android:gravity="center"
-                android:text="COMMS LINK"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:fontFamily="@font/military_font"
-                android:textSize="10sp"
-                app:backgroundTint="@null" />
+<!--            &lt;!&ndash; COMMS LINK Section (Previously Bluetooth) &ndash;&gt;-->
+<!--            <Button-->
+<!--                android:id="@+id/commsLink"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="30dp"-->
+<!--                android:background="@drawable/metal_button"-->
+<!--                android:gravity="center"-->
+<!--                android:text="COMMS LINK"-->
+<!--                android:textAlignment="center"-->
+<!--                android:textColor="@color/black"-->
+<!--                android:fontFamily="@font/military_font"-->
+<!--                android:textSize="10sp"-->
+<!--                app:backgroundTint="@null" />-->
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/container_black"
-                android:orientation="vertical">
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="5dp"-->
+<!--                android:background="@drawable/container_black"-->
+<!--                android:orientation="vertical">-->
 
-                <TextView
-                    android:id="@+id/bluetoothStatus"
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:fontFamily="sans-serif"
-                    android:gravity="center"
-                    android:text="Disconnected"
-                    android:textAlignment="center"
-                    android:textColor="@android:color/holo_red_dark" />
+<!--                <TextView-->
+<!--                    android:id="@+id/bluetoothStatus"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="30dp"-->
+<!--                    android:fontFamily="sans-serif"-->
+<!--                    android:gravity="center"-->
+<!--                    android:text="Disconnected"-->
+<!--                    android:textAlignment="center"-->
+<!--                    android:textColor="@android:color/holo_red_dark" />-->
 
-                <TextView
-                    android:id="@+id/bluetoothConnectedDevice"
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:fontFamily="sans-serif"
-                    android:gravity="center"
-                    android:text="No Device Linked"
-                    android:textAlignment="center"
-                    android:textColor="@android:color/holo_red_dark" />
-            </LinearLayout>
+<!--                <TextView-->
+<!--                    android:id="@+id/bluetoothConnectedDevice"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="30dp"-->
+<!--                    android:fontFamily="sans-serif"-->
+<!--                    android:gravity="center"-->
+<!--                    android:text="No Device Linked"-->
+<!--                    android:textAlignment="center"-->
+<!--                    android:textColor="@android:color/holo_red_dark" />-->
+<!--            </LinearLayout>-->
 
 <!--            &lt;!&ndash; MISSION UPLINK Section (API Status) &ndash;&gt;-->
 <!--            <Button-->
@@ -181,15 +181,15 @@
 <!--                android:textAlignment="center"-->
 <!--                android:textColor="@color/army_green" />-->
 <!-- To do -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:id="@+id/RecyclerView_ObstacleList"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/button_addObstacleToList">
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginHorizontal="10dp"-->
+<!--                android:id="@+id/RecyclerView_ObstacleList"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/button_addObstacleToList">-->
 
-            </androidx.recyclerview.widget.RecyclerView>
+<!--            </androidx.recyclerview.widget.RecyclerView>-->
 
 <!--            <LinearLayout-->
 <!--                android:layout_width="match_parent"-->
@@ -243,8 +243,6 @@
 <!--            </LinearLayout>-->
 
         </LinearLayout>
-    </LinearLayout>
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_container"
@@ -475,15 +473,15 @@
                     app:layout_constraintStart_toEndOf="@id/button_move_down"
                     app:layout_constraintTop_toTopOf="@id/button_move_down" />
 
-                <ImageView
-                    android:id="@+id/composeView"
-                    android:src="@drawable/catgif"
-                    android:layout_marginTop="10dp"
-                    android:layout_width="150dp"
-                    android:layout_height="100dp"
-                    app:layout_constraintTop_toBottomOf="@+id/button_move_down"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+<!--                <ImageView-->
+<!--                    android:id="@+id/composeView"-->
+<!--                    android:src="@drawable/catgif"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:layout_width="150dp"-->
+<!--                    android:layout_height="100dp"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/button_move_down"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"/>-->
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -497,30 +495,30 @@
                 app:layout_constraintStart_toEndOf="@id/layout_controls"
                 app:layout_constraintEnd_toStartOf="@id/reset_controls_layout">
 
-                <ScrollView
-                    android:id="@+id/scrollViewCommsLog"
-                    android:layout_width="150dp"
-                    android:layout_height="200dp"
-                    android:fillViewport="true"
-                    android:background="@color/green_color"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
+<!--                <ScrollView-->
+<!--                    android:id="@+id/scrollViewCommsLog"-->
+<!--                    android:layout_width="150dp"-->
+<!--                    android:layout_height="200dp"-->
+<!--                    android:fillViewport="true"-->
+<!--                    android:background="@color/green_color"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent">-->
 
-                    <TextView
-                        android:id="@+id/textViewMessageLog"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/black"
-                        android:background="@color/green_color"
-                        android:maxLines="10"
-                        android:scrollbars="vertical"
-                        android:scrollbarStyle="insideInset"
-                        android:overScrollMode="always"
-                        android:text="Communication Log"
-                        android:gravity="top|center"/>
-                </ScrollView>
+<!--                    <TextView-->
+<!--                        android:id="@+id/textViewMessageLog"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:textColor="@color/black"-->
+<!--                        android:background="@color/green_color"-->
+<!--                        android:maxLines="10"-->
+<!--                        android:scrollbars="vertical"-->
+<!--                        android:scrollbarStyle="insideInset"-->
+<!--                        android:overScrollMode="always"-->
+<!--                        android:text="Communication Log"-->
+<!--                        android:gravity="top|center"/>-->
+<!--                </ScrollView>-->
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- 3️⃣ Reset Controls Layout -->
@@ -540,7 +538,7 @@
                     app:backgroundTint="@null"
                     android:textColor="@color/black"
                     android:fontFamily="@font/archivef"
-                    android:textSize="25dp"
+                    android:textSize="20dp"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
@@ -554,7 +552,7 @@
                     app:backgroundTint="@null"
                     android:textColor="@color/black"
                     android:fontFamily="@font/archivef"
-                    android:textSize="25dp"
+                    android:textSize="20dp"
                     android:layout_marginTop="10dp"
                     app:layout_constraintTop_toBottomOf="@id/button_drop"
                     app:layout_constraintStart_toStartOf="parent"
@@ -569,7 +567,7 @@
                     app:backgroundTint="@null"
                     android:textColor="@color/black"
                     android:fontFamily="@font/archivef"
-                    android:textSize="25dp"
+                    android:textSize="20dp"
                     android:layout_marginTop="10dp"
                     app:layout_constraintTop_toBottomOf="@id/button_start"
                     app:layout_constraintStart_toStartOf="parent"

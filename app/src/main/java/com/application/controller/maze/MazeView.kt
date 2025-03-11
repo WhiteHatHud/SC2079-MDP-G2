@@ -114,7 +114,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         gridLinePaint.color = Color.BLACK
         gridLinePaint.strokeWidth = 2f
 
-        emptyGridPaint.color = Color.parseColor("#C2B280")
+        emptyGridPaint.color = Color.argb(150, 194, 178, 128) // 150 = 60% opacity
 
         labelPaint.color = Color.BLACK
         labelPaint.textSize = 20f
@@ -265,7 +265,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
                 Log.d("MazeView", if (isTargeted) "🎯 Obstacle $id is targeted with Image ID: $mappedLabel" else "🚫 Obstacle $id is NOT targeted")
 
                 // Update text paint properties
-                val textSize = if (isTargeted) 40f else 20f
+                val textSize = if (isTargeted) 30f else 20f
                 val textColor = if (isTargeted) Color.RED else Color.WHITE
 
                 // Apply to labelPaint
