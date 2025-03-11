@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Point
 import android.util.AttributeSet
 import android.util.Log
 import android.view.DragEvent
@@ -279,9 +280,25 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
                     labelPaint
                 )
 
+                if (previewX != null && previewY != null && previewObstacleType != null) {
+                    val previewLeft = previewX!! * gridSize + leftMargin
+                    val previewTop = (ROW_NUM - previewY!! - 1) * gridSize
+
+                    val previewBitmap = obstacleBitmaps[previewObstacleType]
+                    if (previewBitmap != null){
+                        val scaledPreviewBitmap = Bitmap.createScaledBitmap(previewBitmap, gridSize, gridSize, false)
+
+                        val paint = Paint()
+                        paint.alpha = 150
+
+                        canvas.drawBitmap(scaledPreviewBitmap, previewLeft.toFloat(), previewTop.toFloat(), paint)
+
+                    }
+                }
                 Log.d("MazeView", "🖼️ Drawing Obstacle at ($x, $y) with ID: $id → Label: $displayedLabel (Targeted: $isTargeted)")
             } else {
                 Log.e("MazeView", "❌ Error: No bitmap found for type: $type at ($x, $y)")
+
             }
         }
     }
@@ -378,10 +395,20 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     private fun startDraggingObstacle(x: Int, y: Int) {
         val clipData = ClipData.newPlainText("obstacle", "$x,$y")
-        val shadowBuilder = View.DragShadowBuilder(this)
-        startDragAndDrop(clipData, shadowBuilder, null, 0)
+
+        val obstacleType = getObstacleType(selectedObstacleDirection)
         val obstacle = obstacleInfoList.find { it.x == x && it.y == y }
         val direction = obstacle?.direction ?: 0
+        val obstacleBitmap = obstacleBitmaps[obstacleType]
+
+
+        if(obstacleBitmap != null){
+            val scaledBitmap = Bitmap.createScaledBitmap(obstacleBitmap, gridSize, gridSize, false)
+            val shadowBuilder = ObstacleDragShadowBuilder(this, scaledBitmap)
+            startDragAndDrop(clipData, shadowBuilder, null, 0)
+
+        }
+
         previewObstacleType = getObstacleType(direction)
         previewX = x
         previewY = y
@@ -550,16 +577,33 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     override fun onDragEvent(event: DragEvent?): Boolean {
         when (event?.action) {
-
             DragEvent.ACTION_DRAG_STARTED -> {
                 isDraggingObstacle = true
+                val clipData = event.clipData?.getItemAt(0)?.text?.toString()
+                val coordinates = clipData?.split(",")?.map{it.toIntOrNull()}
+
+                if(coordinates != null && coordinates.size == 2){
+                    val x = coordinates[0]!!
+                    val y = coordinates[1]!!
+                    val obstacle = obstacleInfoList.find{it.x == x && it.y == y}
+                    val direction = obstacle?.direction ?:0
+                    previewObstacleType = getObstacleType(selectedObstacleDirection)
+                }
+
+
+                val x = ((event.x - leftMargin + gridSize / 2) / gridSize).toInt()
+                val y = (ROW_NUM -1 -  ((event.y + gridSize / 2) / gridSize).toInt())
+
+                previewX = x
+                previewY = y
                 invalidate() // Redraw to show preview
             }
 
             DragEvent.ACTION_DRAG_LOCATION -> {
 
+                //test this:
                 val x = ((event.x - leftMargin + gridSize / 2) / gridSize).toInt()
-                val y = (ROW_NUM - 1 - ((event.y + gridSize / 2) / gridSize).toInt())
+                val y = (ROW_NUM -1 -  ((event.y + gridSize / 2) / gridSize).toInt())
 
                 // Update preview position
                 previewX = x
@@ -652,9 +696,18 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     }
 
 
-
-
     // ✅ Function to update the image ID mapping
 
+    private class ObstacleDragShadowBuilder(view: View, private val bitmap: Bitmap) : View.DragShadowBuilder(view) {
+        override fun onProvideShadowMetrics(size: Point, touch: Point) {
+            size.set(bitmap.width, bitmap.height)
+            touch.set(bitmap.width / 2, bitmap.height / 2)
+
+        }
+
+        override fun onDrawShadow(canvas: Canvas) {
+            canvas.drawBitmap(bitmap, 0f, 0f, null)
+        }
+    }
 
 }
