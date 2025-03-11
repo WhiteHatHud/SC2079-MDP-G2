@@ -106,7 +106,11 @@ class MazeFragment : Fragment() {
         }
 
         // ✅ Check Connected Device Name Directly
-        val deviceName = CommunicationActivity.Companion.bluetoothService?.connectedDeviceName
+        var deviceName = ""
+        if (btService!=null)
+        {
+            deviceName = btService.connectedDeviceName.toString()
+        }
         bluetoothDeviceTextView.text = if (!deviceName.isNullOrEmpty()) " $deviceName" else "No Device"
         bluetoothDeviceTextView.setTextColor(if (!deviceName.isNullOrEmpty()) Color.BLUE else Color.RED)
 
@@ -115,10 +119,15 @@ class MazeFragment : Fragment() {
 
         view.findViewById<Button>(R.id.button_start) .setOnClickListener {
             // Checks if bluetooth is connected:
+            /*
             if (CommunicationActivity.Companion.bluetoothService?.isConnectedToBluetoothDevice == true) {
                 val controlMessage = """{"cat": "control", "value": "start"}"""
                 // Send the message via Bluetooth
-                CommunicationActivity.sendStartExplorationCommand(controlMessage)
+          //      CommunicationActivity.sendStartExplorationCommand(controlMessage)*/
+                if (btService != null) {
+                    val controlMessage = """{"cat": "control", "value": "start"}"""
+                    btService.sendOutMessage(controlMessage)
+               // }
             }else {
                     Log.e("MazeFragment", "Bluetooth not connected. Cannot send obstacle data.")
                     Toast.makeText(
@@ -139,7 +148,10 @@ class MazeFragment : Fragment() {
                         d = obstacle.direction // Ensure direction is correctly mapped
                     )
                 }
-                CommunicationActivity.sendOutDataObstacle(obstacleDataList)
+            if (btService != null) {
+                btService.sendOutDataObstacle(obstacleDataList)
+            }
+            //    CommunicationActivity.sendOutDataObstacle(obstacleDataList)
         }
 
         // Define obstacle images
