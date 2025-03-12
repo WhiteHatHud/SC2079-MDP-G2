@@ -433,7 +433,7 @@ class MazeFragment : Fragment() {
                 else {
                     Log.d("MazeFragment", "ERROR NO FOUND IMAGES ID")
                 }
-
+                /*
                 val newLog = CommunicationActivity.getMessageLog()
                 val textViewCommsLog: TextView = view?.findViewById(R.id.textViewMessageLog) ?: return@launch
                 textViewCommsLog.movementMethod = ScrollingMovementMethod()
@@ -446,6 +446,7 @@ class MazeFragment : Fragment() {
                         textViewCommsLog.scrollTo(0, if (scrollAmount > 0) scrollAmount else 0)
                     }
                 }
+                */
 
                 delay(500) // ✅ Prevents UI blocking and loops efficiently
             }
