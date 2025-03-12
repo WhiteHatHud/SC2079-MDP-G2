@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/maze_background"
+    android:background="@drawable/zbg"
     android:orientation="vertical">
 
-
+    <!-- Edit the height to change the mazesize -->
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="600dp"
+        android:layout_height="480dp"
         android:orientation="horizontal"
         android:layout_marginTop="0dp"
         android:padding="0dp"
@@ -30,8 +30,8 @@
                 class="com.application.controller.maze.MazeView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/maze_background"
-                android:layout_margin="50dp"/>
+                android:background="@drawable/mazeview_bg"
+                android:layout_margin="20dp"/>
         </LinearLayout>
 
         <!-- Sidebar containing COMMS LINK, MISSION UPLINK, TANK CONDITION, Direction, and Coordinates -->
@@ -249,7 +249,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp"
-        android:layout_marginTop="160dp"
+        android:layout_marginTop="185dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -407,12 +407,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@+id/positions_layout"
-            android:layout_marginTop="20dp">
+            android:layout_marginTop="30dp">
 
             <!-- 1️⃣ Controls Layout (Movement Buttons) -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout_controls"
-                android:layout_width="240dp"
+                android:layout_width="260dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toStartOf="@id/layout_communication"
                 app:layout_constraintStart_toStartOf="parent">
@@ -429,7 +429,7 @@
                     app:layout_constraintBottom_toTopOf="@id/button_move_down"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginBottom="10dp"/>
+                    android:layout_marginBottom="5dp"/>
 
                 <!-- Down Button -->
                 <Button
@@ -442,7 +442,7 @@
                     app:backgroundTint="@null"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="5dp"
                     app:layout_constraintTop_toBottomOf="@id/button_move_up" />
 
                 <!-- Left Button -->
@@ -454,7 +454,7 @@
                     android:fontFamily="@font/archive"
                     android:text="◄"
                     app:backgroundTint="@null"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="5dp"
                     app:layout_constraintBottom_toBottomOf="@id/button_move_down"
                     app:layout_constraintEnd_toStartOf="@id/button_move_down"
                     app:layout_constraintTop_toTopOf="@id/button_move_down" />
@@ -468,7 +468,7 @@
                     android:fontFamily="@font/archive"
                     android:text="►"
                     app:backgroundTint="@null"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="5dp"
                     app:layout_constraintBottom_toBottomOf="@id/button_move_down"
                     app:layout_constraintStart_toEndOf="@id/button_move_down"
                     app:layout_constraintTop_toTopOf="@id/button_move_down" />
@@ -537,8 +537,8 @@
                     android:background="@drawable/green_button"
                     app:backgroundTint="@null"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/archivef"
-                    android:textSize="20dp"
+                    android:fontFamily="@font/archive"
+                    android:textSize="10dp"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
@@ -551,9 +551,9 @@
                     android:background="@drawable/green_button"
                     app:backgroundTint="@null"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/archivef"
-                    android:textSize="20dp"
-                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/archive"
+                    android:textSize="10dp"
+                    android:layout_marginTop="5dp"
                     app:layout_constraintTop_toBottomOf="@id/button_drop"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
@@ -566,27 +566,13 @@
                     android:background="@drawable/green_button"
                     app:backgroundTint="@null"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/archivef"
-                    android:textSize="20dp"
-                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/archive"
+                    android:textSize="10dp"
+                    android:layout_marginTop="5dp"
                     app:layout_constraintTop_toBottomOf="@id/button_start"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
-<!--                <Button-->
-<!--                    android:id="@+id/button_undo"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="5. UNDO"-->
-<!--                    android:background="@drawable/green_button"-->
-<!--                    app:backgroundTint="@null"-->
-<!--                    android:textColor="@color/black"-->
-<!--                    android:fontFamily="@font/archivef"-->
-<!--                    android:textSize="25dp"-->
-<!--                    android:layout_marginTop="10dp"-->
-<!--                    app:layout_constraintTop_toBottomOf="@id/button_reset"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"/>-->
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

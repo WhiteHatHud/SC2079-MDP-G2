@@ -4,12 +4,11 @@
 
     <!-- Background color with transparency (90% opacity black) -->
     <solid android:color="#90000000"/>
-
     <!-- Rounded corners -->
     <corners android:radius="20dp"/>
 
     <!-- Border (black) -->
     <stroke
-        android:width="4dp"
+        android:width="2dp"
         android:color="#000000"/> <!-- Black border -->
 </shape>

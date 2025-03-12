@@ -113,13 +113,10 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     init {
         gridLinePaint.color = Color.BLACK
         gridLinePaint.strokeWidth = 2f
-
         emptyGridPaint.color = Color.argb(150, 194, 178, 128) // 150 = 60% opacity
-
         labelPaint.color = Color.BLACK
         labelPaint.textSize = 20f
         labelPaint.textAlign = Paint.Align.CENTER
-
         zonePaint.color = Color.GREEN
     }
 
@@ -209,7 +206,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     private fun drawLabels(canvas: Canvas) {
         val labelOffset = gridSize * 0.4f
-        val xLabelMargin = gridSize * 0f
+        val xLabelMargin = gridSize * 0.2f //moves grid lower
         val yLabelOffset = 10f
 
 
@@ -217,7 +214,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
             canvas.drawText(
                 i.toString(),
                 (i * gridSize + leftMargin + labelOffset).toFloat(),
-                ((ROW_NUM + 0.5) * gridSize - xLabelMargin).toFloat(), // 🛠 Moves X labels slightly higher
+                ((ROW_NUM + 0.5) * gridSize + xLabelMargin).toFloat(), // 🛠 Moves X labels slightly higher
                 labelPaint
             )
         }
@@ -225,7 +222,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         for (j in 0 until ROW_NUM) {
             canvas.drawText(
                 j.toString(),
-                leftMargin * 0.3f, // 🛠 Moves Y labels slightly to the left
+                leftMargin * 0.8f, // 🛠 Moves Y labels slightly to the left
                 ((ROW_NUM - j - 0.5) * gridSize + yLabelOffset).toFloat(), // 🛠 Adjusts label position
                 labelPaint
             )
