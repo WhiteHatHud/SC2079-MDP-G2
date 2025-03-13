@@ -268,7 +268,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
                 Log.d("MazeView", if (isTargeted) "🎯 Obstacle $id is targeted with Image ID: $mappedLabel" else "🚫 Obstacle $id is NOT targeted")
 
                 // Update text paint properties
-                val textSize = if (isTargeted) 30f else 20f
+                val textSize = if (isTargeted) 25f else 20f
                 val textColor = if (isTargeted) Color.RED else Color.WHITE
                 // Apply to labelPaint
                 labelPaint.color = textColor
