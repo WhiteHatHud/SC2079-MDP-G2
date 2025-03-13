@@ -230,7 +230,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     }
 
     private fun drawObstacles(canvas: Canvas) {
-        Log.d("MazeView", "🔄 Drawing Obstacles...")
+       // Log.d("MazeView", "🔄 Drawing Obstacles...")
 
         for (obstacle in obstacleInfoList) {
             val (x, y, id, d) = obstacle
@@ -679,7 +679,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     fun updateObstacleImage() {
         val foundImages = com.application.controller.API.LatestRouteObject.foundImage
 
-        Log.d("MazeView", "🔄 Updating Obstacle Images from foundImage List: $foundImages")
+       // Log.d("MazeView", "🔄 Updating Obstacle Images from foundImage List: $foundImages")
 
         // ✅ Clear old mappings before updating
         obstacleImageMap.clear()

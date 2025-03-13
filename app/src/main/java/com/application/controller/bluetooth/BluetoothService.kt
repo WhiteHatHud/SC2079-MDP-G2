@@ -354,10 +354,11 @@ class BluetoothService {
     **/
     fun processMazeUpdates(parseString: String)
     {
+        /*
         val regex = Regex("FOUND IMG(\\d{2})") //Regex for Image ID found
         val regexPostionInfo= Regex("""^ROBOT,\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*([NSEW])$""") //Regex for new bot position
         val regexTarget = Regex("""^TARGET,\s*(\d+)\s*,\s*(\d+)\s*$""") //Regex for new target position
-
+*/
         val imageRecogRegex = Regex("""\{"cat":\s*"image-rec",\s*"value":\s*\{\s*"image_id":\s*"([^"]+)",\s*"obstacle_id":\s*"(\d+)"\s*\}\}""")
         val locationUpdateRegex= Regex("""\{"cat": "location", "value": \{\s*"x":\s*(\d{1,3}),\s*"y":\s*(\d{1,3}),\s*"d":\s*(\d{1,3})\s*\}\}""")
 
@@ -400,7 +401,7 @@ class BluetoothService {
             Log.d("BluetoothService", "🚀 Parsed Robot Position -> X: $x, Y: $y, Dir: $d")
         }
 
-
+        /*
         val matchResult = regex.find(parseString)
         val matchTarget=regexTarget.find(parseString)
         val matchPositionUpdate=regexPostionInfo.find(parseString)
@@ -438,7 +439,7 @@ class BluetoothService {
         else
         {
             //Skip
-        }
+        }*/
     }
 
 

@@ -415,7 +415,7 @@ class MazeFragment : Fragment() {
                     mazeView.updateRobotPosition(x, y, d) // ✅ Apply to MazeView
                     com.application.controller.API.LatestRouteObject.positionChangedFlag = false // ✅ Reset flag
                 }
-                Log.d("MazeFragment", "📡 Found Image List (RAW): ${com.application.controller.API.LatestRouteObject.foundImage}")
+               // Log.d("MazeFragment", "📡 Found Image List (RAW): ${com.application.controller.API.LatestRouteObject.foundImage}")
 
 // Use Gson to convert objects into JSON string (makes it easier to debug)
                 val foundImageJson = Gson().toJson(com.application.controller.API.LatestRouteObject.foundImage)
@@ -431,7 +431,7 @@ class MazeFragment : Fragment() {
                     mazeView.updateObstacleImage() // ✅ Assume this function exists
                 }
                 else {
-                    Log.d("MazeFragment", "ERROR NO FOUND IMAGES ID")
+               //     Log.d("MazeFragment", "ERROR NO FOUND IMAGES ID")
                 }
                 /*
                 val newLog = CommunicationActivity.getMessageLog()
