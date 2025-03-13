@@ -349,13 +349,10 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         robotDirection = 0
         // Clear all obstacles
         obstacleInfoList.clear()
-
         obstacleID = 1
         obstacleImageMap.clear()
-        // Send Bluetooth Reset Command
-        //CommunicationActivity.sendResetCommand()
-
-        // Redraw the maze
+        //clears the foundimage mutable list:
+        com.application.controller.API.LatestRouteObject.foundImage.clear()
         invalidate()
 
         Log.d("MazeView", "Maze has been reset. Sending reset command via Bluetooth.")
