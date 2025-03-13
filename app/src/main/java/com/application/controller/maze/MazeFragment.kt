@@ -305,8 +305,11 @@ class MazeFragment : Fragment() {
 //            findNavController().navigate(R.id.action_MazeFragment_to_BluetoothFragment)
 //            Toast.makeText(context, "Navigating to COMMS LINK...", Toast.LENGTH_SHORT).show()
 //        }
-
-
+        val resetImage: Button = view.findViewById(R.id.button_resetImage)
+        resetImage.setOnClickListener{
+            com.application.controller.API.LatestRouteObject.foundImage.clear()
+            Toast.makeText(context, "Removed all Image Ids!", Toast.LENGTH_SHORT).show()
+        }
 
         // Setup Reset button
         val resetButton: Button = view.findViewById(R.id.button_reset)
