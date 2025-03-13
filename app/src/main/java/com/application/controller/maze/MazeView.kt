@@ -71,11 +71,17 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     // Paint for grid lines
     private val gridLinePaint = Paint()
     private val emptyGridPaint = Paint()
-    private val labelPaint = Paint()
+    private val gridLabelPaint = Paint().apply {
+        color = Color.WHITE  // Set grid labels color
+        textSize = 20f       // Set grid labels text size
+        isAntiAlias = true   // Make text smooth
+        textAlign = Paint.Align.CENTER  // Center align text
+    }
     private val zonePaint = Paint()
     //for the path
     private val pathMap: MutableList<Pair<Int, Int>> = mutableListOf()
-
+    //label paint for the labelling of obstacles
+    private val labelPaint = Paint()
 
     // Tank images
     private val robotBitmaps: Map<Int, Bitmap> = mapOf(
@@ -215,7 +221,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
                 i.toString(),
                 (i * gridSize + leftMargin + labelOffset).toFloat(),
                 ((ROW_NUM + 0.5) * gridSize + xLabelMargin).toFloat(), // 🛠 Moves X labels slightly higher
-                labelPaint
+                gridLabelPaint
             )
         }
 
@@ -224,7 +230,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
                 j.toString(),
                 leftMargin * 0.8f, // 🛠 Moves Y labels slightly to the left
                 ((ROW_NUM - j - 0.5) * gridSize + yLabelOffset).toFloat(), // 🛠 Adjusts label position
-                labelPaint
+                gridLabelPaint
             )
         }
     }
@@ -262,9 +268,8 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
                 Log.d("MazeView", if (isTargeted) "🎯 Obstacle $id is targeted with Image ID: $mappedLabel" else "🚫 Obstacle $id is NOT targeted")
 
                 // Update text paint properties
-                val textSize = if (isTargeted) 30f else 20f
+                val textSize = if (isTargeted) 25f else 20f
                 val textColor = if (isTargeted) Color.RED else Color.WHITE
-
                 // Apply to labelPaint
                 labelPaint.color = textColor
                 labelPaint.textSize = textSize
