@@ -354,6 +354,7 @@ class BluetoothService {
     **/
     fun processMazeUpdates(parseString: String)
     {
+        Log.d("BluetoothService", "📡 PROCESS MAZE UPDATE MSG: $parseString")
         /*
         val regex = Regex("FOUND IMG(\\d{2})") //Regex for Image ID found
         val regexPostionInfo= Regex("""^ROBOT,\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*([NSEW])$""") //Regex for new bot position
@@ -367,6 +368,7 @@ class BluetoothService {
 
         if(imageRecogCheck!=null)
         {
+
             val imageID=imageRecogCheck.groupValues[1] // grabs image ID
             val obstacleID=imageRecogCheck.groupValues[2].toInt() //grabs obstacle ID
             Log.d("BluetoothService", "📡 Image Recognition Data: Obstacle $obstacleID → Image ID: $imageID")

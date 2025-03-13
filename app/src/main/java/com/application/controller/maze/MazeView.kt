@@ -36,7 +36,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     )
     val obstacleInfoList: MutableList<ObstacleInfo> = mutableListOf()
     //Mapping the obstacle ID to new target ID
-    private val obstacleImageMap: MutableMap<Int, String> = mutableMapOf() // ✅ Map ObstacleID → ImageID
+    private var obstacleImageMap: MutableMap<Int, String> = mutableMapOf() // ✅ Map ObstacleID → ImageID
 
 
     fun updateObstacleImageMapping(obstacleID: Int, imageID: String) {
@@ -265,7 +265,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
                 val isTargeted = mappedLabel != null
                 val displayedLabel = mappedLabel ?: id.toString()
 
-                Log.d("MazeView", if (isTargeted) "🎯 Obstacle $id is targeted with Image ID: $mappedLabel" else "🚫 Obstacle $id is NOT targeted")
+               // Log.d("MazeView", if (isTargeted) "🎯 Obstacle $id is targeted with Image ID: $mappedLabel" else "🚫 Obstacle $id is NOT targeted")
 
                 // Update text paint properties
                 val textSize = if (isTargeted) 25f else 20f
@@ -297,7 +297,7 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
                     }
                 }
-                Log.d("MazeView", "🖼️ Drawing Obstacle at ($x, $y) with ID: $id → Label: $displayedLabel (Targeted: $isTargeted)")
+       //         Log.d("MazeView", "🖼️ Drawing Obstacle at ($x, $y) with ID: $id → Label: $displayedLabel (Targeted: $isTargeted)")
             } else {
                 Log.e("MazeView", "❌ Error: No bitmap found for type: $type at ($x, $y)")
 
@@ -349,7 +349,9 @@ class MazeView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         robotDirection = 0
         // Clear all obstacles
         obstacleInfoList.clear()
+
         obstacleID = 1
+        obstacleImageMap.clear()
         // Send Bluetooth Reset Command
         //CommunicationActivity.sendResetCommand()
 
