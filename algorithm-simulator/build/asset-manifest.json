@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/static/css/main.e495a995.css",
+    "main.js": "/static/js/main.0e811cda.js",
+    "static/js/453.ab383b9e.chunk.js": "/static/js/453.ab383b9e.chunk.js",
+    "static/media/catanimation.png": "/static/media/catanimation.d888cd5b0310477ad0b3.png",
+    "static/media/MazeIcon.png": "/static/media/MazeIcon.82283f46c7888e27557e.png",
+    "index.html": "/index.html",
+    "main.e495a995.css.map": "/static/css/main.e495a995.css.map",
+    "main.0e811cda.js.map": "/static/js/main.0e811cda.js.map",
+    "453.ab383b9e.chunk.js.map": "/static/js/453.ab383b9e.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e495a995.css",
+    "static/js/main.0e811cda.js"
+  ]
+}

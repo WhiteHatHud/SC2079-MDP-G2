@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.robot {
+    width: 2rem;
+    height: 2rem;
+    background-color: red;
+    position: absolute; /* So it can move across the grid */
+    transition: transform 0.5s ease-in-out; /* Smooth movement */
+  }
